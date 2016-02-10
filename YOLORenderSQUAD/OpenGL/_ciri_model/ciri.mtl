@@ -1,0 +1,40 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 04.09.2015 19:30:02
+
+newmtl wire_134110008
+	Ns 32
+	d 1
+	Tr 0
+	Tf 1 1 1
+	illum 2
+	Ka 0.5255 0.4314 0.0314
+	Kd 0.5255 0.4314 0.0314
+	Ks 0.3500 0.3500 0.3500
+
+newmtl clothes
+map_Ka textures/clothes_D.tga
+	
+newmtl body
+map_Ka textures/body_D.tga
+	
+newmtl medallion
+map_Ka textures/medallion_D.tga
+	
+newmtl belt
+map_Ka textures/belt_D.tga
+	
+newmtl head
+map_Ka textures/head_D.tga
+	
+newmtl eye
+map_Ka textures/eye_D.tga
+	
+newmtl eyelashes
+map_Ka textures/eyelashes_D.tga
+	
+newmtl teeth
+map_Ka textures/teeth_D.tga
+
+newmtl hair
+map_Ka textures/hair_D.tga
+	

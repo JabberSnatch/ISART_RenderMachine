@@ -1,0 +1,15 @@
+newmtl Model001_Material001
+map_Ka AssassinBody_Dif.tga
+
+newmtl Model001_Material002
+map_Ka AssassinHead_Dif.tga
+
+newmtl Model001_Material003
+map_Ka AssassinsKunai_Dif.tga
+
+newmtl Model001_Material004
+map_Ka PlayerMelee_Dif.tga
+
+newmtl Model001_Material005
+map_Ka AssassinHands_Dif.tga
+
