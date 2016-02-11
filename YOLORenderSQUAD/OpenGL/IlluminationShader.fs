@@ -28,7 +28,11 @@ in VS_OUTPUT
 
 uniform Input_Material IN_MATERIAL;
 uniform Input_Light IN_LIGHT;
+
 uniform sampler2D u_TextureUnit;
+
+uniform sampler2D u_map_Ka;
+uniform sampler2D u_map_Kd;
 
 out vec4 FragmentColor;
 
@@ -37,8 +41,11 @@ void main(void)
     Input_Light LIGHT = IN_LIGHT;
     Input_Material MATERIAL = IN_MATERIAL;
 
-    vec4 TEX_COLOR = texture(u_TextureUnit, IN.v_TexCoords);
-    MATERIAL.Ka = TEX_COLOR.xyz;
+    if (textureSize(u_map_Ka, 0).x > 0)
+    {
+        vec4 TEX_COLOR = texture(u_map_Ka, IN.v_TexCoords);
+        MATERIAL.Ka = TEX_COLOR.xyz;
+    }
 
     LIGHT.Direction = normalize(LIGHT.Direction);
     

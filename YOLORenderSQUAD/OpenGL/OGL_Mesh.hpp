@@ -33,7 +33,7 @@ public:
 	auto	FillBuffers() -> void;
 	auto	FreeOGLResources() -> void;
 
-	auto	CreateTexture(const std::string& _path, bool _forceAlpha = true) -> void;
+	auto	CreateTexture(const std::string& _path, MaterialData::TEXTURE_ID _id, bool _forceAlpha = true) -> void;
 
 	auto	GetTransform() -> Transform& { return m_Transform; }
 	auto	GetShader() -> OGL_Shader& { return *m_Shader; }
@@ -72,8 +72,9 @@ private:
 	int			m_VerticesCount = 0;
 	int			m_VertexSize = 0;
 
-	GLuint		m_TexturesCount = 0;
-	GLuint*		m_Textures = nullptr;
+	//GLuint		m_TexturesCount = 0;
+	//GLuint*		m_Textures = nullptr;
+	GLuint		m_Textures[MaterialData::TEX_ID_COUNT] = { 0 };
 
 	bool		m_HasSampler = false;
 	GLuint		m_Sampler = 0;

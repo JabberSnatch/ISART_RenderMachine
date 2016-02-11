@@ -4,7 +4,11 @@
 
 #include <stb-master\stb_image.h>
 
+#include "MaterialData.hpp"
+
 #define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
+
+using MD = MaterialData;
 
 
 OGL_Mesh::OGL_Mesh(const MeshData& _source)
@@ -28,8 +32,9 @@ OGL_Mesh::OGL_Mesh(const MeshData& _source)
 
 	m_Folder = _source.m_Folder;
 	m_Material = _source.m_Material;
-	if (m_Material.map_Ka != "")
-		CreateTexture(m_Folder + m_Material.map_Ka);
+	for (int id = 0; id < MD::TEX_ID_COUNT; ++id)
+		if (m_Material.tex_maps[id] != "")
+			CreateTexture(m_Folder + m_Material.tex_maps[id], (MD::TEXTURE_ID)id);
 }
 
 
@@ -49,8 +54,9 @@ OGL_Mesh::OGL_Mesh(const OGL_Mesh& _other)
 
 	m_Folder = _other.m_Folder;
 	m_Material = _other.m_Material;
-	if (m_Material.map_Ka != "")
-		CreateTexture(m_Folder + m_Material.map_Ka);
+	for (int id = 0; id < MD::TEX_ID_COUNT; ++id)
+		if (m_Material.tex_maps[id] != "")
+			CreateTexture(m_Folder + m_Material.tex_maps[id], (MD::TEXTURE_ID)id);
 
 	m_HasSampler = _other.m_HasSampler;
 	m_Sampler = _other.m_Sampler;
@@ -77,8 +83,9 @@ OGL_Mesh::OGL_Mesh(OGL_Mesh&& _other)
 
 	m_Folder = _other.m_Folder;
 	m_Material = _other.m_Material;
-	m_TexturesCount = _other.m_TexturesCount; _other.m_TexturesCount = 0;
-	m_Textures = _other.m_Textures; _other.m_Textures = nullptr;
+
+	memcpy(m_Textures, _other.m_Textures, MaterialData::TEX_ID_COUNT * sizeof(GLuint));
+	memset(_other.m_Textures, 0, MaterialData::TEX_ID_COUNT * sizeof(GLuint));
 
 	m_HasSampler = _other.m_HasSampler; _other.m_HasSampler = false;
 	m_Sampler = _other.m_Sampler; _other.m_Sampler = 0;
@@ -101,7 +108,6 @@ OGL_Mesh::~OGL_Mesh()
 	if (m_Data) delete[] m_Data;
 	if (m_Indices) delete[] m_Indices;
 	if (m_VertexAttributesSizes) delete[] m_VertexAttributesSizes;
-	if (m_Textures) delete[] m_Textures;
 }
 
 
@@ -110,13 +116,14 @@ OGL_Mesh::Render() -> void
 {
 	if (!m_Initialized) return;
 
-	if (m_TexturesCount > 0)
+	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
 	{
-		for (GLuint index = 0; index < m_TexturesCount; ++index)
+		if (m_Textures[index] != 0)
 		{
 			glBindSampler(index, m_Sampler);
-			glActiveTexture(GL_TEXTURE0 + index);
+			glActiveTexture(GL_TEXTURE + index);
 			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
+			glUniform1i(m_Shader->GetUniform("u_" + MD::TexIDToString((MD::TEXTURE_ID)index)), index);
 		}
 	}
 
@@ -141,13 +148,14 @@ OGL_Mesh::Render(GLuint _pvMatricesBuffer) -> void
 		glUniformMatrix4fv(m_Shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
 	}
 
-	if (m_TexturesCount > 0)
+	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
 	{
-		for (GLuint index = 0; index < m_TexturesCount; ++index)
+		if (m_Textures[index] != 0)
 		{
 			glBindSampler(index, m_Sampler);
-			glActiveTexture(GL_TEXTURE0 + index);
+			glActiveTexture(GL_TEXTURE + index);
 			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
+			glUniform1i(m_Shader->GetUniform("u_" + MD::TexIDToString((MD::TEXTURE_ID)index)), index);
 		}
 	}
 
@@ -203,7 +211,7 @@ OGL_Mesh::FreeOGLResources() -> void
 	{
 		glDeleteVertexArrays(1, &m_BufferObjects[VAO]);
 		glDeleteBuffers(3, &m_BufferObjects[VBO]);
-		glDeleteTextures(m_TexturesCount, m_Textures);
+		glDeleteTextures(MD::TEX_ID_COUNT, m_Textures);
 		if (m_HasSampler) glDeleteSamplers(1, &m_Sampler);
 
 		m_Initialized = false;
@@ -212,7 +220,7 @@ OGL_Mesh::FreeOGLResources() -> void
 
 
 auto
-OGL_Mesh::CreateTexture(const std::string& _path, bool _forceAlpha) -> void
+OGL_Mesh::CreateTexture(const std::string& _path, MD::TEXTURE_ID _id, bool _forceAlpha) -> void
 {
 	if (!std::fstream(_path).good()) return;
 
@@ -221,19 +229,13 @@ OGL_Mesh::CreateTexture(const std::string& _path, bool _forceAlpha) -> void
 
 	if (data)
 	{
-		GLuint* textures = new GLuint[m_TexturesCount + 1];
-		memcpy(textures, m_Textures, m_TexturesCount);
-		delete[] m_Textures;
-		m_Textures = textures;
-
-		glGenTextures(1, &m_Textures[m_TexturesCount]);
-		glBindTexture(GL_TEXTURE_2D, m_Textures[m_TexturesCount]);
+		glGenTextures(1, &m_Textures[_id]);
+		glBindTexture(GL_TEXTURE_2D, m_Textures[_id]);
 		glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_RGBA : GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		stbi_image_free(data);
-		m_TexturesCount++;
 	}
 
 	if (!m_HasSampler)

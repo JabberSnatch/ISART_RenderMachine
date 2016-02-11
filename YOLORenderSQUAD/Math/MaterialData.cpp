@@ -4,6 +4,53 @@
 
 
 auto
+MaterialData::TexIDToString(MaterialData::TEXTURE_ID _id) -> std::string
+{
+	switch (_id)
+	{
+	case MAP_KA:
+		return "map_Ka";
+	case MAP_KD:
+		return "map_Kd";
+	case MAP_KS:
+		return "map_Ks";
+	case MAP_NS:
+		return "map_Ns";
+	case DISP:
+		return "disp";
+	case DECAL:
+		return "decal";
+	case BUMP:
+		return "bump";
+	default:
+		return "";
+	}
+}
+
+
+auto
+MaterialData::StringToTexID(const std::string& _source) -> MaterialData::TEXTURE_ID
+{
+	if (_source == "map_Ka")
+		return MAP_KA;
+	if (_source == "map_Kd")
+		return MAP_KD;
+	if (_source == "map_Ks")
+		return MAP_KS;
+	if (_source == "map_Ns")
+		return MAP_NS;
+	if (_source == "disp")
+		return DISP;
+	if (_source == "decal")
+		return DECAL;
+	if (_source == "bump")
+		return BUMP;
+
+	return MaterialData::TEX_ID_COUNT;
+}
+
+
+auto
 MaterialData::Serialize(std::fstream& _stream) -> void
 {
 	_stream.write((char*)&Ka, 3 * sizeof(float));
@@ -16,6 +63,9 @@ MaterialData::Serialize(std::fstream& _stream) -> void
 	_stream.write((char*)&sharpness, sizeof(float));
 	_stream.write((char*)&Ni, sizeof(float));
 
+	for (int i = 0; i < TEX_ID_COUNT; ++i)
+		WriteStringToStream(tex_maps[i], _stream);
+	/*
 	WriteStringToStream(map_Ka, _stream);
 	WriteStringToStream(map_Kd, _stream);
 	WriteStringToStream(map_Ks, _stream);
@@ -24,6 +74,7 @@ MaterialData::Serialize(std::fstream& _stream) -> void
 	WriteStringToStream(disp, _stream);
 	WriteStringToStream(decal, _stream);
 	WriteStringToStream(bump, _stream);
+	*/
 }
 
 
@@ -40,6 +91,9 @@ MaterialData::Deserialize(std::fstream& _stream) -> void
 	_stream.read((char*)&sharpness, sizeof(float));
 	_stream.read((char*)&Ni, sizeof(float));
 
+	for (int i = 0; i < TEX_ID_COUNT; ++i)
+		ReadStringFromStream(tex_maps[i], _stream);
+	/*
 	ReadStringFromStream(map_Ka, _stream);
 	ReadStringFromStream(map_Kd, _stream);
 	ReadStringFromStream(map_Ks, _stream);
@@ -48,6 +102,7 @@ MaterialData::Deserialize(std::fstream& _stream) -> void
 	ReadStringFromStream(disp, _stream);
 	ReadStringFromStream(decal, _stream);
 	ReadStringFromStream(bump, _stream);
+	*/
 }
 
 

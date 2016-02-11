@@ -23,24 +23,16 @@ MtlParser::ParseFile(const std::string& _path) -> void
 		{
 			if (*ite == "newmtl")
 				success = m_NewMaterial(++ite);
-			if (*ite == "map_Ka")
+			if (*ite == "map_Ka" || 
+				*ite == "map_Kd" ||
+				*ite == "map_Ns" ||
+				*ite == "map_d" ||
+				*ite == "disp" ||
+				*ite == "decal" ||
+				*ite == "bump")
 			{
-				m_CurrentMaterial->map_Ka = *++ite; 
-				success = true;
-			}
-			if (*ite == "map_Kd")
-			{
-				m_CurrentMaterial->map_Kd = *++ite;
-				success = true;
-			}
-			if (*ite == "map_Ks")
-			{
-				m_CurrentMaterial->map_Ks = *++ite;
-				success = true;
-			}
-			if (*ite == "map_Ns")
-			{
-				m_CurrentMaterial->map_Ns = *++ite;
+				MaterialData::TEXTURE_ID texID = MaterialData::StringToTexID(*ite);
+				m_CurrentMaterial->tex_maps[texID] = *++ite; 
 				success = true;
 			}
 		}

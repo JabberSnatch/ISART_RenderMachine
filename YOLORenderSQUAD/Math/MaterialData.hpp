@@ -28,6 +28,7 @@ struct MaterialData
 	float sharpness = 1;
 	float Ni = 1;
 
+	/*
 	std::string map_Ka = "";
 	std::string map_Kd = "";
 	std::string map_Ks = "";
@@ -36,6 +37,12 @@ struct MaterialData
 	std::string disp = "";
 	std::string decal = "";
 	std::string bump = "";
+	*/
+
+	std::string tex_maps[TEX_ID_COUNT];
+
+	auto static TexIDToString(TEXTURE_ID _id) -> std::string;
+	auto static StringToTexID(const std::string& _source) -> TEXTURE_ID;
 
 	auto	Serialize(std::fstream& _stream) -> void;
 	auto	Deserialize(std::fstream& _stream) -> void;
