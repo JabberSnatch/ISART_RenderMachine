@@ -40,16 +40,15 @@ OGL_Scene::Render() -> void
 		// WIP CODE ================
 		OGL_Shader* ms = &model->GetMesh(0).GetShader();
 
-		static GLfloat lightDirection[3] = { 0.f, 0.f, 1.f };
+		static GLfloat lightPosition[4] = { 0.f, -100.f, 100.f, 0.f };
 		static GLfloat Ia[3] = { .5f, .5f, .5f };
 		static GLfloat Id[3] = { 1.f, 1.f, 1.f };
 		static GLfloat Is[3] = { 1.f, 1.f, 1.f };
-		glUniform3fv(ms->GetUniform("IN_LIGHT.Direction"), 1, lightDirection);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Is"), 1, Is);
 		glUniform3fv(ms->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
-		glUniform3fv(ms->GetUniform("u_LightDirection"), 1, lightDirection);
+		glUniform4fv(ms->GetUniform("u_LightPosition"), 1, lightPosition);
 		// =========================
 
 		model->Render(m_MatricesBuffer);

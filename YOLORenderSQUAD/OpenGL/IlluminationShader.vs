@@ -16,7 +16,7 @@ uniform PVMatrices
 } pvMatrices;
 
 uniform vec3 u_ViewPosition;
-uniform vec3 u_LightDirection;
+uniform vec4 u_LightPosition;
 
 out VS_OUTPUT
 {
@@ -29,8 +29,7 @@ out VS_OUTPUT
 
 void main(void)
 {
-	vec4 position = vec4(a_Position, 1);
-	gl_Position = pvMatrices.u_ProjectionMatrix * pvMatrices.u_ViewMatrix * u_WorldMatrix * position;
+	gl_Position = pvMatrices.u_ProjectionMatrix * pvMatrices.u_ViewMatrix * u_WorldMatrix * vec4(a_Position, 1);
 
 	OUT.v_Color = vec4(abs(a_Normal), 1.0f);
 	OUT.v_TexCoords = vec2(a_TexCoords.x, -a_TexCoords.y);
@@ -38,5 +37,9 @@ void main(void)
 	mat3 tiWorldMatrix = transpose(inverse(mat3(u_WorldMatrix)));
 	OUT.v_Normal = tiWorldMatrix * a_Normal;
 	OUT.v_ViewDirection = u_ViewPosition - (tiWorldMatrix * a_Position);
-	OUT.v_LightDirection = -u_LightDirection;
+
+	if (u_LightPosition.w == 0.0)
+		OUT.v_LightDirection = -u_LightPosition.xyz;
+	else
+		OUT.v_LightDirection = (u_LightPosition.xyz / u_LightPosition.w) - (tiWorldMatrix * a_Position);
 }
