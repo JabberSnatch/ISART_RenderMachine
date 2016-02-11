@@ -113,8 +113,8 @@ void Initialize()
 
 	g_shader = new OGL_Shader();
 #if 1
-	//std::string name = "_zero_model/zero";
-	std::string name = "_ciri_model/ciri";
+	std::string name = "_zero_model/zero";
+	//std::string name = "_ciri_model/ciri";
 	ObjParser parser;
 
 	MultiMeshData data;
@@ -160,9 +160,9 @@ void Initialize()
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 15.f, 10.f);
 	
-	g_Model.GetTransform().Scale = Vec3(0.02f);
-	g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
-	//g_Model.GetTransform().Scale = Vec3(7.f);
+	//g_Model.GetTransform().Scale = Vec3(0.02f);
+	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
+	g_Model.GetTransform().Scale = Vec3(7.f);
 
 	// TRASH
 	/*

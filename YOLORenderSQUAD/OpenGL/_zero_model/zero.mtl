@@ -1,15 +1,24 @@
 newmtl Model001_Material001
 map_Kd AssassinBody_Dif.tga
+Ks 1 1 1
+Ns 25
 
 newmtl Model001_Material002
 map_Kd AssassinHead_Dif.tga
+Ks 1 1 1
+Ns 100
 
 newmtl Model001_Material003
 map_Kd AssassinsKunai_Dif.tga
+Ks 1 1 1
+Ns 100
 
 newmtl Model001_Material004
 map_Kd PlayerMelee_Dif.tga
+Ks 1 1 1
+Ns 100
 
 newmtl Model001_Material005
 map_Kd AssassinHands_Dif.tga
-
+Ks 1 1 1
+Ns 25
