@@ -33,14 +33,12 @@ OGL_Scene::Render() -> void
 	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), m_Camera.GetInverseMatrix().data);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	//for (auto&& mesh : m_Meshes)
-		//mesh->Render(m_MatricesBuffer);
 	for(auto&& model : m_Models)
 	{
 		// WIP CODE ================
 		OGL_Shader* ms = &model->GetMesh(0).GetShader();
 
-		static GLfloat lightPosition[4] = { 0.f, -100.f, 100.f, 0.f };
+		static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
 		static GLfloat Ia[3] = { .5f, .5f, .5f };
 		static GLfloat Id[3] = { 1.f, 1.f, 1.f };
 		static GLfloat Is[3] = { 1.f, 1.f, 1.f };

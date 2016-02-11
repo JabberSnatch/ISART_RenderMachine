@@ -41,5 +41,5 @@ void main(void)
 	if (u_LightPosition.w == 0.0)
 		OUT.v_LightDirection = -u_LightPosition.xyz;
 	else
-		OUT.v_LightDirection = (u_LightPosition.xyz / u_LightPosition.w) - (tiWorldMatrix * a_Position);
+		OUT.v_LightDirection = (u_LightPosition.xyz / u_LightPosition.w) - (mat4(u_WorldMatrix) * vec4(a_Position, 1)).xyz;
 }
