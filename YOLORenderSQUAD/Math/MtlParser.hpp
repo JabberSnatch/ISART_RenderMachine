@@ -30,6 +30,8 @@ public:
 
 private:
 	auto	m_NewMaterial(bIterator _ite) -> bool;
+	auto	m_ParseColor(float* _colorArray, bIterator _ite) -> bool;
+	auto	m_ParseFloat(float* _floatField, bIterator _ite) -> bool;
 
 	MaterialData*									m_CurrentMaterial;
 	std::unordered_map<std::string, MaterialData>	m_Materials;

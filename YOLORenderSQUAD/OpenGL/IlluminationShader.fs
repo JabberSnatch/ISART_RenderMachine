@@ -8,6 +8,11 @@ struct Input_Material
     vec3 Ka;
     vec3 Kd;
     vec3 Ks;
+    float illum;
+    float d;
+    float Ns;
+    float sharpness;
+    float Ni;
 };
 
 struct Input_Light
@@ -24,15 +29,21 @@ in VS_OUTPUT
 	vec3 v_Normal;
 	vec4 v_Color;
 	vec2 v_TexCoords;
+	vec3 v_ViewDirection;
+	vec3 v_LightDirection;
 } IN;
 
 uniform Input_Material IN_MATERIAL;
 uniform Input_Light IN_LIGHT;
 
-uniform sampler2D u_TextureUnit;
-
+uniform bool u_map_Ka_bound;
+uniform bool u_map_Kd_bound;
+uniform bool u_map_Ks_bound;
+uniform bool u_map_N_bound;
 uniform sampler2D u_map_Ka;
 uniform sampler2D u_map_Kd;
+uniform sampler2D u_map_Ks;
+uniform sampler2D u_map_N;
 
 out vec4 FragmentColor;
 
@@ -41,16 +52,45 @@ void main(void)
     Input_Light LIGHT = IN_LIGHT;
     Input_Material MATERIAL = IN_MATERIAL;
 
-    if (textureSize(u_map_Ka, 0).x > 0)
+    if (u_map_Ka_bound)
     {
         vec4 TEX_COLOR = texture(u_map_Ka, IN.v_TexCoords);
-        MATERIAL.Ka = TEX_COLOR.xyz;
+        MATERIAL.Ka *= TEX_COLOR.xyz;
+    }
+
+    if (u_map_Kd_bound)
+    {
+        vec4 TEX_COLOR = texture(u_map_Kd, IN.v_TexCoords);
+        if (MATERIAL.Kd != vec3(0.0, 0.0, 0.0))
+            MATERIAL.Kd *= TEX_COLOR.xyz;
+        else
+            MATERIAL.Kd = TEX_COLOR.xyz;
+    }
+
+    if (u_map_Ks_bound)
+    {
+        vec4 TEX_COLOR = texture(u_map_Ks, IN.v_TexCoords);
+        MATERIAL.Ks = TEX_COLOR.xyz;
+    }
+
+    if (u_map_N_bound)
+    {
+        vec4 TEX_COLOR = texture(u_map_N, IN.v_TexCoords);
+        //MATERIAL.Kd = TEX_COLOR.xyz;
+        //IN.v_Normal += (2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0);
     }
 
     LIGHT.Direction = normalize(LIGHT.Direction);
     
-    vec3 ambiant = LIGHT.Ia * MATERIAL.Ka;
-    vec3 diffuse = LIGHT.Id * (max(dot(IN.v_Normal, LIGHT.Direction), 0.0) * MATERIAL.Kd);
+    IN.v_Normal = normalize(IN.v_Normal);
+    IN.v_LightDirection = normalize(IN.v_LightDirection);
+    IN.v_ViewDirection = normalize(IN.v_ViewDirection);
+    vec3 R = normalize(2 * max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * IN.v_Normal - IN.v_LightDirection);
 
-    FragmentColor = vec4(ambiant + diffuse, 1.0);
+    vec3 ambient = LIGHT.Ia * MATERIAL.Ka;
+    vec3 diffuse = LIGHT.Id * (max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * MATERIAL.Kd);
+    vec3 specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+    specular = max(specular, 0.0);
+
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

@@ -112,24 +112,55 @@ OGL_Mesh::~OGL_Mesh()
 
 
 auto
-OGL_Mesh::Render() -> void
+OGL_Mesh::Render(bool _shaderEnabled) -> void
 {
 	if (!m_Initialized) return;
+
+	if (m_Shader)
+	{
+		if (!_shaderEnabled) m_Shader->EnableShader();
+
+		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ka"), 1, m_Material.Ka);
+		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Kd"), 1, m_Material.Kd);
+		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ks"), 1, m_Material.Ks);
+		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.illum"), m_Material.illum);
+		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.d"), m_Material.d);
+		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.Ns"), m_Material.Ns);
+		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.sharpness"), m_Material.sharpness);
+		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.Ni"), m_Material.Ni);
+	}
+
+	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
+	{
+		std::string uniformName = "u_" + MD::TexIDToString((MD::TEXTURE_ID)index);
+		if (m_Textures[index] != 0)
+		{
+			glBindSampler(index, m_Sampler);
+			glActiveTexture(GL_TEXTURE0 + index);
+			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
+			glUniform1i(m_Shader->GetUniform(uniformName), index);
+			glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 1);
+		}
+		else
+			glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 0);
+
+	}
+
+
+	glBindVertexArray(m_BufferObjects[VAO]);
+	glDrawElements(GL_TRIANGLES, m_DataCount(), GL_UNSIGNED_INT, nullptr);
+	glBindVertexArray(0);
+
 
 	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
 	{
 		if (m_Textures[index] != 0)
 		{
-			glBindSampler(index, m_Sampler);
-			glActiveTexture(GL_TEXTURE + index);
-			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
-			glUniform1i(m_Shader->GetUniform("u_" + MD::TexIDToString((MD::TEXTURE_ID)index)), index);
+			glBindSampler(index, 0);
+			glActiveTexture(GL_TEXTURE0 + index);
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
-
-	glBindVertexArray(m_BufferObjects[VAO]);
-	glDrawElements(GL_TRIANGLES, m_DataCount(), GL_UNSIGNED_INT, nullptr);
-	glBindVertexArray(0);
 }
 
 
@@ -148,20 +179,7 @@ OGL_Mesh::Render(GLuint _pvMatricesBuffer) -> void
 		glUniformMatrix4fv(m_Shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
 	}
 
-	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
-	{
-		if (m_Textures[index] != 0)
-		{
-			glBindSampler(index, m_Sampler);
-			glActiveTexture(GL_TEXTURE + index);
-			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
-			glUniform1i(m_Shader->GetUniform("u_" + MD::TexIDToString((MD::TEXTURE_ID)index)), index);
-		}
-	}
-
-	glBindVertexArray(m_BufferObjects[VAO]);
-	glDrawElements(GL_TRIANGLES, m_DataCount(), GL_UNSIGNED_INT, nullptr);
-	glBindVertexArray(0);
+	Render(true);
 }
 
 

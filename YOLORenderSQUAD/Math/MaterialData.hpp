@@ -12,6 +12,7 @@ struct MaterialData
 		MAP_KD,
 		MAP_KS,
 		MAP_NS,
+		MAP_N,
 		DISP,
 		DECAL,
 		BUMP,
@@ -19,30 +20,22 @@ struct MaterialData
 		TEX_ID_COUNT
 	};
 
-	float Ka[3] = { 1.f, 1.f, 1.f };
-	float Kd[3] = { 1.f, 1.f, 1.f };
-	float Ks[3] = { 1.f, 1.f, 1.f };
-	float Tf[3] = { 1.f, 1.f, 1.f };
-	float illum = 1.f;
-	float Ns = 10;
-	float sharpness = 1;
-	float Ni = 1;
-
-	/*
-	std::string map_Ka = "";
-	std::string map_Kd = "";
-	std::string map_Ks = "";
-	std::string map_Ns = "";
-	std::string map_d = "";
-	std::string disp = "";
-	std::string decal = "";
-	std::string bump = "";
-	*/
+	float Ka[3] = { 0.f, 0.f, 0.f };
+	float Kd[3] = { 0.f, 0.f, 0.f };
+	float Ks[3] = { 0.f, 0.f, 0.f };
+	float Tf[3] = { 0.f, 0.f, 0.f };
+	float illum = 0.f;
+	float d = 0.f;
+	float Ns = 0.f;
+	float sharpness = 0.f;
+	float Ni = 0.f;
 
 	std::string tex_maps[TEX_ID_COUNT];
 
 	auto static TexIDToString(TEXTURE_ID _id) -> std::string;
 	auto static StringToTexID(const std::string& _source) -> TEXTURE_ID;
+
+	auto	GetComponent(const std::string& _source) -> float*;
 
 	auto	Serialize(std::fstream& _stream) -> void;
 	auto	Deserialize(std::fstream& _stream) -> void;

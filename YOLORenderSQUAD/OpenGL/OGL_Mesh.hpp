@@ -27,7 +27,7 @@ public:
 	OGL_Mesh(OGL_Mesh&&);
 	~OGL_Mesh();
 
-	auto	Render() -> void;
+	auto	Render(bool _shaderEnabled = false) -> void;
 	auto	Render(GLuint _pvMatricesBuffer) -> void;
 
 	auto	FillBuffers() -> void;

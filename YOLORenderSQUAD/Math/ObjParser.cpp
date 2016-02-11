@@ -60,16 +60,6 @@ ObjParser::ParseFile(std::string const& _path) -> void
 					m_FinishCurrentGroup(_path);
 					m_NewMeshGroup();
 				}
-
-				/* OLD STYLE TEXTURE LOADING
-				{
-					ite++;
-					bSeparator sep("_");
-					bTokenizer localParser(*ite, sep);
-					auto localIte = localParser.begin();
-					m_CurrentMeshData->m_TextureFile = *localIte + "_D.tga";
-				}
-				*/
 				success = true;
 			}
 			if (*ite == "mtllib")

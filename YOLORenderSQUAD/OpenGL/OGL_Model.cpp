@@ -12,7 +12,7 @@ OGL_Model::Render(GLuint _pvMatricesBuffer) -> void
 		glBindBufferBase(GL_UNIFORM_BUFFER, 42, _pvMatricesBuffer);
 		glUniformMatrix4fv(shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
 
-		mesh.Render();
+		mesh.Render(true);
 	}
 }
 

@@ -25,7 +25,9 @@ MtlParser::ParseFile(const std::string& _path) -> void
 				success = m_NewMaterial(++ite);
 			if (*ite == "map_Ka" || 
 				*ite == "map_Kd" ||
+				*ite == "map_Ks" ||
 				*ite == "map_Ns" ||
+				*ite == "map_N" ||
 				*ite == "map_d" ||
 				*ite == "disp" ||
 				*ite == "decal" ||
@@ -34,6 +36,23 @@ MtlParser::ParseFile(const std::string& _path) -> void
 				MaterialData::TEXTURE_ID texID = MaterialData::StringToTexID(*ite);
 				m_CurrentMaterial->tex_maps[texID] = *++ite; 
 				success = true;
+			}
+			if (*ite == "Ka" ||
+				*ite == "Kd" ||
+				*ite == "Ks" ||
+				*ite == "Tf")
+			{
+				float* component = m_CurrentMaterial->GetComponent(*ite);
+				success = m_ParseColor(component, ++ite);
+			}
+			if (*ite == "illum" ||
+				*ite == "d" ||
+				*ite == "Ns" ||
+				*ite == "sharpness" ||
+				*ite == "Ni")
+			{
+				float* component = m_CurrentMaterial->GetComponent(*ite);
+				success = m_ParseFloat(component, ++ite);
 			}
 		}
 
@@ -69,3 +88,23 @@ MtlParser::m_NewMaterial(bIterator _ite) -> bool
 
 	return pair.second;
 }
+
+
+auto
+MtlParser::m_ParseColor(float* _colorArray, bIterator _ite) -> bool
+{
+	for (int i = 0; i < 3 && !_ite.at_end(); ++i)
+		_colorArray[i] = std::stof(*_ite++);
+
+	return true;
+}
+
+
+auto
+MtlParser::m_ParseFloat(float* _floatField, bIterator _ite) -> bool
+{
+	*_floatField = std::stof(*_ite++);
+
+	return true;
+}
+

@@ -43,11 +43,11 @@ void Update()
 	g_Time += 1.f / 60.f;
 	g_object.Update(g_Time);
 
-	g_Model.GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * 45.f;
+	g_Model.GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -45.f;
 	//g_mesh->GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * 45.f;
 	//g_mesh->GetTransform().Position = Vec3::Up() * cos(g_Time);
 
-	g_scene.GetCameraTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -15.f;
+	g_scene.GetCameraTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -45.f;
 }
 
 
@@ -113,6 +113,7 @@ void Initialize()
 
 	g_shader = new OGL_Shader();
 #if 1
+	//std::string name = "_zero_model/zero";
 	std::string name = "_ciri_model/ciri";
 	ObjParser parser;
 
@@ -157,15 +158,11 @@ void Initialize()
 	
 	g_scene.SetPerspectiveMatrix(projectionMatrix);
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
-	
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 15.f, 10.f);
+	
 	g_Model.GetTransform().Scale = Vec3(0.02f);
-	
+	g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
 	//g_Model.GetTransform().Scale = Vec3(7.f);
-	
-	//g_scene.GetCameraTransform().Position = Vec3(0.f, 500.f, 500.f);
-	//g_mesh->GetTransform().Scale = Vec3(0.02f);
-	//g_mesh->GetTransform().Scale = Vec3(10.f);
 
 	// TRASH
 	/*

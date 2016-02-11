@@ -12,29 +12,96 @@ newmtl wire_134110008
 	Ks 0.3500 0.3500 0.3500
 
 newmtl clothes
-map_Ka textures/clothes_D.tga
+map_Kd textures/clothes_D.tga
+map_Ks textures/clothes_S.tga
+map_N textures/clothes_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 	
 newmtl body
-map_Ka textures/body_D.tga
-	
+map_Kd textures/body_D.tga
+map_Ks textures/body_S.tga
+map_N textures/body_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
+
 newmtl medallion
-map_Ka textures/medallion_D.tga
+map_Kd textures/medallion_D.tga
+map_Ks textures/medallion_S.tga
+map_N textures/medallion_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 	
 newmtl belt
-map_Ka textures/belt_D.tga
+map_Kd textures/belt_D.tga
+map_Ks textures/belt_S.tga
+map_N textures/belt_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 	
 newmtl head
-map_Ka textures/head_D.tga
+map_Kd textures/head_D.tga
+map_Ks textures/head_S.tga
+map_N textures/head_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 	
 newmtl eye
-map_Ka textures/eye_D.tga
+map_Kd textures/eye_D.tga
+map_N textures/eye_N.tga
+Ns 0
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
 	
 newmtl eyelashes
-map_Ka textures/eyelashes_D.tga
+map_Kd textures/eyelashes_D.tga
+Ns 0
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
 	
 newmtl teeth
-map_Ka textures/teeth_D.tga
+map_Kd textures/teeth_D.tga
+map_Ks textures/teeth_S.tga
+map_N textures/teeth_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 
 newmtl hair
-map_Ka textures/hair_D.tga
+map_Kd textures/hair_D.tga
+map_Ks textures/hair_S.tga
+map_N textures/hair_N.tga
+Ns 32
+d 1
+Tr 0
+Tf 1 1 1
+illum 2
+Ks 0.3500 0.3500 0.3500
 	

@@ -2,6 +2,7 @@
 #define __VEC3_HPP__
 
 #include <cmath>
+#include <vector>
 
 
 struct Vec3
@@ -61,6 +62,14 @@ struct Vec3
 
 	auto	operator = (const Vec3&)->Vec3& = default;
 	auto	operator = (Vec3&&)->Vec3& = default;
+	auto	ToStdVec() -> std::vector<float> 
+	{
+		std::vector<float> result;
+		result.push_back(x);
+		result.push_back(y);
+		result.push_back(z);
+		return result;
+	}
 
 	float x;
 	float y;
