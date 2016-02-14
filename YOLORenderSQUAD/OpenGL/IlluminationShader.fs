@@ -1,4 +1,4 @@
-#version 430
+#version 420
 
 const vec4 defaultColor = vec4(1., 0.0, 0.0, 1.0);
 

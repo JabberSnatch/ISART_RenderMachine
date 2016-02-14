@@ -33,6 +33,9 @@
     <ClCompile Include="OGL_Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OGL_TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShader.gs">
@@ -68,6 +71,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OGL_Model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OGL_TextureLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

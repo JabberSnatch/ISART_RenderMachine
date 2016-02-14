@@ -18,11 +18,12 @@
 using namespace std;
 
 #include "ObjParser.hpp"
+#include "Matrix.hpp"
 #include "OGL_Model.hpp"
 #include "OGL_Mesh.hpp"
 #include "OGL_Shader.hpp"
 #include "OGL_Scene.hpp"
-#include "Matrix.hpp"
+#include "OGL_TextureLoader.hpp"
 static OGL_Scene g_scene;
 static OGL_Mesh* g_mesh;
 static OGL_Model g_Model;
@@ -113,8 +114,8 @@ void Initialize()
 
 	g_shader = new OGL_Shader();
 #if 1
-	std::string name = "_zero_model/zero";
-	//std::string name = "_ciri_model/ciri";
+	//std::string name = "_zero_model/zero";
+	std::string name = "_ciri_model/ciri";
 	ObjParser parser;
 
 	MultiMeshData data;
@@ -160,9 +161,9 @@ void Initialize()
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 15.f, 10.f);
 	
-	//g_Model.GetTransform().Scale = Vec3(0.02f);
-	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
-	g_Model.GetTransform().Scale = Vec3(7.f);
+	g_Model.GetTransform().Scale = Vec3(0.02f);
+	g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
+	//g_Model.GetTransform().Scale = Vec3(7.f);
 
 	// TRASH
 	/*
@@ -195,6 +196,7 @@ void Initialize()
 void Terminate()
 {
 	g_object.FreeResources();
+	OGL_TextureLoader::Kill();
 }
 
 int main(int argc, char* argv[])

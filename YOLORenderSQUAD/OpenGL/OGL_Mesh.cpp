@@ -5,6 +5,7 @@
 #include <stb-master\stb_image.h>
 
 #include "MaterialData.hpp"
+#include "OGL_TextureLoader.hpp"
 
 #define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
 
@@ -57,9 +58,6 @@ OGL_Mesh::OGL_Mesh(const OGL_Mesh& _other)
 	for (int id = 0; id < MD::TEX_ID_COUNT; ++id)
 		if (m_Material.tex_maps[id] != "")
 			CreateTexture(m_Folder + m_Material.tex_maps[id], (MD::TEXTURE_ID)id);
-
-	m_HasSampler = _other.m_HasSampler;
-	m_Sampler = _other.m_Sampler;
 
 	m_Shader = _other.m_Shader;
 
@@ -229,7 +227,7 @@ OGL_Mesh::FreeOGLResources() -> void
 	{
 		glDeleteVertexArrays(1, &m_BufferObjects[VAO]);
 		glDeleteBuffers(3, &m_BufferObjects[VBO]);
-		glDeleteTextures(MD::TEX_ID_COUNT, m_Textures);
+		//glDeleteTextures(MD::TEX_ID_COUNT, m_Textures);
 		if (m_HasSampler) glDeleteSamplers(1, &m_Sampler);
 
 		m_Initialized = false;
@@ -242,18 +240,22 @@ OGL_Mesh::CreateTexture(const std::string& _path, MD::TEXTURE_ID _id, bool _forc
 {
 	if (!std::fstream(_path).good()) return;
 
-	int w, h, d;
-	auto* data = stbi_load(_path.c_str(), &w, &h, &d, _forceAlpha ? STBI_rgb_alpha : STBI_rgb);
-
-	if (data)
+	m_Textures[_id] = OGL_TextureLoader::Get()->GetTexture(_path, _forceAlpha);
+	if (0)
 	{
-		glGenTextures(1, &m_Textures[_id]);
-		glBindTexture(GL_TEXTURE_2D, m_Textures[_id]);
-		glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_RGBA : GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		int w, h, d;
+		auto* data = stbi_load(_path.c_str(), &w, &h, &d, _forceAlpha ? STBI_rgb_alpha : STBI_rgb);
 
-		stbi_image_free(data);
+		if (data)
+		{
+			glGenTextures(1, &m_Textures[_id]);
+			glBindTexture(GL_TEXTURE_2D, m_Textures[_id]);
+			glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_RGBA : GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			stbi_image_free(data);
+		}
 	}
 
 	if (!m_HasSampler)

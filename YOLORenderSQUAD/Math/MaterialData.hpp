@@ -20,9 +20,9 @@ struct MaterialData
 		TEX_ID_COUNT
 	};
 
-	float Ka[3] = { 0.f, 0.f, 0.f };
-	float Kd[3] = { 0.f, 0.f, 0.f };
-	float Ks[3] = { 0.f, 0.f, 0.f };
+	float Ka[3] = { 1.f, 1.f, 1.f };
+	float Kd[3] = { 1.f, 1.f, 1.f };
+	float Ks[3] = { 1.f, 1.f, 1.f };
 	float Tf[3] = { 0.f, 0.f, 0.f };
 	float illum = 0.f;
 	float d = 0.f;

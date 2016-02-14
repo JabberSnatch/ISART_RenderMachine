@@ -171,6 +171,7 @@
     <ClCompile Include="OGL_Object.cpp" />
     <ClCompile Include="OGL_Scene.cpp" />
     <ClCompile Include="OGL_Shader.cpp" />
+    <ClCompile Include="OGL_TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShader.gs" />
@@ -186,6 +187,7 @@
     <ClInclude Include="OGL_Object.h" />
     <ClInclude Include="OGL_Scene.hpp" />
     <ClInclude Include="OGL_Shader.hpp" />
+    <ClInclude Include="OGL_TextureLoader.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
