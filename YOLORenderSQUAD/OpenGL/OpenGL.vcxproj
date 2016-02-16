@@ -174,7 +174,13 @@
     <ClCompile Include="OGL_TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BoundingBox.fs" />
+    <None Include="BoundingBox.gs" />
+    <None Include="BoundingBox.vs" />
     <None Include="defaultShader.gs" />
+    <None Include="DrawNormals.fs" />
+    <None Include="DrawNormals.gs" />
+    <None Include="DrawNormals.vs" />
     <None Include="fsDuQ.fs" />
     <None Include="IlluminationShader.fs" />
     <None Include="IlluminationShader.vs" />

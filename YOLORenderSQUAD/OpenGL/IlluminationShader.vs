@@ -35,11 +35,13 @@ void main(void)
 	OUT.v_TexCoords = vec2(a_TexCoords.x, -a_TexCoords.y);
 
 	mat3 tiWorldMatrix = transpose(inverse(mat3(u_WorldMatrix)));
-	OUT.v_Normal = tiWorldMatrix * a_Normal;
-	OUT.v_ViewDirection = u_ViewPosition - (tiWorldMatrix * a_Position);
+	OUT.v_Normal = normalize(tiWorldMatrix * a_Normal);
+	OUT.v_ViewDirection = normalize(u_ViewPosition - (tiWorldMatrix * a_Position));
 
 	if (u_LightPosition.w == 0.0)
-		OUT.v_LightDirection = -u_LightPosition.xyz;
+		OUT.v_LightDirection = u_LightPosition.xyz;
 	else
 		OUT.v_LightDirection = (u_LightPosition.xyz / u_LightPosition.w) - (mat4(u_WorldMatrix) * vec4(a_Position, 1)).xyz;
+	
+	OUT.v_LightDirection = normalize(OUT.v_LightDirection);
 }

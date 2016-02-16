@@ -72,8 +72,6 @@ private:
 	int			m_VerticesCount = 0;
 	int			m_VertexSize = 0;
 
-	//GLuint		m_TexturesCount = 0;
-	//GLuint*		m_Textures = nullptr;
 	GLuint		m_Textures[MaterialData::TEX_ID_COUNT] = { 0 };
 
 	bool		m_HasSampler = false;

@@ -61,16 +61,14 @@ void main(void)
     if (u_map_Kd_bound)
     {
         vec4 TEX_COLOR = texture(u_map_Kd, IN.v_TexCoords);
-        if (MATERIAL.Kd != vec3(0.0, 0.0, 0.0))
-            MATERIAL.Kd *= TEX_COLOR.xyz;
-        else
-            MATERIAL.Kd = TEX_COLOR.xyz;
+        MATERIAL.Kd *= TEX_COLOR.xyz;
+        MATERIAL.Ka *= TEX_COLOR.xyz;
     }
 
     if (u_map_Ks_bound)
     {
         vec4 TEX_COLOR = texture(u_map_Ks, IN.v_TexCoords);
-        MATERIAL.Ks = TEX_COLOR.xyz;
+        MATERIAL.Ks *= TEX_COLOR.xyz;
     }
 
     if (u_map_N_bound)
@@ -85,12 +83,22 @@ void main(void)
     IN.v_Normal = normalize(IN.v_Normal);
     IN.v_LightDirection = normalize(IN.v_LightDirection);
     IN.v_ViewDirection = normalize(IN.v_ViewDirection);
-    vec3 R = normalize(2 * max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * IN.v_Normal - IN.v_LightDirection);
 
     vec3 ambient = LIGHT.Ia * MATERIAL.Ka;
     vec3 diffuse = LIGHT.Id * (max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * MATERIAL.Kd);
-    vec3 specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+
+    vec3 specular;
+    {
+        //vec3 R = normalize(2 * max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * IN.v_Normal - IN.v_LightDirection);
+        //specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+    }
+    {
+        vec3 H = normalize((IN.v_LightDirection + IN.v_ViewDirection) / length(IN.v_LightDirection + IN.v_ViewDirection));
+        specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+    }
+    
     specular = max(specular, 0.0);
 
+    //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

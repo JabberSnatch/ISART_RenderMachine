@@ -11,6 +11,7 @@ class OGL_Shader
 	{
 		VERTEX = 0,
 		FRAGMENT,
+		GEOMETRY,
 		PROGRAM,
 
 		RESOURCES_COUNT

@@ -38,9 +38,12 @@ OGL_Scene::Render() -> void
 		// WIP CODE ================
 		OGL_Shader* ms = &model->GetMesh(0).GetShader();
 
-		static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
-		static GLfloat Ia[3] = { .5f, .5f, .5f };
+		//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
+		static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
+		//static GLfloat Ia[3] = { .2f, .2f, .2f };
+		static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
 		static GLfloat Id[3] = { 1.f, 1.f, 1.f };
+		//static GLfloat Is[3] = { .8f, .8f, .8f };
 		static GLfloat Is[3] = { 1.f, 1.f, 1.f };
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
@@ -51,6 +54,32 @@ OGL_Scene::Render() -> void
 
 		model->Render(m_MatricesBuffer);
 	}
+}
+
+
+#define PI 3.14159265359
+auto
+OGL_Scene::CenterCamera(Vec3 _min, Vec3 _max, float _FOV) -> void
+{
+	/*
+	tan(a) = sin(a) / cos(a) car tan = oppose / adjacent
+	dou
+		adjacent = oppose / tangent
+
+	dans notre cas: a = FOVy / 2
+
+	H = max.y - min.y;
+	distance = (H/2) / tan(a) => (H/2) * cotan(a)
+	CAMERA.z = (H/2) / tan(FOVy/2)
+	*/
+
+	float H = _max.y - _min.y;
+	float W = _max.x - _min.x;
+	float D = _max.z - _min.z;
+
+	m_Camera.Position.x = _min.x + W / 2.f;
+	m_Camera.Position.y = _min.y + H / 2.f;
+	m_Camera.Position.z = D / 2.f + ((H / 2.f) / (float)tan(_FOV * (PI / 180.) / 2.));
 }
 
 

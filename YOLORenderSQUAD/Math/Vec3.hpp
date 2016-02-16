@@ -40,7 +40,7 @@ struct Vec3
 	}
 
 
-	auto	operator + (const Vec3& _other) -> Vec3&
+	auto	operator + (const Vec3& _other) -> Vec3
 	{
 		return Vec3(x + _other.x, y + _other.y, z + _other.z);
 	}
@@ -48,6 +48,14 @@ struct Vec3
 	{
 		x += _other.x; y += _other.y; z += _other.z;
 		return *this;
+	}
+	auto	operator - (const Vec3& _other) -> Vec3
+	{
+		return Vec3(x - _other.x, y - _other.y, z - _other.z);
+	}
+	auto	operator * (const Vec3& _other) -> Vec3
+	{
+		return Vec3(x * _other.x, y * _other.y, z * _other.z);
 	}
 	auto	operator * (float _v) -> Vec3&
 	{

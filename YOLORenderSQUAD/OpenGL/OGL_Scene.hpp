@@ -31,6 +31,8 @@ public:
 	auto	AddMesh(OGL_Mesh* _mesh) -> void { m_Meshes.push_back(_mesh); }
 	auto	AddModel(OGL_Model& _model) -> void { m_Models.push_back(&_model); }
 
+	auto	CenterCamera(Vec3 _min, Vec3 _max, float _FOV) -> void;
+
 	auto	GetCameraTransform() -> Transform& { return m_Camera; }
 	auto	SetPerspectiveMatrix(GLfloat* _matrix) -> void;
 	auto	SetViewMatrix(GLfloat* _matrix) -> void;

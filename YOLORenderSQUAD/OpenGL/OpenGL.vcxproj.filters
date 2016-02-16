@@ -53,6 +53,24 @@
     <None Include="IlluminationShader.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="BoundingBox.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="BoundingBox.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="BoundingBox.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DrawNormals.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DrawNormals.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DrawNormals.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OGL_Object.h">

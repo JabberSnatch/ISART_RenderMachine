@@ -9,6 +9,7 @@ OGL_Shader::~OGL_Shader()
 	if (m_ShaderResources[PROGRAM]) glDeleteProgram(m_ShaderResources[PROGRAM]);
 	if (m_ShaderResources[VERTEX]) glDeleteShader(m_ShaderResources[VERTEX]);
 	if (m_ShaderResources[FRAGMENT]) glDeleteShader(m_ShaderResources[FRAGMENT]);
+	if (m_ShaderResources[GEOMETRY]) glDeleteShader(m_ShaderResources[GEOMETRY]);
 }
 
 
@@ -57,6 +58,8 @@ OGL_Shader::LoadShaderAndCompile(std::string _path, GLenum _type) -> void
 		m_ShaderResources[VERTEX] = shader;
 	else if (_type == GL_FRAGMENT_SHADER)
 		m_ShaderResources[FRAGMENT] = shader;
+	else if (_type == GL_GEOMETRY_SHADER)
+		m_ShaderResources[GEOMETRY] = shader;
 }
 
 
@@ -67,6 +70,7 @@ OGL_Shader::LinkShaders() -> void
 
 	if (m_ShaderResources[VERTEX]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[VERTEX]);
 	if (m_ShaderResources[FRAGMENT]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[FRAGMENT]);
+	if (m_ShaderResources[GEOMETRY]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[GEOMETRY]);
 	glLinkProgram(m_ShaderResources[PROGRAM]);
 
 	GLint linkingFailed = 0;

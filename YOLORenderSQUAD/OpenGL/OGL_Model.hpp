@@ -20,6 +20,8 @@ public:
 	auto	AddMultiMesh(const MultiMeshData& _source, OGL_Shader* _shader) -> void;
 
 	auto	GetTransform() -> Transform& { return m_Transform; }
+	auto	GetMin() -> Vec3 { return m_Min * m_Transform.Scale; }
+	auto	GetMax() -> Vec3 { return m_Max * m_Transform.Scale; }
 	auto	GetMesh(int i) -> OGL_Mesh& { return m_Meshes[i]; }
 
 	auto	operator = (const OGL_Model&)->OGL_Model& = delete;
@@ -27,8 +29,14 @@ public:
 
 private:
 	Transform					m_Transform;
+	Vec3						m_Min = Vec3::Zero();
+	Vec3						m_Max = Vec3::Zero();
 
 	std::vector<OGL_Mesh>		m_Meshes;
+
+
+	static OGL_Shader* m_NormalsShader;
+	static auto	m_GetNormalsShader() -> OGL_Shader*;
 
 };
 

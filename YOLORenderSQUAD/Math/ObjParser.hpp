@@ -69,6 +69,10 @@ struct Point
 	float*	m_Normal;
 	int		m_Size;
 
+	auto	GetPositionSize() const -> int { return m_Texture - m_Position; }
+	auto	GetTextureSize() const -> int { return m_Normal - m_Texture; }
+	auto	GetNormalSize() const -> int { return m_Size - (m_Normal - m_Position); }
+
 	auto	operator == (const Point& other) const -> bool
 	{
 		return (!memcmp(this->m_Position, other.m_Position, m_Size * sizeof(float)));

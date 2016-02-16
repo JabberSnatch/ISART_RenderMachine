@@ -48,7 +48,7 @@ void Update()
 	//g_mesh->GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * 45.f;
 	//g_mesh->GetTransform().Position = Vec3::Up() * cos(g_Time);
 
-	g_scene.GetCameraTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -45.f;
+	//g_scene.GetCameraTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -45.f;
 }
 
 
@@ -115,7 +115,8 @@ void Initialize()
 	g_shader = new OGL_Shader();
 #if 1
 	//std::string name = "_zero_model/zero";
-	std::string name = "_ciri_model/ciri";
+	//std::string name = "_ciri_model/ciri";
+	std::string name = "sphere";
 	ObjParser parser;
 
 	MultiMeshData data;
@@ -155,15 +156,16 @@ void Initialize()
 	g_scene.CreateBuffers();
 
 	static GLfloat projectionMatrix[16];
-	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 10000.f);
+	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 90.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
 	
 	g_scene.SetPerspectiveMatrix(projectionMatrix);
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
-	//g_scene.GetCameraTransform().Position = Vec3(0.f, 15.f, 10.f);
-	
-	g_Model.GetTransform().Scale = Vec3(0.02f);
-	g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
+	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
+
+	//g_Model.GetTransform().Scale = Vec3(0.02f);
+	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
 	//g_Model.GetTransform().Scale = Vec3(7.f);
+	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 90.f);
 
 	// TRASH
 	/*

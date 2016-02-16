@@ -144,11 +144,9 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 
 	}
 
-
 	glBindVertexArray(m_BufferObjects[VAO]);
 	glDrawElements(GL_TRIANGLES, m_DataCount(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
-
 
 	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
 	{
@@ -227,7 +225,6 @@ OGL_Mesh::FreeOGLResources() -> void
 	{
 		glDeleteVertexArrays(1, &m_BufferObjects[VAO]);
 		glDeleteBuffers(3, &m_BufferObjects[VBO]);
-		//glDeleteTextures(MD::TEX_ID_COUNT, m_Textures);
 		if (m_HasSampler) glDeleteSamplers(1, &m_Sampler);
 
 		m_Initialized = false;
