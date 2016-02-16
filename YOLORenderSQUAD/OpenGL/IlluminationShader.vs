@@ -5,6 +5,8 @@ const vec4 g_DefaultColor = vec4(1.0, 1.0, 1.0, 1.0);
 layout (location = 0) in vec3 a_Position;
 layout (location = 1) in vec2 a_TexCoords;
 layout (location = 2) in vec3 a_Normal;
+layout (location = 3) in vec3 a_Tangent;
+layout (location = 4) in vec3 a_Bitangent;
 
 uniform mat4 u_WorldMatrix;
 
@@ -25,6 +27,8 @@ out VS_OUTPUT
 	vec2 v_TexCoords;
 	vec3 v_ViewDirection;
 	vec3 v_LightDirection;
+	vec3 v_Tangent;
+	vec3 v_Bitangent;
 } OUT;
 
 void main(void)
@@ -36,6 +40,8 @@ void main(void)
 
 	mat3 tiWorldMatrix = transpose(inverse(mat3(u_WorldMatrix)));
 	OUT.v_Normal = normalize(tiWorldMatrix * a_Normal);
+	OUT.v_Tangent = normalize(tiWorldMatrix * a_Tangent);
+	OUT.v_Bitangent = normalize(tiWorldMatrix * a_Bitangent);
 	OUT.v_ViewDirection = normalize(u_ViewPosition - (tiWorldMatrix * a_Position));
 
 	if (u_LightPosition.w == 0.0)

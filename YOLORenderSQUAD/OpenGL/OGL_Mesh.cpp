@@ -145,7 +145,7 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 	}
 
 	glBindVertexArray(m_BufferObjects[VAO]);
-	glDrawElements(GL_TRIANGLES, m_DataCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, m_IndicesCount(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 
 	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)

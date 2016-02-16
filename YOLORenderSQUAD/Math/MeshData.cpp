@@ -2,6 +2,70 @@
 
 #include <fstream>
 
+#include "Vec3.hpp"
+
+
+auto
+MeshData::ComputeNormalSpaces() -> void
+{
+	for (int face = 0; face < m_Indices.size(); face += 3)
+	{
+		for (int point = 0; point < 3; ++point)
+		{
+			Point target = m_Points[m_Indices[face + point]];
+
+			Point next = m_Points[m_Indices[face + ((point + 1) % 3)]];
+			Point previous = m_Points[m_Indices[face + ((point + 2) % 3)]];
+
+			Point result(target.GetPositionSize(), target.GetTextureSize(), 9);
+			memcpy(result.m_Position, target.m_Position, target.GetPositionSize() * sizeof(float));
+			memcpy(result.m_Texture, target.m_Texture, target.GetTextureSize() * sizeof(float));
+			memcpy(result.m_Normal, target.m_Normal, 3 * sizeof(float));
+
+			{
+				Vec3 v0(target.m_Position[0], target.m_Position[1], target.m_Position[2]);
+				Vec3 v1(next.m_Position[0], next.m_Position[1], next.m_Position[2]);
+				Vec3 v2(previous.m_Position[0], previous.m_Position[1], previous.m_Position[2]);
+				
+				Vec3 uv0(target.m_Texture[0], target.m_Texture[1], 0.f);
+				Vec3 uv1(next.m_Texture[0], next.m_Texture[1], 0.f);
+				Vec3 uv2(previous.m_Texture[0], previous.m_Texture[1], 0.f);
+
+				Vec3 dPosition1 = v1 - v0;
+				Vec3 dPosition2 = v2 - v0;
+				Vec3 dUV1 = uv1 - uv0;
+				Vec3 dUV2 = uv2 - uv0;
+
+				float r = 1.0f / (dUV1.x * dUV2.y - dUV1.y * dUV2.x);
+
+				Vec3 T = Vec3(dPosition1 * dUV2.y - dPosition2 * dUV1.y) * r;
+				Vec3 B = Vec3(dPosition2 * dUV1.x - dPosition1 * dUV2.x) * r;
+
+				/*
+				result.m_Normal[0] = N.x;
+				result.m_Normal[1] = N.y;
+				result.m_Normal[2] = N.z;
+				*/
+
+				result.m_Normal[3] = T.x;
+				result.m_Normal[4] = T.y;
+				result.m_Normal[5] = T.z;
+
+				result.m_Normal[6] = B.x;
+				result.m_Normal[7] = B.y;
+				result.m_Normal[8] = B.z;
+			}
+
+			m_Points[m_Indices[face + point]] = result;
+		}
+	}
+
+	m_VertexSize = m_Points[0].m_Size;
+	m_AttribSizes.push_back(3);
+	m_AttribSizes.push_back(3);
+}
+
+
 auto
 MeshData::ExtractFolder(const std::string& _path) -> void
 {
@@ -30,6 +94,7 @@ MeshData::Serialize(const std::string& _path) -> void
 {
 	std::fstream stream(_path, std::fstream::out | std::fstream::trunc | std::fstream::binary);
 	Serialize(stream);
+	stream.close();
 }
 
 
@@ -76,6 +141,7 @@ MeshData::Deserialize(const std::string& _path) -> void
 	std::fstream stream(_path, std::fstream::in | std::fstream::binary);
 	Deserialize(stream);
 	ExtractFolder(_path);
+	stream.close();
 }
 
 
@@ -123,12 +189,15 @@ MultiMeshData::Serialize(const std::string& _path) -> void
 	stream.write((char*)&meshesCount, sizeof(int));
 	for (int i = 0; i < meshesCount; ++i)
 		m_Meshes[i].Serialize(stream);
+
+	stream.close();
 }
 
 
 auto
 MultiMeshData::Deserialize(const std::string& _path) -> void
 {
+	m_Meshes.clear();
 	std::fstream stream(_path, std::fstream::in | std::fstream::binary);
 
 	int meshesCount = 0;
@@ -139,5 +208,7 @@ MultiMeshData::Deserialize(const std::string& _path) -> void
 		m_Meshes[i].Deserialize(stream);
 		m_Meshes[i].ExtractFolder(_path);
 	}
+
+	stream.close();
 }
 

@@ -1,0 +1,6 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 11.08.2015 20:45:00
+
+newmtl details
+map_Kd textures/head_D.tga
+map_N textures/head_N.tga

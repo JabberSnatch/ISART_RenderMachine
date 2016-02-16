@@ -40,11 +40,11 @@ OGL_Scene::Render() -> void
 
 		//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
 		static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
-		//static GLfloat Ia[3] = { .2f, .2f, .2f };
-		static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
+		static GLfloat Ia[3] = { .2f, .2f, .2f };
+		//static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
 		static GLfloat Id[3] = { 1.f, 1.f, 1.f };
-		//static GLfloat Is[3] = { .8f, .8f, .8f };
-		static GLfloat Is[3] = { 1.f, 1.f, 1.f };
+		static GLfloat Is[3] = { .8f, .8f, .8f };
+		//static GLfloat Is[3] = { 1.f, 1.f, 1.f };
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Is"), 1, Is);
@@ -79,7 +79,7 @@ OGL_Scene::CenterCamera(Vec3 _min, Vec3 _max, float _FOV) -> void
 
 	m_Camera.Position.x = _min.x + W / 2.f;
 	m_Camera.Position.y = _min.y + H / 2.f;
-	m_Camera.Position.z = D / 2.f + ((H / 2.f) / (float)tan(_FOV * (PI / 180.) / 2.));
+	m_Camera.Position.z = /*D / 2.f + */((H / 2.f) / (float)tan(_FOV * (PI / 180.) / 2.));
 }
 
 

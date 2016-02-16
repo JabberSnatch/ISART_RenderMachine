@@ -31,6 +31,8 @@ in VS_OUTPUT
 	vec2 v_TexCoords;
 	vec3 v_ViewDirection;
 	vec3 v_LightDirection;
+    vec3 v_Tangent;
+	vec3 v_Bitangent;
 } IN;
 
 uniform Input_Material IN_MATERIAL;
@@ -74,8 +76,10 @@ void main(void)
     if (u_map_N_bound)
     {
         vec4 TEX_COLOR = texture(u_map_N, IN.v_TexCoords);
-        //MATERIAL.Kd = TEX_COLOR.xyz;
-        //IN.v_Normal += (2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0);
+        vec3 bitangent = cross(IN.v_Normal, IN.v_Tangent);
+        mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(bitangent), normalize(IN.v_Normal));
+        
+        IN.v_Normal += normalSpace * ((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
     }
 
     LIGHT.Direction = normalize(LIGHT.Direction);

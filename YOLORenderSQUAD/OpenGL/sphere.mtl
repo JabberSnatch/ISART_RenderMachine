@@ -1,5 +1,6 @@
 newmtl initialShadingGroup
 map_Kd _ciri_model/textures/clothes_D.tga
+map_N _ciri_model/textures/clothes_S.tga
 illum 4
 Kd 0.4 0.4 0.4
 Ka 0.25 0.25 0.25

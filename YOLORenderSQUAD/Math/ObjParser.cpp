@@ -22,7 +22,12 @@ ObjParser::FloatComponent("(-?\\d+(\\.\\d+(E-?\\d+)?)?)");
 auto
 ObjParser::ParseFile(std::string const& _path) -> void
 {
+	m_CurrentOBJ.Clear();
+	m_WorkingData.m_Meshes.clear();
+	m_WorkingData.m_Name = "";
+
 	std::ifstream file(_path);
+	// TODO(samu): file should be closed right away and its content put into a buffer
 
 	std::string line;
 	int lineIndex = 0;
@@ -72,17 +77,29 @@ ObjParser::ParseFile(std::string const& _path) -> void
 		}
 
 		if (!success)
-			printf("ObjParser : Line %d did not match.\n", lineIndex);
+		{
+			//printf("ObjParser : Line %d did not match.\n", lineIndex);
+		}
+		if (lineIndex % 5000 == 0)
+		{
+			printf("ObjParser : Line %d \n", lineIndex);
+		}
 
 		lineIndex++;
 	}
 	m_FinishCurrentGroup(_path);
+
+	file.close();
 }
 
 
 auto
-ObjParser::GenerateMeshData() -> MultiMeshData&
+ObjParser::GenerateMeshData(bool _computeNormalSpaces) -> MultiMeshData&
 {
+	if (_computeNormalSpaces)
+		for (auto& mesh : m_WorkingData.m_Meshes)
+			mesh.ComputeNormalSpaces();
+			
 	return m_WorkingData;
 }
 
@@ -188,6 +205,12 @@ ObjParser::m_ParseFace(OBJ& _currentOBJ, bIterator _ite) -> bool
 	{
 		bSeparator slashSep("/", "", boost::keep_empty_tokens);
 		bTokenizer faceParser(*_ite, slashSep);
+
+		/*
+		bIterator index = faceParser.begin();
+		for (int j = 0; j < 3; ++j)
+			_currentOBJ.m_Indices.push_back(std::stoi(*index));
+		*/
 		for (auto& index : faceParser)
 		{
 			if (index == "")
@@ -207,6 +230,7 @@ ObjParser::m_ParseFace(OBJ& _currentOBJ, bIterator _ite) -> bool
 auto 
 ObjParser::m_ParseFloatGroup(OBJ& _currentOBJ, int& _componentSize, std::vector<float>& _componentArray, bIterator _ite) -> bool
 {
+	/*
 	int match_count = 0;
 	{
 		auto itecpy(_ite);
@@ -221,9 +245,20 @@ ObjParser::m_ParseFloatGroup(OBJ& _currentOBJ, int& _componentSize, std::vector<
 	else
 		if ((int)match_count != _componentSize)
 			return false;
+	*/
 
-	while(!_ite.at_end())
+	int i = 0;
+	while (!_ite.at_end() && i < _componentSize)
+	{
 		_componentArray.push_back(std::stof(*_ite++));
+		++i;
+	}
+
+	while (i < _componentSize)
+	{
+		_componentArray.push_back(0.f);
+		++i;
+	}
 
 	return true;
 }

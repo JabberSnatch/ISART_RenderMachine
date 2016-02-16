@@ -20,27 +20,28 @@ struct OBJ
 {
 	std::string				m_Name;
 	
-	int						m_PositionSize = UNDEFINED_VALUE;
-	int						m_NormalSize = UNDEFINED_VALUE;
-	int						m_TexCoordSize = UNDEFINED_VALUE;
+	int						m_PositionSize = 3;
+	int						m_NormalSize = 3;
+	int						m_TexCoordSize = 2;
 
 	std::vector<float>		m_Positions;
 	std::vector<float>		m_Normals;
 	std::vector<float>		m_TexCoords;
 	std::vector<int>		m_Indices;
+
+	auto	Clear() -> void
+	{
+		m_Name = "";
+		m_PositionSize = 3;
+		m_NormalSize = 3;
+		m_TexCoordSize = 2;
+		m_Positions.clear();
+		m_Normals.clear();
+		m_TexCoords.clear();
+		m_Indices.clear();
+	}
 };
 
-template <int A, int B, int C>
-union PointT
-{
-	struct
-	{
-		float m_Position[A];
-		float m_TexCoords[B];
-		float m_Normal[C];
-	} E;
-	float m_Data[A + B + C];
-};
 
 struct Point
 {
@@ -77,6 +78,19 @@ struct Point
 	{
 		return (!memcmp(this->m_Position, other.m_Position, m_Size * sizeof(float)));
 	}
+	auto	operator = (const Point& _other) -> Point&
+	{
+		delete[] m_Position;
+
+		m_Size = _other.m_Size;
+		m_Position = new float[m_Size];
+
+		memcpy(m_Position, _other.m_Position, m_Size * sizeof(float));
+		m_Texture = m_Position + _other.GetPositionSize();
+		m_Normal = m_Texture + _other.GetTextureSize();
+
+		return *this;
+	}
 };
 
 struct MeshData
@@ -92,6 +106,8 @@ struct MeshData
 	MaterialData				m_Material;
 
 	std::string					m_Folder;
+
+	auto	ComputeNormalSpaces() -> void;
 
 	auto	ExtractFolder(const std::string& _path) -> void;
 
@@ -119,7 +135,7 @@ public:
 	~ObjParser() = default;
 
 	auto	ParseFile(std::string const& _path) -> void;
-	auto	GenerateMeshData() -> MultiMeshData&;
+	auto	GenerateMeshData(bool _computeNormalSpaces = false) -> MultiMeshData&;
 
 private:
 	auto	m_NewMeshGroup() -> void;
