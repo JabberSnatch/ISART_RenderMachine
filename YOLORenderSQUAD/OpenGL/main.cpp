@@ -116,6 +116,7 @@ void Initialize()
 #if 1
 	//std::string name = "_zero_model/zero";
 	std::string name = "_ciri_model/ciri";
+	//std::string name = "_lightning_model/lightning_obj";
 	//std::string name = "sphere";
 	ObjParser parser;
 
@@ -162,7 +163,7 @@ void Initialize()
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
 
-	g_Model.GetTransform().Scale = Vec3(0.02f);
+	//g_Model.GetTransform().Scale = Vec3(0.02f);
 	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
 	//g_Model.GetTransform().Scale = Vec3(7.f);
 	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 60.f);

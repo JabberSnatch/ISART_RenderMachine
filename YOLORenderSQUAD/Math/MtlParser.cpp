@@ -11,7 +11,7 @@ MtlParser::ParseFile(const std::string& _path) -> void
 
 	std::string line;
 	int lineIndex = 0;
-	bSeparator space(" ");
+	bSeparator space(" \t");
 
 	while (std::getline(stream, line))
 	{

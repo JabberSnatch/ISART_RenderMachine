@@ -12,6 +12,7 @@ newmtl wire_134110008
 	Ks 0.3500 0.3500 0.3500
 
 newmtl clothes
+map_Ka textures/clothes_AO.tga
 map_Kd textures/clothes_D.tga
 map_Ks textures/clothes_S.tga
 map_N textures/clothes_N.tga
@@ -19,6 +20,7 @@ Ns 32
 #Ks 0.3500 0.3500 0.3500
 	
 newmtl body
+map_Ka textures/body_AO.tga
 map_Kd textures/body_D.tga
 map_Ks textures/body_S.tga
 map_N textures/body_N.tga
@@ -26,12 +28,14 @@ Ns 32
 #Ks 0.3500 0.3500 0.3500
 
 newmtl medallion
+map_Ka textures/medallion_AO.tga
 map_Kd textures/medallion_D.tga
 map_N textures/medallion_N.tga
 Ks 0.50754 0.50754 0.50754
 Ns 51.2
 	
 newmtl belt
+map_Ka textures/belt_AO.tga
 map_Kd textures/belt_D.tga
 map_Ks textures/belt_S.tga
 map_N textures/belt_N.tga
@@ -39,6 +43,7 @@ Ns 32
 #Ks 0.3500 0.3500 0.3500
 	
 newmtl head
+map_Ka textures/head_AO.tga
 map_Kd textures/head_D.tga
 map_Ks textures/head_S.tga
 map_N textures/head_N.tga
@@ -57,6 +62,7 @@ Ks 0 0 0
 Ns 0
 	
 newmtl teeth
+map_Ka textures/teeth_AO.tga
 map_Kd textures/teeth_D.tga
 map_Ks textures/teeth_S.tga
 map_N textures/teeth_N.tga
@@ -64,6 +70,7 @@ Ns 32
 #Ks 0.3500 0.3500 0.3500
 
 newmtl hair
+map_Ka textures/hair_AO.tga
 map_Kd textures/hair_D.tga
 map_Ks textures/hair_S.tga
 map_N textures/hair_N.tga

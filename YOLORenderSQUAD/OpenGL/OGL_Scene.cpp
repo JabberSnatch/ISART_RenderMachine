@@ -40,9 +40,10 @@ OGL_Scene::Render() -> void
 
 		//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
 		static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
-		static GLfloat Ia[3] = { .2f, .2f, .2f };
-		//static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
-		static GLfloat Id[3] = { 1.f, 1.f, 1.f };
+		static GLfloat Ia[3] = { .5f, .5f, .5f };
+		//static GLfloat Ia[3] = { .2f, .2f, .2f };
+		static GLfloat Id[3] = { 0.8f, 0.8f, 0.8f };
+		//static GLfloat Id[3] = { 1.f, 1.f, 1.f };
 		static GLfloat Is[3] = { .8f, .8f, .8f };
 		//static GLfloat Is[3] = { 1.f, 1.f, 1.f };
 		glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
