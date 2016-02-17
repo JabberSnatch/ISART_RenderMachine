@@ -29,7 +29,7 @@ OGL_Light::BindIntoShader(OGL_Shader* _shader, unsigned int _index)
 		glUniform3fv(_shader->GetUniform("u_" + typeName + "Lights[" + index + "].Position"), 1, m_Position.ToStdVec().data());
 		glUniform3fv(_shader->GetUniform("u_" + typeName + "Lights[" + index + "].Direction"), 1, m_Direction.ToStdVec().data());
 		glUniform1f(_shader->GetUniform("u_" + typeName + "Lights[" + index + "].OuterCutoff"), cos(m_Cutoff * Deg2Rad));
-		glUniform1f(_shader->GetUniform("u_" + typeName + "Lights[" + index + "].InnerCutoff"), cos((m_Cutoff * 0.8) * Deg2Rad));
+		glUniform1f(_shader->GetUniform("u_" + typeName + "Lights[" + index + "].InnerCutoff"), cos((m_Cutoff * 0.5) * Deg2Rad));
 		break;
 	default: return;
 	}

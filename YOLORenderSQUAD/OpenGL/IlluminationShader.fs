@@ -150,10 +150,13 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
         float epsilon = light.InnerCutoff - light.OuterCutoff;
         float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
         
-        if (halfLambert)
-            diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
-        else
-            diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+        if (theta > light.OuterCutoff)
+        {
+            if (halfLambert)
+                diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+            else
+                diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+        }
     }
 
     return diffuse;
@@ -171,12 +174,12 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         if (blinnPhong)
         {
             vec3 H = normalize((light.Direction + IN.v_ViewDirection) / length(light.Direction + IN.v_ViewDirection));
-            specular = MATERIAL.Ks * light.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+            specular += MATERIAL.Ks * light.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
         }
         else
         {
             vec3 R = normalize(2 * max(dot(light.Direction, IN.v_Normal), 0.0) * IN.v_Normal - light.Direction);
-            specular = MATERIAL.Ks * light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            specular += MATERIAL.Ks * light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
         }
     }
 
@@ -187,16 +190,16 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         float distance = length(direction);
         direction = normalize(direction);
         float intensity = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
-        
+
         if (blinnPhong)
         {
             vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
-            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
         }
         else
         {
             vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
-            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
         }
     }
 
@@ -209,15 +212,18 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         float epsilon = light.InnerCutoff - light.OuterCutoff;
         float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
     
-        if (blinnPhong)
+        if (theta > light.OuterCutoff)
         {
-            vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
-            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
-        }
-        else
-        {
-            vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
-            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            if (blinnPhong)
+            {
+                vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
+                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+            }
+            else
+            {
+                vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
+                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            }
         }
     }
 
@@ -272,4 +278,5 @@ void main(void)
     gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(specular, 1.0);
 }
