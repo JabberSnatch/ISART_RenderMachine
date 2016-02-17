@@ -36,6 +36,11 @@ public:
 	auto	operator = (const OGL_Shader&)->OGL_Shader& = delete;
 	auto	operator = (OGL_Shader&&)->OGL_Shader& = delete;
 
+	auto	operator == (const OGL_Shader& _other) const -> bool 
+	{ return m_ShaderResources[PROGRAM] == _other.m_ShaderResources[PROGRAM]; }
+	auto	operator != (const OGL_Shader& _other) const -> bool
+	{ return m_ShaderResources[PROGRAM] != _other.m_ShaderResources[PROGRAM]; }
+
 private:
 	GLuint m_ShaderResources[RESOURCES_COUNT] = { 0 };
 

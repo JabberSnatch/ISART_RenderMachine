@@ -24,6 +24,38 @@ struct Input_Light
     vec3 Is;
 };
 
+struct DirectionalLight
+{
+	vec3 Ia;
+	vec3 Id;
+	vec3 Is;
+	vec3 Direction;
+};
+struct PointLight
+{
+	vec3 Ia;
+	vec3 Id;
+	vec3 Is;
+	vec3 Position;
+};
+struct SpotLight
+{
+	vec3 Ia;
+	vec3 Id;
+	vec3 Is;
+	vec3 Position;
+	vec3 Direction;
+	float Cutoff;
+};
+
+const unsigned int MAX_LIGHT_COUNT = 32;
+uniform unsigned int u_DirectionalCount;
+uniform DirectionalLight[MAX_LIGHT_COUNT] u_DirectionalLights;
+uniform unsigned int u_PointCount;
+uniform PointLight[MAX_LIGHT_COUNT] u_PointLights;
+uniform unsigned int u_SpotCount;
+uniform SpotLight[MAX_LIGHT_COUNT] u_SpotLights;
+
 in VS_OUTPUT
 {
 	vec3 v_Normal;
@@ -31,7 +63,7 @@ in VS_OUTPUT
 	vec2 v_TexCoords;
 	vec3 v_ViewDirection;
 	vec3 v_LightDirection;
-    vec3 v_Tangent;
+	vec3 v_Tangent;
 	vec3 v_Bitangent;
 } IN;
 
@@ -48,6 +80,56 @@ uniform sampler2D u_map_Ks;
 uniform sampler2D u_map_N;
 
 out vec4 FragmentColor;
+
+
+vec3 ComputeAmbient(Input_Material MATERIAL)
+{
+    vec3 Ia = vec3(0.0);
+    
+    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
+        Ia += u_DirectionalLights[i].Ia;
+
+    vec3 ambient = Ia * MATERIAL.Ka;
+
+    return ambient;
+}
+
+vec3 ComputeDiffuse(Input_Material MATERIAL)
+{
+    vec3 diffuse = vec3(0.0);
+
+    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
+    {
+        DirectionalLight light = u_DirectionalLights[i];
+        light.Direction = normalize(light.Direction);
+        //diffuse += light.Id * (max(pow(dot(light.Direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+        diffuse += light.Id * (max(dot(light.Direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+    }
+
+    return diffuse;
+}
+
+vec3 ComputeSpecular(Input_Material MATERIAL)
+{
+    vec3 specular = vec3(0.0);
+
+    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
+    {
+        DirectionalLight light = u_DirectionalLights[i];
+        light.Direction = normalize(light.Direction);
+        {
+            //vec3 R = normalize(2 * max(dot(light.Direction, IN.v_Normal), 0.0) * IN.v_Normal - light.Direction);
+            //specular = MATERIAL.Ks * Light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+        }
+        {
+            vec3 H = normalize((light.Direction + IN.v_ViewDirection) / length(light.Direction + IN.v_ViewDirection));
+            specular = MATERIAL.Ks * light.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+        }
+    }
+    
+    specular = max(specular, 0.0);
+    return specular;
+}
 
 void main(void)
 {
@@ -82,28 +164,14 @@ void main(void)
         IN.v_Normal += normalSpace * ((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
     }
 
-    LIGHT.Direction = normalize(LIGHT.Direction);
-    
     IN.v_Normal = normalize(IN.v_Normal);
-    IN.v_LightDirection = normalize(IN.v_LightDirection);
     IN.v_ViewDirection = normalize(IN.v_ViewDirection);
 
-    vec3 ambient = LIGHT.Ia * MATERIAL.Ka;
 
-    //vec3 diffuse = LIGHT.Id * (max(pow(dot(IN.v_LightDirection, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
-    vec3 diffuse = LIGHT.Id * (max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * MATERIAL.Kd);
+    vec3 ambient = ComputeAmbient(MATERIAL);
+    vec3 diffuse = ComputeDiffuse(MATERIAL);
+    vec3 specular = ComputeSpecular(MATERIAL);
 
-    vec3 specular;
-    {
-        //vec3 R = normalize(2 * max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * IN.v_Normal - IN.v_LightDirection);
-        //specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
-    }
-    {
-        vec3 H = normalize((IN.v_LightDirection + IN.v_ViewDirection) / length(IN.v_LightDirection + IN.v_ViewDirection));
-        specular = MATERIAL.Ks * LIGHT.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
-    }
-    
-    specular = max(specular, 0.0);
 
     vec3 linearColor = ambient + diffuse * 3 + specular;
     gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);

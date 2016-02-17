@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OGL_Light.cpp" />
     <ClCompile Include="OGL_Mesh.cpp" />
     <ClCompile Include="OGL_Model.cpp" />
     <ClCompile Include="OGL_Object.cpp" />
@@ -188,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OGL_InstancedMesh.hpp" />
+    <ClInclude Include="OGL_Light.hpp" />
     <ClInclude Include="OGL_Mesh.hpp" />
     <ClInclude Include="OGL_Model.hpp" />
     <ClInclude Include="OGL_Object.h" />

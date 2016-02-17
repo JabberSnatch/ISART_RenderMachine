@@ -33,29 +33,34 @@ OGL_Scene::Render() -> void
 	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), m_Camera.GetInverseMatrix().data);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	// SET SHADERS UP WITH LIGHTS AND VIEW
+	{
+		std::list<OGL_Shader*> shaders;
+		for (auto& model : m_Models)
+		{
+			for (auto& mesh : model->GetMeshes())
+			{
+				OGL_Shader* shader = mesh.GetShader();
+				if (std::find(shaders.begin(), shaders.end(), shader) == shaders.end())
+					shaders.emplace_back(shader);
+			}
+		}
+
+		unsigned int lightCounts[OGL_Light::COUNT]; memset(lightCounts, 0, OGL_Light::COUNT * sizeof(unsigned int));
+		for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)
+		{
+			for (OGL_Light& light : m_Lights)
+				light.BindIntoShader(*ite, lightCounts[light.m_Type]++);
+			
+			glUniform1ui((*ite)->GetUniform("u_DirectionalCount"), lightCounts[OGL_Light::DIRECTIONAL]);
+			glUniform1ui((*ite)->GetUniform("u_PointCount"), lightCounts[OGL_Light::POINT]);
+			glUniform1ui((*ite)->GetUniform("u_SpotCount"), lightCounts[OGL_Light::SPOT]);
+			glUniform3fv((*ite)->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
+		}
+	}
+
 	for(auto&& model : m_Models)
 	{
-		// WIP CODE ================
-		OGL_Shader* ms = model->GetMesh(0).GetShader();
-
-		if (ms)
-		{
-			//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
-			static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
-			static GLfloat Ia[3] = { .25f, .2f, .15f };
-			//static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
-			static GLfloat Id[3] = { 0.8f, 0.75f, 0.75f };
-			//static GLfloat Id[3] = { 1.f, 1.f, 1.f };
-			static GLfloat Is[3] = { .8f, .8f, .7f };
-			//static GLfloat Is[3] = { 1.f, 1.f, 1.f };
-			glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
-			glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
-			glUniform3fv(ms->GetUniform("IN_LIGHT.Is"), 1, Is);
-			glUniform3fv(ms->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
-			glUniform4fv(ms->GetUniform("u_LightPosition"), 1, lightPosition);
-		}
-		// =========================
-
 		model->Render(m_MatricesBuffer);
 	}
 }
@@ -83,7 +88,7 @@ OGL_Scene::CenterCamera(Vec3 _min, Vec3 _max, float _FOV) -> void
 
 	m_Camera.Position.x = _min.x + W / 2.f;
 	m_Camera.Position.y = _min.y + H / 2.f;
-	m_Camera.Position.z = /*D / 2.f + */((H / 2.f) / (float)tan(_FOV * (PI / 180.) / 2.));
+	m_Camera.Position.z = D / 2.f + ((H / 2.f) / (float)tan(_FOV * (PI / 180.) / 2.));
 }
 
 

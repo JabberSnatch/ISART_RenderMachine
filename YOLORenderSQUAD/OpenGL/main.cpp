@@ -146,10 +146,27 @@ void Initialize()
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
 
-	//g_Model.GetTransform().Scale = Vec3(0.02f);
+	g_Model.GetTransform().Scale = Vec3(0.02f);
 	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
 	//g_Model.GetTransform().Scale = Vec3(7.f);
 	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 60.f);
+
+
+	OGL_Light light0(OGL_Light::DIRECTIONAL);
+	light0.m_Ia = Vec3(.25f, .2f, .15f);
+	light0.m_Id = Vec3(0.8f, 0.75f, 0.75f);
+	light0.m_Is = Vec3(.8f, .8f, .7f);
+	light0.m_Direction = Vec3(0.f, 0.f, 1.f);
+
+	OGL_Light light1(OGL_Light::DIRECTIONAL);
+	light1.m_Ia = Vec3(.25f, .2f, .15f);
+	light1.m_Id = Vec3(0.f, 0.f, 0.75f);
+	light1.m_Is = Vec3(.0f, .0f, .0f);
+	light1.m_Direction = Vec3(0.f, 1.f, 0.f);
+
+
+	g_scene.AddLight(light0);
+	g_scene.AddLight(light1);
 
 
 	// TRASH

@@ -23,6 +23,7 @@ public:
 	auto	GetMin() -> Vec3 { return m_Min * m_Transform.Scale; }
 	auto	GetMax() -> Vec3 { return m_Max * m_Transform.Scale; }
 	auto	GetMesh(int i) -> OGL_Mesh& { return m_Meshes[i]; }
+	auto	GetMeshes() -> std::vector<OGL_Mesh>& { return m_Meshes; }
 
 	auto	operator = (const OGL_Model&)->OGL_Model& = delete;
 	auto	operator = (OGL_Model&&)->OGL_Model& = delete;

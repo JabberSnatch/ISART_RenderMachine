@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "OGL_Model.hpp"
+#include "OGL_Light.hpp"
 #include "OGL_Mesh.hpp"
 #include "OGL_InstancedMesh.hpp"
 
@@ -28,8 +29,9 @@ public:
 
 	auto	Render() -> void;
 
-	auto	AddMesh(OGL_Mesh* _mesh) -> void { m_Meshes.push_back(_mesh); }
+	//auto	AddMesh(OGL_Mesh* _mesh) -> void { m_Meshes.push_back(_mesh); }
 	auto	AddModel(OGL_Model& _model) -> void { m_Models.push_back(&_model); }
+	auto	AddLight(OGL_Light& _light) -> void { m_Lights.push_back(_light); }
 
 	auto	CenterCamera(Vec3 _min, Vec3 _max, float _FOV) -> void;
 
@@ -43,7 +45,9 @@ public:
 private:
 	Transform							m_Camera;
 	std::vector<OGL_Model*>				m_Models;
-	std::vector<OGL_Mesh*>				m_Meshes;
+	std::vector<OGL_Light>				m_Lights;
+
+	//std::vector<OGL_Mesh*>				m_Meshes;
 	std::vector<OGL_InstancedMesh*>		m_InstancedMeshes;
 
 	GLuint			m_MatricesBuffer = 0;
