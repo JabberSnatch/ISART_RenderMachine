@@ -36,21 +36,24 @@ OGL_Scene::Render() -> void
 	for(auto&& model : m_Models)
 	{
 		// WIP CODE ================
-		OGL_Shader* ms = &model->GetMesh(0).GetShader();
+		OGL_Shader* ms = model->GetMesh(0).GetShader();
 
-		//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
-		static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
-		static GLfloat Ia[3] = { .5f, .5f, .5f };
-		//static GLfloat Ia[3] = { .2f, .2f, .2f };
-		static GLfloat Id[3] = { 0.8f, 0.8f, 0.8f };
-		//static GLfloat Id[3] = { 1.f, 1.f, 1.f };
-		static GLfloat Is[3] = { .8f, .8f, .8f };
-		//static GLfloat Is[3] = { 1.f, 1.f, 1.f };
-		glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
-		glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
-		glUniform3fv(ms->GetUniform("IN_LIGHT.Is"), 1, Is);
-		glUniform3fv(ms->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
-		glUniform4fv(ms->GetUniform("u_LightPosition"), 1, lightPosition);
+		if (ms)
+		{
+			//static GLfloat lightPosition[4] = { 0.f, 100.f, 100.f, 1.f };
+			static GLfloat lightPosition[4] = { 0.f, 0.f, 1.f, 0.f };
+			static GLfloat Ia[3] = { .25f, .2f, .15f };
+			//static GLfloat Ia[3] = { 1.f, 1.f, 1.f };
+			static GLfloat Id[3] = { 0.8f, 0.75f, 0.75f };
+			//static GLfloat Id[3] = { 1.f, 1.f, 1.f };
+			static GLfloat Is[3] = { .8f, .8f, .7f };
+			//static GLfloat Is[3] = { 1.f, 1.f, 1.f };
+			glUniform3fv(ms->GetUniform("IN_LIGHT.Ia"), 1, Ia);
+			glUniform3fv(ms->GetUniform("IN_LIGHT.Id"), 1, Id);
+			glUniform3fv(ms->GetUniform("IN_LIGHT.Is"), 1, Is);
+			glUniform3fv(ms->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
+			glUniform4fv(ms->GetUniform("u_LightPosition"), 1, lightPosition);
+		}
 		// =========================
 
 		model->Render(m_MatricesBuffer);

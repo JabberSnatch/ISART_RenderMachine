@@ -36,7 +36,7 @@ OGL_TextureLoader::GetTexture(const std::string & _path, bool _forceAlpha) -> Te
 		{
 			glGenTextures(1, &m_TextureMap[_path]);
 			glBindTexture(GL_TEXTURE_2D, m_TextureMap[_path]);
-			glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_RGBA : GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_SRGB_ALPHA : GL_SRGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 

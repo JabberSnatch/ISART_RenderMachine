@@ -17,13 +17,15 @@ OGL_Model::Render(GLuint _pvMatricesBuffer) -> void
 		}
 
 
-		OGL_Shader* shader = &mesh.GetShader();
-		shader->EnableShader();
-		glUniformBlockBinding(shader->GetProgram(), glGetUniformBlockIndex(shader->GetProgram(), "pvMatrices"), 42);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 42, _pvMatricesBuffer);
-		glUniformMatrix4fv(shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
+		OGL_Shader* shader = mesh.GetShader();
+		if (shader)
+		{
+			glUniformBlockBinding(shader->GetProgram(), glGetUniformBlockIndex(shader->GetProgram(), "pvMatrices"), 42);
+			glBindBufferBase(GL_UNIFORM_BUFFER, 42, _pvMatricesBuffer);
+			glUniformMatrix4fv(shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
+		}
 
-		mesh.Render(true);
+		mesh.Render();
 	}
 }
 
@@ -32,7 +34,7 @@ auto
 OGL_Model::AddMesh(const MeshData& _source, OGL_Shader* _shader) -> void
 {
 	OGL_Mesh mesh(_source);
-	mesh.SetShader(*_shader);
+	mesh.SetShader(_shader);
 	m_Meshes.push_back(mesh);
 
 	for (Point const& point : _source.m_Points)

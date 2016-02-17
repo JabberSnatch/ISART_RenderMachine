@@ -89,6 +89,8 @@ void main(void)
     IN.v_ViewDirection = normalize(IN.v_ViewDirection);
 
     vec3 ambient = LIGHT.Ia * MATERIAL.Ka;
+
+    //vec3 diffuse = LIGHT.Id * (max(pow(dot(IN.v_LightDirection, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
     vec3 diffuse = LIGHT.Id * (max(dot(IN.v_LightDirection, IN.v_Normal), 0.0) * MATERIAL.Kd);
 
     vec3 specular;
@@ -103,6 +105,8 @@ void main(void)
     
     specular = max(specular, 0.0);
 
+    vec3 linearColor = ambient + diffuse * 3 + specular;
+    gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
-    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

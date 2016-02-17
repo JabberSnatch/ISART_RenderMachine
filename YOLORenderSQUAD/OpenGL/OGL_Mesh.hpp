@@ -36,7 +36,7 @@ public:
 	auto	CreateTexture(const std::string& _path, MaterialData::TEXTURE_ID _id, bool _forceAlpha = true) -> void;
 
 	auto	GetTransform() -> Transform& { return m_Transform; }
-	auto	GetShader() -> OGL_Shader& { return *m_Shader; }
+	auto	GetShader() -> OGL_Shader* { return m_Shader; }
 
 	auto	SetData(GLfloat* _data) -> void;
 	auto	SetIndices(GLuint* _indices) -> void;
@@ -46,7 +46,7 @@ public:
 	auto	SetVerticesCount(int _count) -> void { m_VerticesCount = _count; }
 	auto	SetVertexSize(int _size) -> void { m_VertexSize = _size; }
 
-	auto	SetShader(OGL_Shader& _shader) -> void { m_Shader = &_shader; }
+	auto	SetShader(OGL_Shader* _shader) -> void { m_Shader = _shader; }
 
 	auto	operator = (const OGL_Mesh&)->OGL_Mesh& = delete;
 	auto	operator = (OGL_Mesh&&)->OGL_Mesh& = delete;

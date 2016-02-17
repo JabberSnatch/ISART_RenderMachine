@@ -116,8 +116,6 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 
 	if (m_Shader)
 	{
-		if (!_shaderEnabled) m_Shader->EnableShader();
-
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ka"), 1, m_Material.Ka);
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Kd"), 1, m_Material.Kd);
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ks"), 1, m_Material.Ks);
@@ -126,22 +124,23 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.Ns"), m_Material.Ns);
 		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.sharpness"), m_Material.sharpness);
 		glUniform1f(m_Shader->GetUniform("IN_MATERIAL.Ni"), m_Material.Ni);
-	}
 
-	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
-	{
-		std::string uniformName = "u_" + MD::TexIDToString((MD::TEXTURE_ID)index);
-		if (m_Textures[index] != 0)
+		for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
 		{
-			glBindSampler(index, m_Sampler);
-			glActiveTexture(GL_TEXTURE0 + index);
-			glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
-			glUniform1i(m_Shader->GetUniform(uniformName), index);
-			glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 1);
+			std::string uniformName = "u_" + MD::TexIDToString((MD::TEXTURE_ID)index);
+			if (m_Textures[index] != 0)
+			{
+				glBindSampler(index, m_Sampler);
+				glActiveTexture(GL_TEXTURE0 + index);
+				glBindTexture(GL_TEXTURE_2D, m_Textures[index]);
+				glUniform1i(m_Shader->GetUniform(uniformName), index);
+				glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 1);
+			}
+			else
+				glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 0);
 		}
-		else
-			glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 0);
 
+		if (!_shaderEnabled) m_Shader->EnableShader();
 	}
 
 	glBindVertexArray(m_BufferObjects[VAO]);

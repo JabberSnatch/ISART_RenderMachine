@@ -113,14 +113,19 @@ void Initialize()
 
 
 	g_shader = new OGL_Shader();
-#if 1
+	g_shader->LoadShaderAndCompile("IlluminationShader.vs", GL_VERTEX_SHADER);
+	g_shader->LoadShaderAndCompile("IlluminationShader.fs", GL_FRAGMENT_SHADER);
+	g_shader->LinkShaders();
+
+
+	ObjParser parser;
+	MultiMeshData data;
+	
 	//std::string name = "_zero_model/zero";
 	std::string name = "_ciri_model/ciri";
 	//std::string name = "_lightning_model/lightning_obj";
 	//std::string name = "sphere";
-	ObjParser parser;
 
-	MultiMeshData data;
 	if (!std::fstream(name + ".mys").good())
 	{
 		parser.ParseFile(name + ".obj");
@@ -130,14 +135,25 @@ void Initialize()
 	else
 		data.Deserialize(name + ".mys");
 
-	g_shader->LoadShaderAndCompile("IlluminationShader.vs", GL_VERTEX_SHADER);
-	g_shader->LoadShaderAndCompile("IlluminationShader.fs", GL_FRAGMENT_SHADER);
-	g_shader->LinkShaders();
-
 	g_Model.AddMultiMesh(data, g_shader);
-
 	g_scene.AddModel(g_Model);
-#else
+	
+	static GLfloat projectionMatrix[16];
+	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
+	
+	g_scene.CreateBuffers();
+	g_scene.SetPerspectiveMatrix(projectionMatrix);
+	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
+	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
+
+	//g_Model.GetTransform().Scale = Vec3(0.02f);
+	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
+	//g_Model.GetTransform().Scale = Vec3(7.f);
+	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 60.f);
+
+
+	// TRASH
+	/*
 	g_mesh = new OGL_Mesh();
 
 	g_mesh->SetPolyCount(6);
@@ -152,24 +168,8 @@ void Initialize()
 	g_shader->LinkShaders();
 
 	g_scene.AddMesh(g_mesh);
-#endif
-	
-	g_scene.CreateBuffers();
 
-	static GLfloat projectionMatrix[16];
-	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
-	
-	g_scene.SetPerspectiveMatrix(projectionMatrix);
-	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
-	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
 
-	//g_Model.GetTransform().Scale = Vec3(0.02f);
-	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
-	//g_Model.GetTransform().Scale = Vec3(7.f);
-	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 60.f);
-
-	// TRASH
-	/*
 	g_object.LoadShaderAndCompile("shaderDuQ.vs", GL_VERTEX_SHADER);
 	g_object.LoadShaderAndCompile("fsDuQ.fs", GL_FRAGMENT_SHADER);
 	//g_object.LoadShaderAndCompile("IlluminationShader.vs", GL_VERTEX_SHADER);
