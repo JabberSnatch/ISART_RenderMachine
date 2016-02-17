@@ -3,7 +3,9 @@
 #include <freeglut/include/GL/freeglut.h>
 
 #if defined(_WIN64)
-#pragma comment(lib, "x64/freeglut.lib")
+#pragma comment(lib, "freeglut.lib")
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glew32.lib")
 #elif defined(_WIN32)
 #pragma comment(lib, "freeglut.lib")
 #pragma comment(lib, "opengl32.lib")
@@ -121,8 +123,8 @@ void Initialize()
 	ObjParser parser;
 	MultiMeshData data;
 	
-	std::string name = "_zero_model/zero";
-	//std::string name = "_ciri_model/ciri";
+	//std::string name = "_zero_model/zero";
+	std::string name = "_ciri_model/ciri";
 	//std::string name = "_lightning_model/lightning_obj";
 	//std::string name = "sphere";
 
@@ -146,7 +148,7 @@ void Initialize()
 	g_scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 	//g_scene.GetCameraTransform().Position = Vec3(0.f, 0.f, 2.f);
 
-	//g_Model.GetTransform().Scale = Vec3(0.02f);
+	g_Model.GetTransform().Scale = Vec3(0.02f);
 	//g_Model.GetTransform().Rotation = Vec3::Up() * 180.f;
 	//g_Model.GetTransform().Scale = Vec3(7.f);
 	g_scene.CenterCamera(g_Model.GetMin(), g_Model.GetMax(), 60.f);
@@ -168,16 +170,15 @@ void Initialize()
 	light2.m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2.m_Id = Vec3(1.f, 0.f, 0.f);
 	light2.m_Is = Vec3(1.f, 0.f, 0.f);
-	light2.m_Direction = Vec3(0.f, 0.f, 1.f);
+	light2.m_Direction = Vec3(0.f, 1.f, 1.f);
 
 	OGL_Light light3(OGL_Light::SPOT);
 	light3.m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3.m_Id = Vec3(0.f, 1.f, 0.f);
 	light3.m_Is = Vec3(0.f, 1.f, 0.f);
-	light3.m_Direction = Vec3(0.f, -.75f, 1.f);
-	light3.m_Position = Vec3(0.f, 5.f, -5.f);
-	light3.m_Cutoff = 2.f;
-
+	light3.m_Direction = Vec3(0.f, -.8f, 1.f);
+	light3.m_Position = Vec3(0.f, 20.f, -5.f);
+	light3.m_Cutoff = 5.f;
 
 	/*
 	*/

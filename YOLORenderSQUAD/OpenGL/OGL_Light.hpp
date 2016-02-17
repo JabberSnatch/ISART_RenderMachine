@@ -25,13 +25,13 @@ public:
 
 	LIGHT_TYPE	m_Type = DIRECTIONAL;
 
-	Vec3	m_Ia = Vec3(1.0);
-	Vec3	m_Id = Vec3(1.0);
-	Vec3	m_Is = Vec3(1.0);
+	Vec3	m_Ia = Vec3(0.0);
+	Vec3	m_Id = Vec3(0.0);
+	Vec3	m_Is = Vec3(0.0);
 
 	Vec3	m_Position = Vec3::Zero();
 	Vec3	m_Direction = Vec3::Zero();
-	float	m_Cutoff = 180.f;
+	float	m_Cutoff = 90.f;
 };
 
 
