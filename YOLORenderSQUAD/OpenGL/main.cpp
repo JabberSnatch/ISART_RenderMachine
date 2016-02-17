@@ -156,17 +156,32 @@ void Initialize()
 	light0.m_Ia = Vec3(.25f, .2f, .15f);
 	light0.m_Id = Vec3(0.8f, 0.75f, 0.75f);
 	light0.m_Is = Vec3(.8f, .8f, .7f);
-	light0.m_Direction = Vec3(0.f, 0.f, 1.f);
+	light0.m_Direction = Vec3(0.f, 0.f, -1.f);
 
-	OGL_Light light1(OGL_Light::DIRECTIONAL);
-	light1.m_Ia = Vec3(.25f, .2f, .15f);
-	light1.m_Id = Vec3(0.f, 0.f, 0.75f);
-	light1.m_Is = Vec3(.0f, .0f, .0f);
-	light1.m_Direction = Vec3(0.f, 1.f, 0.f);
+	OGL_Light light1(OGL_Light::POINT);
+	light1.m_Ia = Vec3(.0f, .0f, 0.f);
+	light1.m_Id = Vec3(0.f, 0.f, 1.f);
+	light1.m_Is = Vec3(.0f, .0f, 1.f);
+	light1.m_Position = Vec3(0.f, 5.f, -5.f);
+
+	OGL_Light light2(OGL_Light::DIRECTIONAL);
+	light2.m_Ia = Vec3(0.f, 0.f, 0.f);
+	light2.m_Id = Vec3(1.f, 0.f, 0.f);
+	light2.m_Is = Vec3(1.f, 0.f, 0.f);
+	light2.m_Direction = Vec3(0.f, 0.f, -1.f);
+
+	OGL_Light light3(OGL_Light::SPOT);
+	light3.m_Ia = Vec3(0.f, 0.f, 0.f);
+	light3.m_Id = Vec3(0.f, 1.f, 0.f);
+	light3.m_Is = Vec3(0.f, 1.f, 0.f);
+	light3.m_Direction = Vec3(0.f, -.75f, 1.f);
+	light3.m_Position = Vec3(0.f, 20.f, -5.f);
+	light3.m_Cutoff = 15.f;
 
 
-	g_scene.AddLight(light0);
 	g_scene.AddLight(light1);
+	g_scene.AddLight(light2);
+	g_scene.AddLight(light3);
 
 
 	// TRASH

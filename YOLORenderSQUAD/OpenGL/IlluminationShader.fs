@@ -37,6 +37,10 @@ struct PointLight
 	vec3 Id;
 	vec3 Is;
 	vec3 Position;
+
+    float Constant;
+    float Linear;
+    float Quadratic;
 };
 struct SpotLight
 {
@@ -45,10 +49,12 @@ struct SpotLight
 	vec3 Is;
 	vec3 Position;
 	vec3 Direction;
-	float Cutoff;
+
+    float InnerCutoff;
+	float OuterCutoff;
 };
 
-const unsigned int MAX_LIGHT_COUNT = 32;
+const unsigned int MAX_LIGHT_COUNT = 10;
 uniform unsigned int u_DirectionalCount;
 uniform DirectionalLight[MAX_LIGHT_COUNT] u_DirectionalLights;
 uniform unsigned int u_PointCount;
@@ -58,6 +64,7 @@ uniform SpotLight[MAX_LIGHT_COUNT] u_SpotLights;
 
 in VS_OUTPUT
 {
+    vec3 v_WorldPosition;
 	vec3 v_Normal;
 	vec4 v_Color;
 	vec2 v_TexCoords;
@@ -89,43 +96,131 @@ vec3 ComputeAmbient(Input_Material MATERIAL)
     for(unsigned int i = 0; i < u_DirectionalCount; ++i)
         Ia += u_DirectionalLights[i].Ia;
 
+    for(unsigned int i = 0; i < u_PointCount; ++i)
+    {
+        PointLight light = u_PointLights[i];
+        float distance = length(light.Position - IN.v_WorldPosition);
+        float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
+        Ia += light.Ia * attenuation;
+    }
+
+    for(unsigned int i = 0; i < u_SpotCount; ++i)
+        Ia += u_SpotLights[i].Ia;
+
     vec3 ambient = Ia * MATERIAL.Ka;
 
     return ambient;
 }
 
-vec3 ComputeDiffuse(Input_Material MATERIAL)
+vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
 {
     vec3 diffuse = vec3(0.0);
 
     for(unsigned int i = 0; i < u_DirectionalCount; ++i)
     {
         DirectionalLight light = u_DirectionalLights[i];
-        light.Direction = normalize(light.Direction);
-        //diffuse += light.Id * (max(pow(dot(light.Direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
-        diffuse += light.Id * (max(dot(light.Direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+        light.Direction = -normalize(light.Direction);
+        
+        if (halfLambert)
+            diffuse += light.Id * (max(pow(dot(light.Direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+        else
+            diffuse += light.Id * (max(dot(light.Direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+    }
+
+    for(unsigned int i = 0; i < u_PointCount; ++i)
+    {
+        PointLight light = u_PointLights[i];
+        vec3 direction = light.Position - IN.v_WorldPosition;
+        float distance = length(direction);
+        direction = normalize(direction);
+        float intensity = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
+        
+        if (halfLambert)
+            diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+        else
+            diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+    }
+
+    for(unsigned int i = 0; i < u_SpotCount; ++i)
+    {
+        SpotLight light = u_SpotLights[i];
+        vec3 direction = light.Position - IN.v_WorldPosition;
+        direction = normalize(direction);
+        float theta = dot(direction, -normalize(light.Direction));
+        float epsilon = light.InnerCutoff - light.OuterCutoff;
+        float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
+        
+        if (halfLambert)
+            diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+        else
+            diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
     }
 
     return diffuse;
 }
 
-vec3 ComputeSpecular(Input_Material MATERIAL)
+vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 {
     vec3 specular = vec3(0.0);
 
     for(unsigned int i = 0; i < u_DirectionalCount; ++i)
     {
         DirectionalLight light = u_DirectionalLights[i];
-        light.Direction = normalize(light.Direction);
-        {
-            //vec3 R = normalize(2 * max(dot(light.Direction, IN.v_Normal), 0.0) * IN.v_Normal - light.Direction);
-            //specular = MATERIAL.Ks * Light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
-        }
+        light.Direction = -normalize(light.Direction);
+        
+        if (blinnPhong)
         {
             vec3 H = normalize((light.Direction + IN.v_ViewDirection) / length(light.Direction + IN.v_ViewDirection));
             specular = MATERIAL.Ks * light.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
         }
+        else
+        {
+            vec3 R = normalize(2 * max(dot(light.Direction, IN.v_Normal), 0.0) * IN.v_Normal - light.Direction);
+            specular = MATERIAL.Ks * light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+        }
     }
+
+    for(unsigned int i = 0; i < u_PointCount; ++i)
+    {
+        PointLight light = u_PointLights[i];
+        vec3 direction = light.Position - IN.v_WorldPosition;
+        float distance = length(direction);
+        direction = normalize(direction);
+        float intensity = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
+        
+        if (blinnPhong)
+        {
+            vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
+            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+        }
+        else
+        {
+            vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
+            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+        }
+    }
+
+    for(unsigned int i = 0; i < u_SpotCount; ++i)
+    {
+        SpotLight light = u_SpotLights[i];
+        vec3 direction = light.Position - IN.v_WorldPosition;
+        direction = normalize(direction);
+        float theta = dot(direction, -normalize(light.Direction));
+        float epsilon = light.InnerCutoff - light.OuterCutoff;
+        float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
+    
+        if (blinnPhong)
+        {
+            vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
+            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+        }
+        else
+        {
+            vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
+            specular = MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+        }
+    }
+
     
     specular = max(specular, 0.0);
     return specular;
@@ -169,8 +264,8 @@ void main(void)
 
 
     vec3 ambient = ComputeAmbient(MATERIAL);
-    vec3 diffuse = ComputeDiffuse(MATERIAL);
-    vec3 specular = ComputeSpecular(MATERIAL);
+    vec3 diffuse = ComputeDiffuse(MATERIAL, false);
+    vec3 specular = ComputeSpecular(MATERIAL, true);
 
 
     vec3 linearColor = ambient + diffuse * 3 + specular;

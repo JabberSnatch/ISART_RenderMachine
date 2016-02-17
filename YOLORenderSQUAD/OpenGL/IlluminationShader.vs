@@ -22,6 +22,7 @@ uniform vec4 u_LightPosition;
 
 out VS_OUTPUT
 {
+	vec3 v_WorldPosition;
 	vec3 v_Normal;
 	vec4 v_Color;
 	vec2 v_TexCoords;
@@ -34,6 +35,8 @@ out VS_OUTPUT
 void main(void)
 {
 	gl_Position = pvMatrices.u_ProjectionMatrix * pvMatrices.u_ViewMatrix * u_WorldMatrix * vec4(a_Position, 1);
+
+	OUT.v_WorldPosition = vec3(u_WorldMatrix * vec4(a_Position, 1.0));
 
 	OUT.v_Color = vec4(abs(a_Normal), 1.0f);
 	OUT.v_TexCoords = vec2(a_TexCoords.x, -a_TexCoords.y);
