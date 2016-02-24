@@ -37,6 +37,7 @@ struct PointLight
 	vec3 Id;
 	vec3 Is;
 	vec3 Position;
+    float _pad;
     
     float Constant;
     float Linear;
@@ -49,12 +50,13 @@ struct SpotLight
 	vec3 Is;
 	vec3 Position;
 	vec3 Direction;
+    float _pad;
 
     float InnerCutoff;
 	float OuterCutoff;
 };
 
-const unsigned int MAX_LIGHT_COUNT = 2;
+const unsigned int MAX_LIGHT_COUNT = 50;
 //uniform unsigned int u_DirectionalCount;
 //uniform DirectionalLight[MAX_LIGHT_COUNT] u_DirectionalLights;
 //uniform unsigned int u_PointCount;
@@ -159,10 +161,11 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
         vec3 direction = light.Position - IN.v_WorldPosition;
         direction = normalize(direction);
         float theta = dot(direction, -normalize(light.Direction));
+        float bufferTheta = dot(direction, -normalize(LIGHTS.SpotLights[i].Direction));
         float epsilon = light.InnerCutoff - light.OuterCutoff;
         float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
         
-        if (theta > light.OuterCutoff)
+        if (light.Direction == LIGHTS.SpotLights[i].Direction)//theta >= light.OuterCutoff)
         {
             if (halfLambert)
                 diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
@@ -224,7 +227,7 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         float epsilon = light.InnerCutoff - light.OuterCutoff;
         float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
     
-        if (theta > light.OuterCutoff)
+        if (theta >= light.OuterCutoff)
         {
             if (blinnPhong)
             {
@@ -287,8 +290,9 @@ void main(void)
 
 
     vec3 linearColor = ambient + diffuse * 3 + specular;
-    gl_FragColor = vec4(pow(linearColor * 1000.0, vec3(1.0 / 2.2)), 1.0);
+    gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(specular, 1.0);
+    //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }

@@ -176,9 +176,9 @@ void Initialize()
 	light3.m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3.m_Id = Vec3(0.f, 1.f, 0.f);
 	light3.m_Is = Vec3(0.f, 1.f, 0.f);
-	light3.m_Direction = Vec3(0.f, -.8f, 1.f);
+	light3.m_Direction = Vec3(0.f, -0.8f, 1.f);
 	light3.m_Position = Vec3(0.f, 20.f, -5.f);
-	light3.m_Cutoff = 5.f;
+	light3.m_Cutoff = 25.f;
 
 	/*
 	*/
