@@ -7,6 +7,7 @@ OGL_Scene::~OGL_Scene()
 }
 
 
+
 auto
 OGL_Scene::CreateBuffers() -> void
 {
@@ -15,6 +16,12 @@ OGL_Scene::CreateBuffers() -> void
 	glBindBuffer(GL_UNIFORM_BUFFER, m_MatricesBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, 2 * 16 * sizeof(GLfloat), nullptr, GL_STREAM_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &m_LightsBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_LightsBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, ARRAY_OFFSET + 
+		MAX_LIGHT_COUNT * (DIRLIGHT_SIZE + POINTLIGHT_SIZE + SPOTLIGHT_SIZE), nullptr, GL_STREAM_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 
@@ -22,6 +29,7 @@ auto
 OGL_Scene::FreeOGLResources() -> void
 {
 	glDeleteBuffers(1, &m_MatricesBuffer);
+	glDeleteBuffers(1, &m_LightsBuffer);
 }
 
 
@@ -47,6 +55,7 @@ OGL_Scene::Render() -> void
 		}
 
 		unsigned int lightCounts[OGL_Light::COUNT]; memset(lightCounts, 0, OGL_Light::COUNT * sizeof(unsigned int));
+		/*
 		for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)
 		{
 			for (OGL_Light& light : m_Lights)
@@ -55,6 +64,21 @@ OGL_Scene::Render() -> void
 			glUniform1ui((*ite)->GetUniform("u_DirectionalCount"), lightCounts[OGL_Light::DIRECTIONAL]);
 			glUniform1ui((*ite)->GetUniform("u_PointCount"), lightCounts[OGL_Light::POINT]);
 			glUniform1ui((*ite)->GetUniform("u_SpotCount"), lightCounts[OGL_Light::SPOT]);
+			glUniform3fv((*ite)->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
+		}
+		*/
+		for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)
+		{
+			for (OGL_Light& light : m_Lights)
+				light.BindIntoBuffer(m_LightsBuffer, lightCounts[light.m_Type]++);
+
+			glBindBuffer(GL_UNIFORM_BUFFER, m_LightsBuffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLuint), &lightCounts[OGL_Light::DIRECTIONAL]);
+			glBufferSubData(GL_UNIFORM_BUFFER, 1 * sizeof(GLuint), sizeof(GLuint), &lightCounts[OGL_Light::POINT]);
+			glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(GLuint), sizeof(GLuint), &lightCounts[OGL_Light::SPOT]);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_LightsBuffer);
+
 			glUniform3fv((*ite)->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
 		}
 	}

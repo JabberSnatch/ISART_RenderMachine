@@ -4,6 +4,12 @@
 #include "Vec3.hpp"
 #include "OGL_Shader.hpp"
 
+#define MAX_LIGHT_COUNT 2
+#define DIRLIGHT_SIZE (4 * 4 * sizeof(GLfloat))
+#define POINTLIGHT_SIZE (4 * 4 * sizeof(GLfloat) + 4 * sizeof(GLfloat))
+#define SPOTLIGHT_SIZE (5 * 4 * sizeof(GLfloat) + 4 * sizeof(GLfloat))
+
+#define ARRAY_OFFSET 4 * sizeof(GLuint)
 
 class OGL_Light
 {
@@ -16,8 +22,14 @@ public:
 	OGL_Light(const OGL_Light&) = default;
 	OGL_Light(OGL_Light&&) = default;
 	~OGL_Light() = default;
-
+	
 	void	BindIntoShader(OGL_Shader* _shader, unsigned int _index);
+	void	BindIntoBuffer(GLuint _buffer, unsigned int _index);
+
+	GLfloat Constant()		{ return 1.f; }
+	GLfloat Linear()		{ return .22f; }
+	GLfloat Quadratic()		{ return 0.20f; }
+	GLfloat InnerCutoff()	{ return m_Cutoff * 0.5f; }
 
 	auto	operator = (const OGL_Light&)->OGL_Light& = delete;
 	auto	operator = (OGL_Light&&)->OGL_Light& = delete;
@@ -32,6 +44,9 @@ public:
 	Vec3	m_Position = Vec3::Zero();
 	Vec3	m_Direction = Vec3::Zero();
 	float	m_Cutoff = 90.f;
+
+private:
+	GLint	m_ComputeLightOffset(unsigned int _index);
 };
 
 

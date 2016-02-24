@@ -50,6 +50,7 @@ private:
 	//std::vector<OGL_Mesh*>				m_Meshes;
 	std::vector<OGL_InstancedMesh*>		m_InstancedMeshes;
 
+	GLuint			m_LightsBuffer = 0;
 	GLuint			m_MatricesBuffer = 0;
 	GLfloat			m_Matrices[MATRICES_COUNT][16];
 

@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <vector>
+#include <memory>
 
 
 struct Vec3
@@ -76,6 +77,18 @@ struct Vec3
 		result.push_back(x);
 		result.push_back(y);
 		result.push_back(z);
+		return result;
+	}
+	auto	ToArray() -> std::shared_ptr<float>
+	{
+		float* acc = new float[3];
+		acc[0] = x;
+		acc[1] = y;
+		acc[2] = z;
+		std::shared_ptr<float> result(acc, [](float* p) {
+			delete[] p;
+		});
+
 		return result;
 	}
 

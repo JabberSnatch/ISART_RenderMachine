@@ -37,7 +37,7 @@ struct PointLight
 	vec3 Id;
 	vec3 Is;
 	vec3 Position;
-
+    
     float Constant;
     float Linear;
     float Quadratic;
@@ -54,13 +54,25 @@ struct SpotLight
 	float OuterCutoff;
 };
 
-const unsigned int MAX_LIGHT_COUNT = 10;
-uniform unsigned int u_DirectionalCount;
-uniform DirectionalLight[MAX_LIGHT_COUNT] u_DirectionalLights;
-uniform unsigned int u_PointCount;
-uniform PointLight[MAX_LIGHT_COUNT] u_PointLights;
-uniform unsigned int u_SpotCount;
-uniform SpotLight[MAX_LIGHT_COUNT] u_SpotLights;
+const unsigned int MAX_LIGHT_COUNT = 2;
+//uniform unsigned int u_DirectionalCount;
+//uniform DirectionalLight[MAX_LIGHT_COUNT] u_DirectionalLights;
+//uniform unsigned int u_PointCount;
+//uniform PointLight[MAX_LIGHT_COUNT] u_PointLights;
+//uniform unsigned int u_SpotCount;
+//uniform SpotLight[MAX_LIGHT_COUNT] u_SpotLights;
+
+layout(std140, binding = 1)
+uniform LightData
+{
+    unsigned int DirectionalCount;
+    unsigned int PointCount;
+    unsigned int SpotCount;
+
+    DirectionalLight[MAX_LIGHT_COUNT] DirectionalLights;
+    PointLight[MAX_LIGHT_COUNT] PointLights;
+    SpotLight[MAX_LIGHT_COUNT] SpotLights;
+} LIGHTS;
 
 in VS_OUTPUT
 {
@@ -93,19 +105,19 @@ vec3 ComputeAmbient(Input_Material MATERIAL)
 {
     vec3 Ia = vec3(0.0);
     
-    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
-        Ia += u_DirectionalLights[i].Ia;
+    for(unsigned int i = 0; i < LIGHTS.DirectionalCount; ++i)
+        Ia += LIGHTS.DirectionalLights[i].Ia;
 
-    for(unsigned int i = 0; i < u_PointCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.PointCount; ++i)
     {
-        PointLight light = u_PointLights[i];
+        PointLight light = LIGHTS.PointLights[i];
         float distance = length(light.Position - IN.v_WorldPosition);
         float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
         Ia += light.Ia * attenuation;
     }
 
-    for(unsigned int i = 0; i < u_SpotCount; ++i)
-        Ia += u_SpotLights[i].Ia;
+    for(unsigned int i = 0; i < LIGHTS.SpotCount; ++i)
+        Ia += LIGHTS.SpotLights[i].Ia;
 
     vec3 ambient = Ia * MATERIAL.Ka;
 
@@ -116,9 +128,9 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
 {
     vec3 diffuse = vec3(0.0);
 
-    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.DirectionalCount; ++i)
     {
-        DirectionalLight light = u_DirectionalLights[i];
+        DirectionalLight light = LIGHTS.DirectionalLights[i];
         light.Direction = -normalize(light.Direction);
         
         if (halfLambert)
@@ -127,9 +139,9 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
             diffuse += light.Id * (max(dot(light.Direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
     }
 
-    for(unsigned int i = 0; i < u_PointCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.PointCount; ++i)
     {
-        PointLight light = u_PointLights[i];
+        PointLight light = LIGHTS.PointLights[i];
         vec3 direction = light.Position - IN.v_WorldPosition;
         float distance = length(direction);
         direction = normalize(direction);
@@ -141,9 +153,9 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
             diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
     }
 
-    for(unsigned int i = 0; i < u_SpotCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.SpotCount; ++i)
     {
-        SpotLight light = u_SpotLights[i];
+        SpotLight light = LIGHTS.SpotLights[i];
         vec3 direction = light.Position - IN.v_WorldPosition;
         direction = normalize(direction);
         float theta = dot(direction, -normalize(light.Direction));
@@ -166,9 +178,9 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 {
     vec3 specular = vec3(0.0);
 
-    for(unsigned int i = 0; i < u_DirectionalCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.DirectionalCount; ++i)
     {
-        DirectionalLight light = u_DirectionalLights[i];
+        DirectionalLight light = LIGHTS.DirectionalLights[i];
         light.Direction = -normalize(light.Direction);
         
         if (blinnPhong)
@@ -183,9 +195,9 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         }
     }
 
-    for(unsigned int i = 0; i < u_PointCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.PointCount; ++i)
     {
-        PointLight light = u_PointLights[i];
+        PointLight light = LIGHTS.PointLights[i];
         vec3 direction = light.Position - IN.v_WorldPosition;
         float distance = length(direction);
         direction = normalize(direction);
@@ -203,9 +215,9 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         }
     }
 
-    for(unsigned int i = 0; i < u_SpotCount; ++i)
+    for(unsigned int i = 0; i < LIGHTS.SpotCount; ++i)
     {
-        SpotLight light = u_SpotLights[i];
+        SpotLight light = LIGHTS.SpotLights[i];
         vec3 direction = light.Position - IN.v_WorldPosition;
         direction = normalize(direction);
         float theta = dot(direction, -normalize(light.Direction));
@@ -275,7 +287,7 @@ void main(void)
 
 
     vec3 linearColor = ambient + diffuse * 3 + specular;
-    gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
+    gl_FragColor = vec4(pow(linearColor * 1000.0, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(specular, 1.0);
