@@ -88,8 +88,13 @@ in VS_OUTPUT
 	vec3 v_Bitangent;
 } IN;
 
+struct VS_CPY
+{
+	vec3 v_Normal;
+	vec3 v_ViewDirection;
+} CPY;
+
 uniform Input_Material IN_MATERIAL;
-uniform Input_Light IN_LIGHT;
 
 uniform bool u_map_Ka_bound;
 uniform bool u_map_Kd_bound;
@@ -136,9 +141,9 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
         light.Direction = -normalize(light.Direction);
         
         if (halfLambert)
-            diffuse += light.Id * (max(pow(dot(light.Direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+            diffuse += light.Id * (max(pow((dot(light.Direction, CPY.v_Normal) + 0.5) * 0.5, 2), 0.0) * MATERIAL.Kd);
         else
-            diffuse += light.Id * (max(dot(light.Direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+            diffuse += light.Id * (max(dot(light.Direction, CPY.v_Normal), 0.0) * MATERIAL.Kd);
     }
 
     for(unsigned int i = 0; i < LIGHTS.PointCount; ++i)
@@ -150,9 +155,9 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
         float intensity = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
         
         if (halfLambert)
-            diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+            diffuse += light.Id * intensity * (max(pow((dot(direction, CPY.v_Normal) + 0.5) * 0.5, 2), 0.0) * MATERIAL.Kd);
         else
-            diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+            diffuse += light.Id * intensity * (max(dot(direction, CPY.v_Normal), 0.0) * MATERIAL.Kd);
     }
 
     for(unsigned int i = 0; i < LIGHTS.SpotCount; ++i)
@@ -165,12 +170,12 @@ vec3 ComputeDiffuse(Input_Material MATERIAL, bool halfLambert)
         float epsilon = light.InnerCutoff - light.OuterCutoff;
         float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
         
-        if (light.Direction == LIGHTS.SpotLights[i].Direction)//theta >= light.OuterCutoff)
+        if (theta >= light.OuterCutoff)
         {
             if (halfLambert)
-                diffuse += light.Id * intensity * (max(pow(dot(direction, IN.v_Normal) * 0.5 + 0.5, 2), 0.0) * MATERIAL.Kd);
+                diffuse += light.Id * intensity * (max(pow((dot(direction, CPY.v_Normal) + 0.5) * 0.5, 2), 0.0) * MATERIAL.Kd);
             else
-                diffuse += light.Id * intensity * (max(dot(direction, IN.v_Normal), 0.0) * MATERIAL.Kd);
+                diffuse += light.Id * intensity * (max(dot(direction, CPY.v_Normal), 0.0) * MATERIAL.Kd);
         }
     }
 
@@ -188,13 +193,13 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         
         if (blinnPhong)
         {
-            vec3 H = normalize((light.Direction + IN.v_ViewDirection) / length(light.Direction + IN.v_ViewDirection));
-            specular += MATERIAL.Ks * light.Is * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+            vec3 H = normalize((light.Direction + CPY.v_ViewDirection) / length(light.Direction + CPY.v_ViewDirection));
+            specular += MATERIAL.Ks * light.Is * pow(max(dot(CPY.v_Normal, H), 0.0), MATERIAL.Ns * 4);
         }
         else
         {
-            vec3 R = normalize(2 * max(dot(light.Direction, IN.v_Normal), 0.0) * IN.v_Normal - light.Direction);
-            specular += MATERIAL.Ks * light.Is * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            vec3 R = normalize(2 * max(dot(light.Direction, CPY.v_Normal), 0.0) * CPY.v_Normal - light.Direction);
+            specular += MATERIAL.Ks * light.Is * pow(max(dot(R, CPY.v_ViewDirection), 0.0), MATERIAL.Ns);
         }
     }
 
@@ -208,13 +213,13 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 
         if (blinnPhong)
         {
-            vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
-            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+            vec3 H = normalize((direction + CPY.v_ViewDirection) / length(direction + CPY.v_ViewDirection));
+            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(CPY.v_Normal, H), 0.0), MATERIAL.Ns * 4);
         }
         else
         {
-            vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
-            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+            vec3 R = normalize(2 * max(dot(direction, CPY.v_Normal), 0.0) * CPY.v_Normal - direction);
+            specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, CPY.v_ViewDirection), 0.0), MATERIAL.Ns);
         }
     }
 
@@ -231,13 +236,13 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
         {
             if (blinnPhong)
             {
-                vec3 H = normalize((direction + IN.v_ViewDirection) / length(direction + IN.v_ViewDirection));
-                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(IN.v_Normal, H), 0.0), MATERIAL.Ns * 4);
+                vec3 H = normalize((direction + CPY.v_ViewDirection) / length(direction + CPY.v_ViewDirection));
+                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(CPY.v_Normal, H), 0.0), MATERIAL.Ns * 4);
             }
             else
             {
-                vec3 R = normalize(2 * max(dot(direction, IN.v_Normal), 0.0) * IN.v_Normal - direction);
-                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, IN.v_ViewDirection), 0.0), MATERIAL.Ns);
+                vec3 R = normalize(2 * max(dot(direction, CPY.v_Normal), 0.0) * CPY.v_Normal - direction);
+                specular += MATERIAL.Ks * light.Is * intensity * pow(max(dot(R, CPY.v_ViewDirection), 0.0), MATERIAL.Ns);
             }
         }
     }
@@ -249,8 +254,10 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 
 void main(void)
 {
-    Input_Light LIGHT = IN_LIGHT;
     Input_Material MATERIAL = IN_MATERIAL;
+	
+    CPY.v_Normal = IN.v_Normal;
+	CPY.v_ViewDirection = IN.v_ViewDirection;
 
     if (u_map_Ka_bound)
     {
@@ -277,11 +284,11 @@ void main(void)
         vec3 bitangent = cross(IN.v_Normal, IN.v_Tangent);
         mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(bitangent), normalize(IN.v_Normal));
         
-        IN.v_Normal += normalSpace * ((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
+        CPY.v_Normal += normalSpace * ((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
     }
 
-    IN.v_Normal = normalize(IN.v_Normal);
-    IN.v_ViewDirection = normalize(IN.v_ViewDirection);
+    CPY.v_Normal = normalize(CPY.v_Normal);
+    CPY.v_ViewDirection = normalize(CPY.v_ViewDirection);
 
 
     vec3 ambient = ComputeAmbient(MATERIAL);
@@ -293,6 +300,6 @@ void main(void)
     gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-    //gl_FragColor = vec4(specular, 1.0);
+    //gl_FragColor = vec4(specular * 1000, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }
