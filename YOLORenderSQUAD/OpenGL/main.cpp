@@ -1,5 +1,6 @@
 #define FREEGLUT_LIB_PRAGMAS 0
 #include <glew/include/GL/glew.h>
+#include <glew/include/GL/wglew.h>
 #include <freeglut/include/GL/freeglut.h>
 
 #if defined(_WIN64)
@@ -12,11 +13,8 @@
 #pragma comment(lib, "glew32.lib")
 #endif
 
-#define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
-
 #include <iostream>
 #include <fstream>
-#include <sstream>
 using namespace std;
 
 #include "ObjParser.hpp"
@@ -37,20 +35,29 @@ static OGL_Shader* g_CommonShader;
 static OGL_Object g_object;
 static GLuint g_TextureID;
 
-static float g_Time = 0.f;
+struct GameState
+{
+	long long	Counter = 0;
+	long long	Frequency = 0;
+	long long	tDeltaTime = 0;
+	double		DeltaTime = 1. / 60.;
+};
+static GameState g_State;
 
 void Update()
 {
 	glutPostRedisplay();
 
-	g_Time += 1.f / 60.f;
-	//g_object.Update(g_Time);
+	{
+		LARGE_INTEGER counter;
+		QueryPerformanceCounter(&counter);
+		g_State.tDeltaTime = counter.QuadPart - g_State.Counter;
+		g_State.Counter = counter.QuadPart;
+		//g_State.DeltaTime = (double)g_State.tDeltaTime / (double)g_State.Frequency;
+	}
 
-	g_Model.GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -45.f;
-	//g_mesh->GetTransform().Rotation += Vec3::Up() * (1.f / 60.f) * 45.f;
-	//g_mesh->GetTransform().Position = Vec3::Up() * cos(g_Time);
-
-	g_scene.GetCameraTransform().Rotation += Vec3::Up() * (1.f / 60.f) * -15.f;
+	g_Model.GetTransform().Rotation += Vec3::Up() * g_State.DeltaTime * -45.f;
+	g_scene.GetCameraTransform().Rotation += Vec3::Up() * g_State.DeltaTime * -15.f;
 }
 
 
@@ -87,6 +94,9 @@ void Initialize()
 		//cout << "Extension[" << glGetStringi(GL_EXTENSIONS, index) << "]" << endl;
 	}
 
+	wglSwapIntervalEXT(1);
+
+
 	GLfloat triangles[] = {
 		-.69f, .4f, .4f,		1.f, 1.f, 0.f, 1.f,		.0f, 1.f,
 		0.f, -.8f, 0.f,			0.f, 1.f, 1.f, 1.f,		.5f, 0.f,
@@ -115,8 +125,8 @@ void Initialize()
 
 
 	g_shader = new OGL_Shader();
-	g_shader->LoadShaderAndCompile("IlluminationShader.vs", GL_VERTEX_SHADER);
-	g_shader->LoadShaderAndCompile("IlluminationShader.fs", GL_FRAGMENT_SHADER);
+	g_shader->LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.vs", GL_VERTEX_SHADER);
+	g_shader->LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
 	g_shader->LinkShaders();
 
 
@@ -124,7 +134,7 @@ void Initialize()
 	MultiMeshData data;
 	
 	//std::string name = "_zero_model/zero";
-	std::string name = "_ciri_model/ciri";
+	std::string name = "../Resources/MODELS/_ciri_model/ciri";
 	//std::string name = "_lightning_model/lightning_obj";
 	//std::string name = "sphere";
 
@@ -180,13 +190,23 @@ void Initialize()
 	light3.m_Position = Vec3(0.f, 20.f, -5.f);
 	light3.m_Cutoff = 25.f;
 
-	/*
-	*/
 	g_scene.AddLight(light0);
 	g_scene.AddLight(light1);
 	g_scene.AddLight(light2);
 	g_scene.AddLight(light3);
+	/*
+	*/
 
+
+
+	{
+		LARGE_INTEGER counter, frequency;
+		QueryPerformanceCounter(&counter);
+		QueryPerformanceFrequency(&frequency);
+
+		g_State.Counter = counter.QuadPart;
+		g_State.Frequency = frequency.QuadPart;
+	}
 
 	// TRASH
 	/*
@@ -234,13 +254,12 @@ void Initialize()
 
 void Terminate()
 {
-	g_object.FreeResources();
+	//g_object.FreeResources();
 	OGL_TextureLoader::Kill();
 }
 
 int main(int argc, char* argv[])
 {
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(800, 800);

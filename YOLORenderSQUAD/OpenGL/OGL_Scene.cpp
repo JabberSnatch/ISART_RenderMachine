@@ -28,8 +28,10 @@ OGL_Scene::CreateBuffers() -> void
 auto
 OGL_Scene::FreeOGLResources() -> void
 {
-	glDeleteBuffers(1, &m_MatricesBuffer);
-	glDeleteBuffers(1, &m_LightsBuffer);
+	if (m_MatricesBuffer)
+		glDeleteBuffers(1, &m_MatricesBuffer);
+	if (m_LightsBuffer)
+		glDeleteBuffers(1, &m_LightsBuffer);
 }
 
 

@@ -297,9 +297,9 @@ void main(void)
 
 
     vec3 linearColor = ambient + diffuse * 3 + specular;
-    FragmentColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
-    //FragmentColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
-    //FragmentColor = vec4(ambient + diffuse + specular, 1.0);
-    //FragmentColor = vec4(specular * 1000, 1.0);
-    //FragmentColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
+    gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
+    //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(specular * 1000, 1.0);
+    //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }
