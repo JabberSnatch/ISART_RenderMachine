@@ -1,10 +1,11 @@
 #ifndef __DEVICE_HPP__
 #define __DEVICE_HPP__
 
-#include "IRenderer.hpp"
 #include "IRenderContext.hpp"
-#include "OGL_Scene.hpp"
+#include "NodeIncubator.hpp"
+#include "ComponentIncubator.hpp"
 
+#include "OGL_Scene.hpp"
 
 class Device
 {

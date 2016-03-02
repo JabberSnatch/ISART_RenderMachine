@@ -48,6 +48,7 @@ Device::Render()
 
 
 #define FREEGLUT_LIB_PRAGMAS 0
+#include <Windows.h>
 #include <glew/include/GL/wglew.h>
 
 #if defined(_WIN64)

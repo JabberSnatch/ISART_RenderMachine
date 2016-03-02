@@ -30,14 +30,14 @@ ComponentIncubator::Delete(Component* _component)
 void
 ComponentIncubator::GarbageCollection()
 {
-	std::list<UUID> toDelete;
+	std::list<utility::UUID> toDelete;
 	for (ComponentMap_t::iterator ite = m_ComponentMap.begin(); ite != m_ComponentMap.end(); ++ite)
 	{
 		if (ite->second.m_Delete)
 			toDelete.push_back(ite->first);
 	}
 
-	for (std::list<UUID>::iterator ite = toDelete.begin(); ite != toDelete.end(); ++ite)
+	for (std::list<utility::UUID>::iterator ite = toDelete.begin(); ite != toDelete.end(); ++ite)
 	{
 		delete m_ComponentMap[*ite].m_Component;
 		m_ComponentMap.erase(*ite);

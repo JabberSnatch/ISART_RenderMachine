@@ -32,7 +32,7 @@ private:
 		Component*		m_Component = nullptr;
 		bool			m_Delete = false;
 	};
-	typedef std::map<UUID, ComponentMeta> ComponentMap_t;
+	typedef std::map<utility::UUID, ComponentMeta> ComponentMap_t;
 
 	ComponentMap_t		m_ComponentMap;
 };

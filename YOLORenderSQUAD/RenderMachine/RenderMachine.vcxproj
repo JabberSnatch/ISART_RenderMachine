@@ -140,7 +140,7 @@
     <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />
     <ClInclude Include="IRenderContext.hpp" />
-    <ClInclude Include="IRenderer.hpp" />
+    <ClInclude Include="IRenderObject.hpp" />
     <ClInclude Include="IScene.hpp" />
     <ClInclude Include="Node.hpp" />
     <ClInclude Include="NodeIncubator.hpp" />

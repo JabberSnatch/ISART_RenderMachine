@@ -33,11 +33,11 @@ public:
 private:
 	Node() = default;
 
-	UUID					m_ID;
+	utility::UUID			m_ID;
 	Transform				m_LocalTransform;
 
 	Node*					m_Parent = nullptr;
-	std::map<UUID, Node*>	m_Children;
+	std::map<utility::UUID, Node*>	m_Children;
 };
 
 

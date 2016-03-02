@@ -4,6 +4,8 @@
 #include <boost\uuid\uuid.hpp>
 #include <boost\uuid\random_generator.hpp>
 
+namespace utility {
+
 
 class UUID
 {
@@ -14,8 +16,10 @@ public:
 	UUID(UUID&&) = delete;
 	~UUID() = default;
 
-	bool	operator < (const UUID& _other) const 
-	{ return memcmp(m_ID.data, _other.m_ID.data, m_ID.size()) < 0; }
+	bool	operator < (const UUID& _other) const
+	{
+		return memcmp(m_ID.data, _other.m_ID.data, m_ID.size()) < 0;
+	}
 
 	auto	operator = (const UUID&) -> UUID& = default;
 	auto	operator = (UUID&&) -> UUID& = delete;
@@ -25,5 +29,7 @@ private:
 
 };
 
+
+} // utility
 
 #endif /*__UUID_HPP__*/

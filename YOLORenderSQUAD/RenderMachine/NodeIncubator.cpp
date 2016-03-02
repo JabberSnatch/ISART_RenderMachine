@@ -41,14 +41,14 @@ NodeIncubator::Delete(Node* _node)
 void
 NodeIncubator::GarbageCollection()
 {
-	std::list<UUID> toDelete;
+	std::list<utility::UUID> toDelete;
 	for (NodeMap_t::iterator ite = m_NodeMap.begin(); ite != m_NodeMap.end(); ++ite)
 	{
 		if (ite->second.m_Delete)
 			toDelete.push_back(ite->first);
 	}
 
-	for (std::list<UUID>::iterator ite = toDelete.begin(); ite != toDelete.end(); ++ite)
+	for (std::list<utility::UUID>::iterator ite = toDelete.begin(); ite != toDelete.end(); ++ite)
 	{
 		delete m_NodeMap[*ite].m_Node;
 		m_NodeMap.erase(*ite);

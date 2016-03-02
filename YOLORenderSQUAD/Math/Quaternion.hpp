@@ -31,12 +31,12 @@ struct Quaternion
 	{
 		Vec3 axis = _axis.normalized();
 
-		float sinA = sin(MC::Deg2Rad() * (_angle / 2.f));
+		float sinA = (float)sin(MC::Deg2Rad() * (_angle / 2.f));
 
 		x = axis.x * sinA;
 		y = axis.y * sinA;
 		z = axis.z * sinA;
-		w = cos(MC::Deg2Rad() * (_angle / 2.f));
+		w = (float)cos(MC::Deg2Rad() * (_angle / 2.f));
 
 		normalize();
 	}

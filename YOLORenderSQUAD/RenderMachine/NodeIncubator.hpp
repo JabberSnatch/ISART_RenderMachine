@@ -28,7 +28,7 @@ private:
 		Node*		m_Node = nullptr;
 		bool		m_Delete = false;
 	};
-	typedef std::map<UUID, NodeMeta> NodeMap_t;
+	typedef std::map<utility::UUID, NodeMeta> NodeMap_t;
 
 	NodeMap_t		m_NodeMap;
 

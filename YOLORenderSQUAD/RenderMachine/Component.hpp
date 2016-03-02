@@ -19,9 +19,9 @@ public:
 private:
 	Component() = default;
 
-	UUID	m_ID;
+	utility::UUID	m_ID;
 	
-	Node*	m_Node;
+	Node*			m_Node;
 
 };
 
