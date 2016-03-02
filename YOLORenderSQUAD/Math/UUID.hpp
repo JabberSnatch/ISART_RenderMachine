@@ -10,11 +10,11 @@ class UUID
 public:
 	UUID()
 		:m_ID(boost::uuids::random_generator()()) {}
-	UUID(const UUID&) = delete;
+	UUID(const UUID&) = default;
 	UUID(UUID&&) = delete;
 	~UUID() = default;
 
-	auto	operator = (const UUID&) -> UUID& = delete;
+	auto	operator = (const UUID&) -> UUID& = default;
 	auto	operator = (UUID&&) -> UUID& = delete;
 
 private:

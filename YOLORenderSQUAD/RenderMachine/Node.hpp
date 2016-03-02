@@ -10,13 +10,22 @@
 
 class Node
 {
+	friend class NodeIncubator;
 public:
 	Node(const Node&) = delete;
 	Node(Node&&) = delete;
 	~Node() = default;
 
-	Matrix	GetLocalMatrix() const;
-	Matrix	GetWorldMatrix() const;
+	void		SetParent(Node* _parent);
+	void		AddChild(Node* _child);
+	bool		RemoveChild(Node* _child);
+
+	Transform&	LocalTransform() { return m_LocalTransform; }
+	Transform	WorldTransform() const;
+
+	Matrix		LocalMatrix() const;
+	Matrix		WorldMatrix() const;
+	Matrix		InverseWorldMatrix() const;
 
 	auto	operator = (const Node&) -> Node& = delete;
 	auto	operator = (Node&&) -> Node& = delete;
