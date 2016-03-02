@@ -136,6 +136,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Component.hpp" />
+    <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />
     <ClInclude Include="IRenderContext.hpp" />
     <ClInclude Include="IRenderer.hpp" />
@@ -144,6 +146,7 @@
     <ClInclude Include="NodeIncubator.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ComponentIncubator.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeIncubator.cpp" />

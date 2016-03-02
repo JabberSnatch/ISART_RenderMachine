@@ -1,13 +1,14 @@
 #ifndef __COMPONENT_HPP__
 #define __COMPONENT_HPP__
 
+#include "UUID.hpp"
 
 class Node;
 
 class Component
 {
+	friend class ComponentIncubator;
 public:
-	Component() = default;
 	Component(const Component&) = delete;
 	Component(Component&&) = delete;
 	virtual ~Component() = default;
@@ -16,6 +17,10 @@ public:
 	auto	operator = (Component&&) -> Component& = delete;
 
 private:
+	Component() = default;
+
+	UUID	m_ID;
+	
 	Node*	m_Node;
 
 };

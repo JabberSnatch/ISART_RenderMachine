@@ -33,6 +33,12 @@
     <ClInclude Include="NodeIncubator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentIncubator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -42,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NodeIncubator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentIncubator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

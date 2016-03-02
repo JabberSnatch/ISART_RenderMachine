@@ -17,7 +17,8 @@ public:
 	ComponentIncubator(ComponentIncubator&&) = delete;
 	~ComponentIncubator();
 
-	Component*	Create();
+	template <class T>
+	T*			Create();
 	bool		Delete(Component* _component);
 
 	void		GarbageCollection();
@@ -35,6 +36,16 @@ private:
 
 	ComponentMap_t		m_ComponentMap;
 };
+
+
+template <class T> T*
+ComponentIncubator::Create()
+{
+	T* result = new T();
+	ComponentMeta meta; meta.m_Component = (Component*)result;
+	m_ComponentMap.emplace(meta.m_Component->m_ID, meta);
+	return result;
+}
 
 
 #endif /*__COMPONENT_INCUBATOR_HPP__*/

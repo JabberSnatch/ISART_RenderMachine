@@ -16,7 +16,8 @@ Node*
 NodeIncubator::Create()
 {
 	Node* result = new Node();
-	m_NodeMap.emplace(result->m_ID, result);
+	NodeMeta meta; meta.m_Node = result;
+	m_NodeMap.emplace(result->m_ID, meta);
 	return result;
 }
 
