@@ -55,7 +55,7 @@ OGL_Model::AddMesh(const MeshData& _source, OGL_Shader* _shader) -> void
 auto	
 OGL_Model::AddMultiMesh(const MultiMeshData& _source, OGL_Shader* _shader) -> void
 {
-	for (int i = 0; i < _source.m_Meshes.size(); ++i)
+	for (size_t i = 0; i < _source.m_Meshes.size(); ++i)
 	{
 		auto& meshData = _source.m_Meshes[i];
 		AddMesh(meshData, _shader);

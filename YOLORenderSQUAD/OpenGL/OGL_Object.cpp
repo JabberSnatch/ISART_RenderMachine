@@ -113,7 +113,7 @@ OGL_Object::Update(float _deltaTime) -> void
 	static GLfloat projectionMatrix[16];
 	//ComputeOrthographicProjection(projectionMatrix, -1.f, 1.f, -1.f, 1.f, 5.f, -1.f);
 	//ComputePerspectiveProjection(projectionMatrix, -1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
-	ComputePerspectiveProjectionFOV(projectionMatrix, 90.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
+	ComputePerspectiveProjectionFOV(projectionMatrix, 90.f, (GLfloat)glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
 
 	GLfloat cameraMatrix[] = { 1.f, 0.f, 0.f, 0.f,
 							   0.f, 1.f, 0.f, 0.f,
@@ -277,7 +277,7 @@ OGL_Object::LoadShaderAndCompile(string _path, GLenum _type) -> void
 	std::streamoff length = sourceFile.tellg();
 	sourceFile.seekg(0, sourceFile.beg);
 
-	char* buffer = new char[length];
+	char* buffer = new char[(unsigned int)length];
 	sourceFile.get(buffer, length, '\0');
 
 
@@ -557,7 +557,7 @@ OGL_Object::ComputePerspectiveProjection(GLfloat* o_matrix, GLfloat _L, GLfloat 
 auto
 OGL_Object::ComputePerspectiveProjectionFOV(GLfloat* o_matrix, GLfloat _fov, GLfloat _aspectRatio, GLfloat _near, GLfloat _far) -> void
 {
-	GLfloat xymax = _near * tan(_fov * (PI / 360.));
+	GLfloat xymax = _near * (GLfloat)tan(_fov * (PI / 360.));
 	GLfloat width = 2 * xymax;
 
 	GLfloat depth = _far - _near;

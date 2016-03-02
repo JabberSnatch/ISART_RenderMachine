@@ -19,6 +19,7 @@ using namespace std;
 
 #include "ObjParser.hpp"
 #include "Matrix.hpp"
+#include "Quaternion.hpp"
 #include "OGL_Model.hpp"
 #include "OGL_Mesh.hpp"
 #include "OGL_Shader.hpp"
@@ -56,8 +57,10 @@ void Update()
 		//g_State.DeltaTime = (double)g_State.tDeltaTime / (double)g_State.Frequency;
 	}
 
-	g_Model.GetTransform().Rotation += Vec3::Up() * g_State.DeltaTime * -45.f;
-	g_scene.GetCameraTransform().Rotation += Vec3::Up() * g_State.DeltaTime * -15.f;
+	//g_Model.GetTransform().Rotation = 
+	//	Quaternion((float)g_State.DeltaTime * -45.f, Vec3::Up()) * g_Model.GetTransform().Rotation;
+	//g_scene.GetCameraTransform().Rotation =
+	//	Quaternion((float)g_State.DeltaTime * -15.f, Vec3::Up()) * g_scene.GetCameraTransform().Rotation;
 }
 
 
@@ -151,7 +154,7 @@ void Initialize()
 	g_scene.AddModel(g_Model);
 	
 	static GLfloat projectionMatrix[16];
-	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
+	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, (GLfloat)glutGet(GLUT_SCREEN_WIDTH) / glutGet(GLUT_SCREEN_HEIGHT), .1f, 1000.f);
 	
 	g_scene.CreateBuffers();
 	g_scene.SetPerspectiveMatrix(projectionMatrix);

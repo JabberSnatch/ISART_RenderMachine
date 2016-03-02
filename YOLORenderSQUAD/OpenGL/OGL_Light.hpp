@@ -32,8 +32,8 @@ public:
 	GLfloat Constant()		{ return 1.f; }
 	GLfloat Linear()		{ return .22f; }
 	GLfloat Quadratic()		{ return 0.20f; }
-	GLfloat InnerCutoff()	{ return cos((m_Cutoff * 0.5f) * Deg2Rad); }
-	GLfloat Cutoff()		{ return cos(m_Cutoff * Deg2Rad); }
+	GLfloat InnerCutoff()	{ return (GLfloat)cos((m_Cutoff * 0.5f) * Deg2Rad); }
+	GLfloat Cutoff()		{ return (GLfloat)cos(m_Cutoff * Deg2Rad); }
 
 	auto	operator = (const OGL_Light&)->OGL_Light& = delete;
 	auto	operator = (OGL_Light&&)->OGL_Light& = delete;

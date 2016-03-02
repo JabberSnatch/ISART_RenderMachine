@@ -19,11 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Constants.hpp" />
     <ClInclude Include="MaterialData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="MtlParser.hpp" />
     <ClInclude Include="ObjParser.hpp" />
+    <ClInclude Include="Quaternion.hpp" />
     <ClInclude Include="Transform.hpp" />
+    <ClInclude Include="UUID.hpp" />
     <ClInclude Include="Vec3.hpp" />
   </ItemGroup>
   <ItemGroup>

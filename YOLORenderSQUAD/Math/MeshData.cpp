@@ -8,7 +8,7 @@
 auto
 MeshData::ComputeNormalSpaces() -> void
 {
-	for (int face = 0; face < m_Indices.size(); face += 3)
+	for (size_t face = 0; face < m_Indices.size(); face += 3)
 	{
 		for (int point = 0; point < 3; ++point)
 		{
@@ -38,8 +38,8 @@ MeshData::ComputeNormalSpaces() -> void
 
 				float r = 1.0f / (dUV1.x * dUV2.y - dUV1.y * dUV2.x);
 
-				Vec3 T = Vec3(dPosition1 * dUV2.y - dPosition2 * dUV1.y) * r;
-				Vec3 B = Vec3(dPosition2 * dUV1.x - dPosition1 * dUV2.x) * r;
+				Vec3 T = (dPosition1 * dUV2.y - dPosition2 * dUV1.y) * r;
+				Vec3 B = (dPosition2 * dUV1.x - dPosition1 * dUV2.x) * r;
 
 				/*
 				result.m_Normal[0] = N.x;

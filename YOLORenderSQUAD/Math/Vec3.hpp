@@ -23,17 +23,17 @@ struct Vec3
 	static auto Up() -> Vec3 { return Vec3(0.f, 1.f, 0.f); }
 	static auto Forward() -> Vec3 { return Vec3(0.f, 0.f, 1.f); }
 
-	auto	dot(const Vec3& _v) -> float { return x * _v.x + y * _v.y + z * _v.z; }
-	auto	cross(const Vec3& _v) -> Vec3& 
+	auto	dot(const Vec3& _v) const -> float { return x * _v.x + y * _v.y + z * _v.z; }
+	auto	cross(const Vec3& _v) const -> Vec3 
 	{
 		Vec3 result(y * _v.z - z * _v.y,
 					z * _v.x - x * _v.z,
 					x * _v.y - y * _v.x); 
 		return result;
 	}
-	auto	sqrMagnitude() -> float { return x * x + y * y + z * z; }
-	auto	magnitude() -> float { return std::sqrt(sqrMagnitude()); }
-	auto	normalized() -> Vec3& { return *this / magnitude(); }
+	auto	sqrMagnitude() const -> float { return x * x + y * y + z * z; }
+	auto	magnitude() const -> float { return std::sqrt(sqrMagnitude()); }
+	auto	normalized() const -> Vec3 { return (*this) / magnitude(); }
 	auto	normalize() -> void 
 	{ 
 		float mag = magnitude(); 
@@ -41,7 +41,7 @@ struct Vec3
 	}
 
 
-	auto	operator + (const Vec3& _other) -> Vec3
+	auto	operator + (const Vec3& _other) const -> Vec3
 	{
 		return Vec3(x + _other.x, y + _other.y, z + _other.z);
 	}
@@ -50,20 +50,28 @@ struct Vec3
 		x += _other.x; y += _other.y; z += _other.z;
 		return *this;
 	}
-	auto	operator - (const Vec3& _other) -> Vec3
+	auto	operator - (const Vec3& _other) const -> Vec3
 	{
 		return Vec3(x - _other.x, y - _other.y, z - _other.z);
 	}
-	auto	operator * (const Vec3& _other) -> Vec3
+	auto	operator * (const Vec3& _other) const -> Vec3 
 	{
 		return Vec3(x * _other.x, y * _other.y, z * _other.z);
 	}
-	auto	operator * (float _v) -> Vec3&
+	auto	operator * (float _v) const -> Vec3
+	{
+		return Vec3(x * _v, y * _v, z * _v);
+	}
+	auto	operator *= (float _v) -> Vec3&
 	{
 		x *= _v; y *= _v; z *= _v;
 		return *this;
 	}
-	auto	operator / (float _v) -> Vec3&
+	auto	operator / (float _v) const -> Vec3
+	{
+		return Vec3(x / _v, y / _v, z / _v);
+	}
+	auto	operator /= (float _v) -> Vec3&
 	{
 		x /= _v; y /= _v; z /= _v;
 		return *this;
@@ -71,7 +79,7 @@ struct Vec3
 
 	auto	operator = (const Vec3&)->Vec3& = default;
 	auto	operator = (Vec3&&)->Vec3& = default;
-	auto	ToStdVec() -> std::vector<float> 
+	auto	ToStdVec() const -> std::vector<float>
 	{
 		std::vector<float> result;
 		result.push_back(x);
@@ -79,7 +87,7 @@ struct Vec3
 		result.push_back(z);
 		return result;
 	}
-	auto	ToArray() -> std::shared_ptr<float>
+	auto	ToArray() const -> std::shared_ptr<float>
 	{
 		float* acc = new float[3];
 		acc[0] = x;

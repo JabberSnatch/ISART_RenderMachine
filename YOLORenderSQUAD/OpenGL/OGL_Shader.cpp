@@ -28,7 +28,7 @@ OGL_Shader::LoadShaderAndCompile(std::string _path, GLenum _type) -> void
 	std::streamoff length = sourceFile.tellg();
 	sourceFile.seekg(0, sourceFile.beg);
 
-	char* buffer = new char[length];
+	char* buffer = new char[(unsigned int)length];
 	sourceFile.get(buffer, length, '\0');
 
 

@@ -3,18 +3,30 @@
 
 #include "Matrix.hpp"
 #include "Vec3.hpp"
+#include "Quaternion.hpp"
 
 struct Transform
 {
 	Transform()
-		:Position(0.f), Rotation(0.f), Scale(1.f) {}
+		:Position(0.f), Rotation(), Scale(1.f) {}
+	
+	Vec3		Position;
+	Quaternion	Rotation;
+	Vec3		Scale;
 
-	Vec3	Position;
-	Vec3	Rotation;
-	Vec3	Scale;
+	// Combines two transforms. 
+	// Since they hold rotations, this operator is non-commutative
+	Transform	operator * (const Transform& _other) const
+	{
+		Transform result;
+		result.Position	= Position + _other.Position;
+		result.Rotation = Rotation * _other.Rotation;
+		result.Scale	= Scale * _other.Scale;
+		return result;
+	}
 
-	auto	GetMatrix() -> Matrix;
-	auto	GetInverseMatrix() -> Matrix;
+	auto	GetMatrix() const -> Matrix;
+	auto	GetInverseMatrix() const -> Matrix;
 };
 
 

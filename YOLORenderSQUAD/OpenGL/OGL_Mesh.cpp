@@ -23,7 +23,7 @@ OGL_Mesh::OGL_Mesh(const MeshData& _source)
 
 	memcpy(m_Indices, _source.m_Indices.data(), _source.m_Indices.size() * sizeof(unsigned int));
 	
-	for (int i = 0; i < _source.m_Points.size(); ++i)
+	for (size_t i = 0; i < _source.m_Points.size(); ++i)
 	{
 		auto& point = _source.m_Points[i];
 		memcpy(m_Data + i * m_VertexSize, point.m_Position, m_VertexSize * sizeof(float));

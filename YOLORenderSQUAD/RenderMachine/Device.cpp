@@ -29,8 +29,10 @@ Device::Update(double _deltaTime)
 	m_Scene.SetPerspectiveMatrix(projectionMatrix);
 	m_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
 
-	m_Model.GetTransform().Rotation += Vec3::Up() * _deltaTime * -45.f;
-	m_Scene.GetCameraTransform().Rotation += Vec3::Up() * _deltaTime * -15.f;
+	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 79.f, Vec3::Up()) * m_Model.GetTransform().Rotation;
+	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 57.f, Vec3::Right()) * m_Model.GetTransform().Rotation;
+	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 83.f, Vec3::Forward()) * m_Model.GetTransform().Rotation;
+	//m_Scene.GetCameraTransform().Rotation = Quaternion((float)_deltaTime * -15.f, Vec3::Up()) * m_Scene.GetCameraTransform().Rotation;
 }
 
 

@@ -46,7 +46,7 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 		AdjustWindowRect(&canvasRect, style, FALSE);
 
-		HWND hWnd = CreateWindowEx(
+		hWnd = CreateWindowEx(
 			0,
 			(LPCWSTR)AppName,
 			(LPCWSTR)WindowName,
@@ -73,7 +73,7 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 	MSG msg = { 0 };
 	while (msg.message != WM_QUIT)
 	{
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
