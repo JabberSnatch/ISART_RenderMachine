@@ -13,7 +13,7 @@ public:
 	UUID()
 		:m_ID(boost::uuids::random_generator()()) {}
 	UUID(const UUID&) = default;
-	UUID(UUID&&) = delete;
+	UUID(UUID&&) = default;
 	~UUID() = default;
 
 	bool	operator < (const UUID& _other) const
@@ -22,7 +22,7 @@ public:
 	}
 
 	auto	operator = (const UUID&) -> UUID& = default;
-	auto	operator = (UUID&&) -> UUID& = delete;
+	auto	operator = (UUID&&) -> UUID& = default;
 
 private:
 	boost::uuids::uuid	m_ID;

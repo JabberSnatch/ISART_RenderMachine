@@ -1,11 +1,23 @@
 #include "Device.hpp"
 
+#include "IDynamicObject.hpp"
+#include "Camera.hpp"
+
+
+Device* Device::g_Instance = nullptr;
+
 
 void
 Device::Initialize(int _width, int _height)
 {
 	m_Width = _width;
 	m_Height = _height;
+
+	m_CurrentScene = new Scene();
+	Camera* camera = m_CurrentScene->MainCamera();
+	camera->Initialize();
+	camera->SetAspectRatio((float)_width / _height);
+	camera->ComputePerspective();
 }
 
 
@@ -17,6 +29,8 @@ Device::Shutdown()
 		m_RenderContext->Shutdown();
 		delete m_RenderContext;
 	}
+
+	delete m_CurrentScene;
 }
 
 
@@ -24,15 +38,20 @@ Device::Shutdown()
 void
 Device::Update(double _deltaTime)
 {
-	static GLfloat projectionMatrix[16];
-	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, (float)m_Width / m_Height, .1f, 1000.f);
-	m_Scene.SetPerspectiveMatrix(projectionMatrix);
-	m_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
+	const DynamicObjectMap_t& objectsMap = m_CurrentScene->DynamicObjectsMap();
+	for (DynamicObjectMap_t::const_iterator ite = objectsMap.cbegin(); ite != objectsMap.cend(); ++ite)
+		(*ite).second->Update(_deltaTime);
 
-	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 79.f, Vec3::Up()) * m_Model.GetTransform().Rotation;
-	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 57.f, Vec3::Right()) * m_Model.GetTransform().Rotation;
-	m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 83.f, Vec3::Forward()) * m_Model.GetTransform().Rotation;
-	//m_Scene.GetCameraTransform().Rotation = Quaternion((float)_deltaTime * -15.f, Vec3::Up()) * m_Scene.GetCameraTransform().Rotation;
+
+	//static GLfloat projectionMatrix[16];
+	//OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, (float)m_Width / m_Height, .1f, 1000.f);
+	//m_OGL_Scene.SetPerspectiveMatrix(projectionMatrix);
+	//m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
+	//
+	//m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 79.f, Vec3::Up()) * m_Model.GetTransform().Rotation;
+	//m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 57.f, Vec3::Right()) * m_Model.GetTransform().Rotation;
+	//m_Model.GetTransform().Rotation = Quaternion((float)_deltaTime * 83.f, Vec3::Forward()) * m_Model.GetTransform().Rotation;
+	//m_OGL_Scene.GetCameraTransform().Rotation = Quaternion((float)_deltaTime * -15.f, Vec3::Up()) * m_OGL_Scene.GetCameraTransform().Rotation;
 }
 
 
@@ -41,7 +60,8 @@ Device::Render()
 {
 	m_RenderContext->ClearBuffer();
 
-	m_Scene.Render();
+	//m_OGL_Scene.Render();
+	m_Renderer->Render(m_CurrentScene);
 
 	m_RenderContext->SwapBuffers();
 }
@@ -94,17 +114,17 @@ Device::OGL_SETUP()
 		data.Deserialize(name + ".mys");
 
 	m_Model.AddMultiMesh(data, &m_Shader);
-	m_Scene.AddModel(m_Model);
+	m_OGL_Scene.AddModel(m_Model);
 
 	static GLfloat projectionMatrix[16];
 	OGL_Object::ComputePerspectiveProjectionFOV(projectionMatrix, 60.f, (float)m_Width / m_Height, .1f, 1000.f);
 
-	m_Scene.CreateBuffers();
-	m_Scene.SetPerspectiveMatrix(projectionMatrix);
-	m_Scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
+	m_OGL_Scene.CreateBuffers();
+	m_OGL_Scene.SetPerspectiveMatrix(projectionMatrix);
+	m_OGL_Scene.GetCameraTransform().Position = Vec3(0.f, 8.f, 15.f);
 
 	m_Model.GetTransform().Scale = Vec3(0.02f);
-	m_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
+	m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
 
 
 	OGL_Light light0(OGL_Light::DIRECTIONAL);
@@ -133,9 +153,9 @@ Device::OGL_SETUP()
 	light3.m_Position = Vec3(0.f, 20.f, -5.f);
 	light3.m_Cutoff = 25.f;
 
-	m_Scene.AddLight(light0);
-	m_Scene.AddLight(light1);
-	m_Scene.AddLight(light2);
-	m_Scene.AddLight(light3);
+	m_OGL_Scene.AddLight(light0);
+	m_OGL_Scene.AddLight(light1);
+	m_OGL_Scene.AddLight(light2);
+	m_OGL_Scene.AddLight(light3);
 }
 

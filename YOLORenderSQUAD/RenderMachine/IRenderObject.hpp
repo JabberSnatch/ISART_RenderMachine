@@ -8,11 +8,12 @@ class IRenderObject
 	:public Component
 {
 public:
-	IRenderObject() = delete;
+	IRenderObject() = default;
 	IRenderObject(const IRenderObject&) = delete;
 	IRenderObject(IRenderObject&&) = delete;
 	virtual ~IRenderObject() = default;
 
+	virtual void	Attach(Node* _node);
 	virtual void	Render() = 0;
 
 	auto	operator = (const IRenderObject&) -> IRenderObject& = delete;

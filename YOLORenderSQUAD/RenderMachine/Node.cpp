@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "Device.hpp"
 
 void
 Node::SetParent(Node* _parent)
@@ -13,7 +14,17 @@ Node::SetParent(Node* _parent)
 void
 Node::AddChild(Node* _child)
 {
+	_child->m_Parent = this;
 	m_Children.emplace(_child->m_ID, _child);
+}
+
+
+Node*
+Node::CreateChild()
+{
+	Node* result = NODEINCUBATOR->Create();
+	AddChild(result);
+	return result;
 }
 
 

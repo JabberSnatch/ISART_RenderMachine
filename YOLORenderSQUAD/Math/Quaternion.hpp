@@ -80,6 +80,16 @@ struct Quaternion
 		return result;
 	}
 
+	Vec3		operator * (const Vec3& _vec) const
+	{
+		// Courtesy of http://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+		Vec3 vectPart(x, y, z);
+		Vec3 t = vectPart.cross(_vec) * 2.f;
+		Vec3 result = _vec + t * w + vectPart.cross(t);
+
+		return result;
+	}
+
 	Quaternion	operator / (const float _v) const 
 	{ return Quaternion(x / _v, y / _v, z / _v, w / _v); }
 

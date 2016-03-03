@@ -136,20 +136,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />
+    <ClInclude Include="IDynamicObject.hpp" />
     <ClInclude Include="IRenderContext.hpp" />
+    <ClInclude Include="IRenderer.hpp" />
     <ClInclude Include="IRenderObject.hpp" />
+    <ClInclude Include="IShader.hpp" />
+    <ClInclude Include="Light.hpp" />
     <ClInclude Include="Node.hpp" />
     <ClInclude Include="NodeIncubator.hpp" />
+    <ClInclude Include="RotateAround.hpp" />
     <ClInclude Include="Scene.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ComponentIncubator.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="IDynamicObject.cpp" />
+    <ClCompile Include="IRenderObject.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeIncubator.cpp" />
+    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

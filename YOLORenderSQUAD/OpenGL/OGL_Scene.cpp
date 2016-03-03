@@ -56,21 +56,6 @@ OGL_Scene::Render() -> void
 			}
 		}
 
-		/*
-		{
-			unsigned int lightCounts[OGL_Light::COUNT]; memset(lightCounts, 0, OGL_Light::COUNT * sizeof(unsigned int));
-			for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)
-			{
-				for (OGL_Light& light : m_Lights)
-					light.BindIntoShader(*ite, lightCounts[light.m_Type]++);
-			
-				glUniform1ui((*ite)->GetUniform("u_DirectionalCount"), lightCounts[OGL_Light::DIRECTIONAL]);
-				glUniform1ui((*ite)->GetUniform("u_PointCount"), lightCounts[OGL_Light::POINT]);
-				glUniform1ui((*ite)->GetUniform("u_SpotCount"), lightCounts[OGL_Light::SPOT]);
-				glUniform3fv((*ite)->GetUniform("u_ViewPosition"), 1, m_Camera.Position.ToStdVec().data());
-			}
-		}
-		*/
 		{
 			unsigned int lightCounts[OGL_Light::COUNT]; memset(lightCounts, 0, OGL_Light::COUNT * sizeof(unsigned int));
 			for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)

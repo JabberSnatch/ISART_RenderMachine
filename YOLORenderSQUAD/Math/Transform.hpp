@@ -19,7 +19,7 @@ struct Transform
 	Transform	operator * (const Transform& _other) const
 	{
 		Transform result;
-		result.Position	= Position + _other.Position;
+		result.Position	= Position + (Rotation * _other.Position);
 		result.Rotation = Rotation * _other.Rotation;
 		result.Scale	= Scale * _other.Scale;
 		return result;

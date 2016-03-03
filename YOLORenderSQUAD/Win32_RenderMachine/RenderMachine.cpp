@@ -8,8 +8,10 @@
 #pragma comment(lib, "opengl32.lib")
 #endif
 
+#include "IRenderer.hpp"
 #include "IRenderContext.hpp"
 
+#include "OGL_Renderer.hpp"
 #include "OGL_RenderContext.hpp"
 #include "Device.hpp"
 
@@ -20,10 +22,9 @@ static const wchar_t WindowName[] = { L"YOLORenderSQUAD" };
 enum E_RENDERER { OPENGL, D3D11, COUNT };
 
 LRESULT WINAPI		DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam);
+IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
-
-
-static Device g_Device;
+void				INIT_TEST_SCENE();
 
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
@@ -62,10 +63,14 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		}
 
 		IRenderContext* context = CreateContext(OPENGL, hWnd);
+		IRenderer* renderer = CreateRenderer(OPENGL);
 	
-		g_Device.Initialize(width, height);
-		g_Device.SetRenderContext(context);
-		g_Device.OGL_SETUP();
+		DEVICE->Initialize(width, height);
+		DEVICE->SetRenderContext(context);
+		DEVICE->SetRenderer(renderer);
+		//DEVICE->OGL_SETUP();
+
+		INIT_TEST_SCENE();
 	}
 
 
@@ -79,12 +84,12 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 			DispatchMessage(&msg);
 		}
 
-		g_Device.Update(1. / 60.);
-		g_Device.Render();
+		DEVICE->Update(1. / 60.);
+		DEVICE->Render();
 	}
 
 
-	g_Device.Shutdown();
+	DEVICE->Shutdown();
 
 __SHUTDOWN:
 	UnregisterClass(AppName, wc.hInstance);
@@ -111,7 +116,7 @@ DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 	case WM_WINDOWPOSCHANGED:
 	{
 		WINDOWPOS* position = (WINDOWPOS*)_lParam;
-		g_Device.SetDimensions(position->cx - 16, position->cy - 19);
+		DEVICE->SetDimensions(position->cx - 16, position->cy - 19);
 	} break;
 	}
 
@@ -139,4 +144,119 @@ CreateContext(E_RENDERER _type, HWND _window)
 
 	return result;
 }
+
+
+IRenderer*
+CreateRenderer(E_RENDERER _type)
+{
+	IRenderer* result = nullptr;
+
+	switch (_type)
+	{
+	case OPENGL:
+	{
+		OGL_Renderer* context = new OGL_Renderer();
+		context->Initialize();
+		result = (IRenderer*)context;
+	} break;
+	case D3D11:
+		break;
+	default: break;
+	}
+
+	return result;
+}
+
+
+#include <fstream>
+#include "OGL_Shader.hpp"
+#include "OGL_RenderObject.hpp"
+#include "Node.hpp"
+#include "Camera.hpp"
+#include "Light.hpp"
+#include "RotateAround.hpp"
+OGL_Shader g_Shader;
+void
+INIT_TEST_SCENE()
+{
+	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.vs", GL_VERTEX_SHADER);
+	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
+	g_Shader.LinkShaders();
+
+
+	ObjParser parser;
+	MultiMeshData data;
+
+	//std::string name = "_zero_model/zero";
+	std::string name = "../Resources/MODELS/_ciri_model/ciri";
+	//std::string name = "_lightning_model/lightning_obj";
+	//std::string name = "sphere";
+
+	if (!std::fstream(name + ".mys").good())
+	{
+		parser.ParseFile(name + ".obj");
+		data = parser.GenerateMeshData();
+		data.Serialize(name + ".mys");
+	}
+	else
+		data.Deserialize(name + ".mys");
+
+
+	Node* modelNode = ROOTNODE->CreateChild();
+	modelNode->LocalTransform().Position = Vec3(0.f, 8.f, 0.f);
+	RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
+	controller->Attach(modelNode);
+	
+	Node* offsetNode = modelNode->CreateChild();
+	offsetNode->LocalTransform().Position = Vec3(0.f, -8.f, 0.f);
+	OGL_RenderObject* model = COMPONENTINCUBATOR->Create<OGL_RenderObject>();
+	model->AddMultiMesh(data, &g_Shader);
+	model->Attach(offsetNode);
+
+
+	MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
+	
+	modelNode->LocalTransform().Scale = Vec3(0.02f);
+	//m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
+
+
+	Node* lightNode = NODEINCUBATOR->Create();
+	Light* light0 = COMPONENTINCUBATOR->Create<Light>();
+	light0->Attach(lightNode);
+	light0->m_Type = Light::DIRECTIONAL;
+	light0->m_Ia = Vec3(.25f, .2f, .15f);
+	light0->m_Id = Vec3(0.8f, 0.75f, 0.75f);
+	light0->m_Is = Vec3(.8f, .8f, .7f);
+	light0->m_Direction = Vec3(0.f, 0.f, -1.f);
+
+	lightNode = NODEINCUBATOR->Create();
+	Light* light1 = COMPONENTINCUBATOR->Create<Light>();
+	light1->Attach(lightNode);
+	light1->m_Type = Light::POINT;
+	light1->m_Ia = Vec3(0.f, 0.f, 0.f);
+	light1->m_Id = Vec3(0.f, 0.f, 1.f);
+	light1->m_Is = Vec3(0.f, 0.f, 1.f);
+	light1->m_Position = Vec3(5.f, 5.f, 0.f);
+
+	lightNode = NODEINCUBATOR->Create();
+	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
+	light2->Attach(lightNode);
+	light2->m_Type = Light::DIRECTIONAL;
+	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
+	light2->m_Id = Vec3(1.f, 0.f, 0.f);
+	light2->m_Is = Vec3(1.f, 0.f, 0.f);
+	light2->m_Direction = Vec3(0.f, 1.f, 1.f);
+
+	lightNode = NODEINCUBATOR->Create();
+	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
+	light3->Attach(lightNode);
+	light3->m_Type = Light::SPOT;
+	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
+	light3->m_Id = Vec3(0.f, 1.f, 0.f);
+	light3->m_Is = Vec3(0.f, 1.f, 0.f);
+	light3->m_Direction = Vec3(0.f, -0.8f, 1.f);
+	light3->m_Position = Vec3(0.f, 20.f, -5.f);
+	light3->m_Cutoff = 25.f;
+}
+
 

@@ -17,7 +17,9 @@ public:
 	~Node() = default;
 
 	void		SetParent(Node* _parent);
+
 	void		AddChild(Node* _child);
+	Node*		CreateChild();
 	bool		RemoveChild(Node* _child);
 
 	Transform&	LocalTransform() { return m_LocalTransform; }

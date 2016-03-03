@@ -3,9 +3,7 @@
 
 #include "Vec3.hpp"
 #include "OGL_Shader.hpp"
-
-#define PI 3.14159265359
-#define Deg2Rad PI / 180.
+#include "Constants.hpp"
 
 #define MAX_LIGHT_COUNT 50
 #define DIRLIGHT_SIZE (4 * 4 * sizeof(GLfloat))
@@ -32,8 +30,8 @@ public:
 	GLfloat Constant()		{ return 1.f; }
 	GLfloat Linear()		{ return .22f; }
 	GLfloat Quadratic()		{ return 0.20f; }
-	GLfloat InnerCutoff()	{ return (GLfloat)cos((m_Cutoff * 0.5f) * Deg2Rad); }
-	GLfloat Cutoff()		{ return (GLfloat)cos(m_Cutoff * Deg2Rad); }
+	GLfloat InnerCutoff()	{ return (GLfloat)cos((m_Cutoff * 0.5f) * MC::Deg2Rad()); }
+	GLfloat Cutoff()		{ return (GLfloat)cos(m_Cutoff * MC::Deg2Rad()); }
 
 	auto	operator = (const OGL_Light&)->OGL_Light& = delete;
 	auto	operator = (OGL_Light&&)->OGL_Light& = delete;
