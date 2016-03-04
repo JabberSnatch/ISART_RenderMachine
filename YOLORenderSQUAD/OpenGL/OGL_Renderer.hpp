@@ -28,6 +28,7 @@ public:
 
 	virtual void	Initialize();
 	virtual void	Render(const Scene* _scene);
+	virtual void	ImGui_RenderDrawLists(ImDrawData* _data);
 	virtual void	Shutdown();
 
 	auto	operator = (const OGL_Renderer&) -> OGL_Renderer& = delete;

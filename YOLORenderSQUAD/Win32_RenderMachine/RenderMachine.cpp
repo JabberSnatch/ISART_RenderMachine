@@ -79,7 +79,6 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize.x = width;
 		io.DisplaySize.y = height;
-		io.IniFilename = "imgui.ini";
 	}
 
 
