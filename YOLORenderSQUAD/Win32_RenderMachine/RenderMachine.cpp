@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "imgui.h"
 
 #include <iostream>
 
@@ -7,6 +8,7 @@
 #elif defined(_WIN32)
 #pragma comment(lib, "opengl32.lib")
 #endif
+
 
 #include "IRenderer.hpp"
 #include "IRenderContext.hpp"
@@ -32,6 +34,8 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
 
+	const int width = 1280;
+	const int height = 740;
 	{
 		{
 			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -41,8 +45,6 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		}
 		RegisterClass(&wc);
 
-		const int width = 1280;
-		const int height = 740;
 		RECT canvasRect = { 0, 0, width, height };
 		DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 		AdjustWindowRect(&canvasRect, style, FALSE);
@@ -71,6 +73,13 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		//DEVICE->OGL_SETUP();
 
 		INIT_TEST_SCENE();
+	}
+
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize.x = width;
+		io.DisplaySize.y = height;
+		io.IniFilename = "imgui.ini";
 	}
 
 
@@ -205,8 +214,9 @@ INIT_TEST_SCENE()
 	Node* modelNode = ROOTNODE->CreateChild();
 	modelNode->LocalTransform().Position = Vec3(0.f, 8.f, 0.f);
 	RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
-	controller->Attach(modelNode);
-	
+	//controller->Attach(modelNode);
+	controller->Attach(MAINCAMERANODE);
+
 	Node* offsetNode = modelNode->CreateChild();
 	offsetNode->LocalTransform().Position = Vec3(0.f, -8.f, 0.f);
 	OGL_RenderObject* model = COMPONENTINCUBATOR->Create<OGL_RenderObject>();
@@ -222,7 +232,7 @@ INIT_TEST_SCENE()
 
 	Node* lightNode = NODEINCUBATOR->Create();
 	Light* light0 = COMPONENTINCUBATOR->Create<Light>();
-	light0->Attach(lightNode);
+	//light0->Attach(lightNode);
 	light0->m_Type = Light::DIRECTIONAL;
 	light0->m_Ia = Vec3(.25f, .2f, .15f);
 	light0->m_Id = Vec3(0.8f, 0.75f, 0.75f);
@@ -240,7 +250,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	light2->Attach(lightNode);
+	//light2->Attach(lightNode);
 	light2->m_Type = Light::DIRECTIONAL;
 	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2->m_Id = Vec3(1.f, 0.f, 0.f);

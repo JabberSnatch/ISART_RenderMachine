@@ -1,6 +1,7 @@
 #include "OGL_TextureLoader.hpp"
 
 #include <fstream>
+
 #include <stb-master\stb_image.h>
 
 OGL_TextureLoader* OGL_TextureLoader::s_Instance = nullptr;

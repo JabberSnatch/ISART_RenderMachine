@@ -69,7 +69,7 @@ ObjParser::ParseFile(std::string const& _path) -> void
 			}
 			if (*ite == "mtllib")
 			{
-				m_MtlParser.ParseFile(*++ite);
+				m_MtlParser.ParseFile(ExtractFolderFromPath(_path) + *++ite);
 				success = true;
 			}
 			if (*ite == "usemtl")
@@ -101,6 +101,33 @@ ObjParser::GenerateMeshData(bool _computeNormalSpaces) -> MultiMeshData&
 			mesh.ComputeNormalSpaces();
 			
 	return m_WorkingData;
+}
+
+
+auto
+ObjParser::ExtractFolderFromPath(std::string const& _path) -> std::string
+{
+	std::string result;
+
+	bSeparator slash("", "\\/");
+	bTokenizer parser(_path, slash);
+	int tokenCount = 0;
+	{
+		bIterator ite = parser.begin();
+		while (!ite.at_end())
+		{
+			tokenCount++;
+			ite++;
+		}
+	}
+	{
+		result = "";
+		bIterator ite = parser.begin();
+		for (int i = 0; i < tokenCount - 1; ++i)
+			result += *ite++;
+	}
+
+	return result;
 }
 
 

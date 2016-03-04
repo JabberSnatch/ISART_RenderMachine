@@ -10,7 +10,7 @@ Scene::Scene()
 {
 	m_Root = NODEINCUBATOR->Create();
 	
-	Node* CameraNode = NODEINCUBATOR->Create();
+	Node* CameraNode = m_Root->CreateChild();
 	m_MainCamera = COMPONENTINCUBATOR->Create<Camera>();
 	m_MainCamera->Attach(CameraNode);
 }

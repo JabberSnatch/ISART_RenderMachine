@@ -46,9 +46,6 @@ public:
 	auto	operator = (const Device&) -> Device& = delete;
 	auto	operator = (Device&&) -> Device& = delete;
 
-
-	void	OGL_SETUP();
-
 private:
 	int		m_Width;
 	int		m_Height;

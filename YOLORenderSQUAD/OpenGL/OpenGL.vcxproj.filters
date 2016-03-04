@@ -18,9 +18,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OGL_Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OGL_Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -82,9 +79,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OGL_Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OGL_Mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -137,6 +137,8 @@ public:
 	auto	ParseFile(std::string const& _path) -> void;
 	auto	GenerateMeshData(bool _computeNormalSpaces = false) -> MultiMeshData&;
 
+	static auto		ExtractFolderFromPath(std::string const& _path) -> std::string;
+
 private:
 	auto	m_NewMeshGroup() -> void;
 	auto	m_FinishCurrentGroup(const std::string& _path = "") -> void;

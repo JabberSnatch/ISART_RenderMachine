@@ -1,8 +1,6 @@
 #ifndef __OGL_INSTANCED_MESH_HPP__
 #define __OGL_INSTANCED_MESH_HPP__
 
-#include <glew\include\GL\glew.h>
-
 #include "OGL_Mesh.hpp"
 
 

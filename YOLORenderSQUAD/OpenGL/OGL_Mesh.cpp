@@ -2,6 +2,9 @@
 
 #include <fstream>
 
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif
 #include <stb-master\stb_image.h>
 
 #include "MaterialData.hpp"

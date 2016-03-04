@@ -1,9 +1,9 @@
 #include "OGL_RenderContext.hpp"
 
 #include <Windows.h>
-#include <iostream>
 #include <glew\include\GL\glew.h>
 #include <glew\include\GL\wglew.h>
+#include <iostream>
 
 void
 OGL_RenderContext::Initialize(HWND _window)
