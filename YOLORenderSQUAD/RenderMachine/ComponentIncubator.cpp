@@ -4,6 +4,13 @@
 
 ComponentIncubator::~ComponentIncubator()
 {
+	Shutdown();
+}
+
+
+void
+ComponentIncubator::Shutdown()
+{
 	for (ComponentMap_t::iterator ite = m_ComponentMap.begin(); ite != m_ComponentMap.end(); ++ite)
 		delete ite->second.m_Component;
 

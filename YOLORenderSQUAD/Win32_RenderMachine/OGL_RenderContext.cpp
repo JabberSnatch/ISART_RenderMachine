@@ -29,18 +29,19 @@ OGL_RenderContext::Initialize(HWND _window)
 
 	if (glewInit() != GLEW_OK)
 		printf("glew failed to initialize.\n");
-
+	/*
 	int glAttribs[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 		WGL_CONTEXT_MINOR_VERSION_ARB, 5,
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
 		0
 	};
+	*/
 
 	if (wglewIsSupported("WGL_ARB_create_context") == 1)
 	{
 		HGLRC temp = m_glRenderContext;
-		m_glRenderContext = wglCreateContextAttribsARB(m_DeviceContext, 0, glAttribs);
+		m_glRenderContext = wglCreateContextAttribsARB(m_DeviceContext, 0, nullptr);// glAttribs);
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(temp);
 		wglMakeCurrent(m_DeviceContext, m_glRenderContext);

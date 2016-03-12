@@ -17,6 +17,8 @@ public:
 	ComponentIncubator(ComponentIncubator&&) = delete;
 	~ComponentIncubator();
 
+	void		Shutdown();
+
 	template <class T>
 	T*			Create();
 	bool		Delete(Component* _component);

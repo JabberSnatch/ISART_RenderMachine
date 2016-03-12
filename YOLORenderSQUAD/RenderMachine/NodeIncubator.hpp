@@ -14,6 +14,8 @@ public:
 	NodeIncubator(NodeIncubator&&) = delete;
 	~NodeIncubator();
 
+	void	Shutdown();
+
 	Node*	Create();
 	bool	Delete(Node* _node);
 

@@ -16,6 +16,8 @@ public:
 	UUID(UUID&&) = default;
 	~UUID() = default;
 
+	boost::uuids::uuid& boostID() { return m_ID; }
+
 	bool	operator < (const UUID& _other) const
 	{
 		return memcmp(m_ID.data, _other.m_ID.data, m_ID.size()) < 0;

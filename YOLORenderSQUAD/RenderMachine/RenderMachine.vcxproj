@@ -167,6 +167,7 @@
     <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />
     <ClInclude Include="IDynamicObject.hpp" />
+    <ClInclude Include="Input.hpp" />
     <ClInclude Include="IRenderContext.hpp" />
     <ClInclude Include="IRenderer.hpp" />
     <ClInclude Include="IRenderObject.hpp" />

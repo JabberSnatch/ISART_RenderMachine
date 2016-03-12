@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="iVec2.hpp" />
     <ClInclude Include="MaterialData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="MtlParser.hpp" />

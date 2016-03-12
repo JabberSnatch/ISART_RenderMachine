@@ -44,41 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultShader.gs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="fsDuQ.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="shaderDuQ.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="IlluminationShader.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="IlluminationShader.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="BoundingBox.gs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="BoundingBox.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="BoundingBox.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="DrawNormals.gs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="DrawNormals.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="DrawNormals.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="OGL_Mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -106,5 +71,40 @@
     <ClInclude Include="OGL_RenderObject.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\SHADERS\defaultShader.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DrawNormals.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DrawNormals.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DrawNormals.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\fsDuQ.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\IlluminationShader.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\IlluminationShader.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\shaderDuQ.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\BoundingBox.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\BoundingBox.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\BoundingBox.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

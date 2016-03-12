@@ -179,11 +179,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Libs\imgui-master\imgui.cpp" />
+    <ClCompile Include="..\Libs\imgui-master\imgui_demo.cpp" />
     <ClCompile Include="..\Libs\imgui-master\imgui_draw.cpp" />
+    <ClCompile Include="ImGui_OGL_RenderSystem.cpp" />
     <ClCompile Include="OGL_RenderContext.cpp" />
     <ClCompile Include="RenderMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ImGui_OGL_RenderSystem.hpp" />
     <ClInclude Include="OGL_RenderContext.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

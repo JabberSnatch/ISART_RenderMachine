@@ -78,19 +78,22 @@ OGL_Renderer::Render(const Scene* _scene)
 		// object.Render()
 	for (auto& pair : renderObjectsMap)
 		pair.second->Render();
+
+	glUseProgram(0);
 }
 
 
 void
 OGL_Renderer::ImGui_RenderDrawLists(ImDrawData* _data)
 {
-	glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
+	GLuint VBO, IBO;
+
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &IBO);
+
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_SCISSOR_TEST);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
 
 	const float width = ImGui::GetIO().DisplaySize.x;
 	const float height = ImGui::GetIO().DisplaySize.y;
@@ -103,19 +106,86 @@ OGL_Renderer::ImGui_RenderDrawLists(ImDrawData* _data)
 	glLoadIdentity();
 
 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	for (int n = 0; n < _data->CmdListsCount; ++n)
+	{
+		const ImDrawList*	cmd_list = _data->CmdLists[n];
+		ImDrawIdx*			idx_buffer = cmd_list->IdxBuffer.Data;
+		ImDrawVert*			vtx_buffer = cmd_list->VtxBuffer.Data;
+
+		glBufferData(GL_ARRAY_BUFFER, cmd_list->VtxBuffer.Size * (4 * sizeof(GLfloat) + sizeof(GLint)), vtx_buffer, GL_STREAM_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)(0));
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)(4 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(2 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(2);
+
+		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); ++cmd_i)
+		{
+			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+			unsigned int elem_count = pcmd->ElemCount;
+
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, elem_count * sizeof(GLushort), idx_buffer, GL_STREAM_DRAW);
+
+			if (pcmd->UserCallback)
+				pcmd->UserCallback(cmd_list, pcmd);
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
+				glScissor((GLint)pcmd->ClipRect.x, (GLint)(height - pcmd->ClipRect.w),
+						  (GLint)(pcmd->ClipRect.z - pcmd->ClipRect.x), (GLint)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+				glDrawElements(GL_TRIANGLES, elem_count, GL_UNSIGNED_SHORT, nullptr);
+			}
+
+			idx_buffer += elem_count;
+		}
+		/*
+		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); ++cmd_i)
+		{
+			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+			unsigned int elem_count = pcmd->ElemCount;
+			
+			if (pcmd->UserCallback)
+				pcmd->UserCallback(cmd_list, pcmd);
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, (GLuint)pcmd->TextureId);
+				glScissor((GLint)pcmd->ClipRect.x, (GLint)(height - pcmd->ClipRect.w),
+					(GLint)(pcmd->ClipRect.z - pcmd->ClipRect.x), (GLint)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+				
+				glBegin(GL_TRIANGLES);
+				for (int i = 0; i < elem_count; ++i)
+				{
+					ImDrawVert vertex = vtx_buffer[*(idx_buffer + i)];
+					glColor4bv((GLbyte*)&vertex.col);
+					glTexCoord2f(vertex.uv.x, vertex.uv.y);
+					glVertex2f(vertex.pos.x, vertex.pos.y);
+				}
+				glEnd();
+				
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			idx_buffer += elem_count;
+		}
+		*/
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glPopAttrib();
+
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &IBO);
 }
 
 

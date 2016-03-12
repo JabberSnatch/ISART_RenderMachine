@@ -5,6 +5,7 @@
 #include "IRenderContext.hpp"
 #include "NodeIncubator.hpp"
 #include "ComponentIncubator.hpp"
+#include "Input.hpp"
 
 #include "Scene.hpp"
 
@@ -34,6 +35,7 @@ public:
 
 	void	Update(double _deltaTime);
 	void	Render();
+	void	SwapBuffers() { m_RenderContext->SwapBuffers(); }
 
 	void	SetDimensions(int _width, int _height) { m_Width = _width; m_Height = _height; }
 	void	SetRenderer(IRenderer* _renderer) { m_Renderer = _renderer; }
@@ -42,6 +44,7 @@ public:
 	Scene*				CurrentScene() { return m_CurrentScene; }
 	ComponentIncubator*	getComponentIncubator() { return &m_ComponentIncubator; }
 	NodeIncubator*		getNodeIncubator() { return &m_NodeIncubator; }
+	InputManager*		getInputManager() { return &m_InputManager; }
 
 	auto	operator = (const Device&) -> Device& = delete;
 	auto	operator = (Device&&) -> Device& = delete;
@@ -56,6 +59,7 @@ private:
 
 	ComponentIncubator	m_ComponentIncubator;
 	NodeIncubator		m_NodeIncubator;
+	InputManager		m_InputManager;
 
 	// This will change at some point
 	OGL_Scene		m_OGL_Scene;
@@ -70,6 +74,7 @@ private:
 #define DEVICE				Device::Instance()
 #define COMPONENTINCUBATOR	Device::Instance()->getComponentIncubator()
 #define NODEINCUBATOR		Device::Instance()->getNodeIncubator()
+#define INPUT				Device::Instance()->getInputManager()
 #define ROOTNODE			Device::Instance()->CurrentScene()->Root()
 #define MAINCAMERANODE		Device::Instance()->CurrentScene()->MainCamera()->getNode()
 

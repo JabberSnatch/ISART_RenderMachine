@@ -5,6 +5,13 @@
 
 NodeIncubator::~NodeIncubator()
 {
+	Shutdown();
+}
+
+
+void
+NodeIncubator::Shutdown()
+{
 	for (NodeMap_t::iterator ite = m_NodeMap.begin(); ite != m_NodeMap.end(); ++ite)
 		delete ite->second.m_Node;
 

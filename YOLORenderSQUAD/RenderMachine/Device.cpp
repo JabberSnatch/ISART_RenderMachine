@@ -31,6 +31,9 @@ Device::Shutdown()
 	}
 
 	delete m_CurrentScene;
+
+	m_ComponentIncubator.Shutdown();
+	m_NodeIncubator.Shutdown();
 }
 
 
@@ -40,6 +43,8 @@ Device::Update(double _deltaTime)
 	const DynamicObjectMap_t& objectsMap = m_CurrentScene->DynamicObjectsMap();
 	for (DynamicObjectMap_t::const_iterator ite = objectsMap.cbegin(); ite != objectsMap.cend(); ++ite)
 		(*ite).second->Update(_deltaTime);
+
+	m_InputManager.SwapSnapshots();
 }
 
 
@@ -49,8 +54,6 @@ Device::Render()
 	m_RenderContext->ClearBuffer();
 
 	m_Renderer->Render(m_CurrentScene);
-
-	m_RenderContext->SwapBuffers();
 }
 
 
