@@ -37,7 +37,7 @@ public:
 	void	Render();
 	void	SwapBuffers() { m_RenderContext->SwapBuffers(); }
 
-	void	SetDimensions(int _width, int _height) { m_Width = _width; m_Height = _height; }
+	void	SetDimensions(int _width, int _height);
 	void	SetRenderer(IRenderer* _renderer) { m_Renderer = _renderer; }
 	void	SetRenderContext(IRenderContext* _context) { m_RenderContext = _context; }
 

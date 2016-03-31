@@ -5,6 +5,14 @@
 
 #include "Matrix.hpp"
 
+struct Viewport
+{
+	int x;
+	int y;
+	int width;
+	int height;
+};
+
 
 class Camera
 	:public Component
@@ -15,7 +23,7 @@ public:
 	Camera(Camera&&) = delete;
 	virtual ~Camera() = default;
 
-	void	Initialize(float _aspectRatio = 1.f, float _FOV = 60.f, float _near = .1f, float _far = 1000.f);
+	void	Initialize(const Viewport& _viewport, float _FOV = 60.f, float _near = .1f, float _far = 1000.f);
 
 	void			ComputePerspective();
 	const Matrix&	PerspectiveMatrix() const;
@@ -25,17 +33,28 @@ public:
 	void	SetFOV(float _v) { m_FOV = _v; }
 	void	SetNear(float _v) { m_Near = _v; }
 	void	SetFar(float _v) { m_Far = _v; }
-	void	SetAspectRatio(float _v) { m_AspectRatio = _v; }
+	void	SetViewport(const Viewport& _v) 
+	{ 
+		float oldFOV = m_FOV;
+		float oldAspectRatio = m_AspectRatio;
+		m_Viewport = _v; 
+		m_AspectRatio = _v.width / (float)_v.height; 
+		ComputePerspective();
+		//m_FOV = m_AspectRatio * oldFOV / oldAspectRatio;
+	}
+
+	const Viewport&	GetViewport() { return m_Viewport; }
 
 	auto	operator = (const Camera&) -> Camera& = delete;
 	auto	operator = (Camera&&) -> Camera& = delete;
 
 private:
 
-	float	m_FOV;
-	float	m_Near;
-	float	m_Far;
-	float	m_AspectRatio;
+	Viewport	m_Viewport;
+	float		m_FOV;
+	float		m_Near;
+	float		m_Far;
+	float		m_AspectRatio;
 
 	Matrix	m_Perspective;
 	

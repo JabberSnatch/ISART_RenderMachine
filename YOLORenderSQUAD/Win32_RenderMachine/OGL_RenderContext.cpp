@@ -63,8 +63,7 @@ OGL_RenderContext::Initialize(HWND _window)
 void
 OGL_RenderContext::ClearBuffer()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 

@@ -32,6 +32,8 @@ OGL_Renderer::Render(const Scene* _scene)
 	// Get Camera from scene
 	Camera* camera = _scene->MainCamera();
 	Transform cameraTransform = camera->getNode()->WorldTransform();
+	Viewport vp = camera->GetViewport();
+	glViewport(vp.x, vp.y, vp.width, vp.height);
 
 	// Retrieve Perspective and View matrices from it
 	// Bind matrices to buffer

@@ -5,12 +5,13 @@
 
 
 void
-Camera::Initialize(float _aspectRatio, float _FOV, float _near, float _far)
+Camera::Initialize(const Viewport& _viewport, float _FOV, float _near, float _far)
 {
+	m_Viewport = _viewport;
 	m_FOV = _FOV;
 	m_Near = _near;
 	m_Far = _far;
-	m_AspectRatio = _aspectRatio;
+	m_AspectRatio = _viewport.width / (float)_viewport.height;
 }
 
 

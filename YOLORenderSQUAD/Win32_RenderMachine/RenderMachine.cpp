@@ -20,6 +20,7 @@
 #include "OGL_Renderer.hpp"
 #include "OGL_RenderContext.hpp"
 #include "Device.hpp"
+#include "TESTSCENE.hpp"
 
 
 static const wchar_t	AppName[] = { L"RenderMachine" };
@@ -32,7 +33,6 @@ LRESULT WINAPI		DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _
 IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 void				ImGui_RenderWrapper(ImDrawData* _data);
-void				INIT_TEST_SCENE();
 
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
@@ -124,13 +124,13 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 			BYTE keystate[256];
 			GetKeyboardState(keystate);
 			for (int i = 0; i < 256; ++i)
-				io.KeysDown[i] = (keystate[i] & 0x80);
-			io.KeyCtrl = (keystate[VK_CONTROL] & 0x80);
-			io.KeyAlt = (keystate[VK_MENU] & 0x80);
-			io.KeyShift = (keystate[VK_SHIFT] & 0x80);
+				io.KeysDown[i] = (keystate[i] & 0x80) != 0;
+			io.KeyCtrl = (keystate[VK_CONTROL] & 0x80) != 0;
+			io.KeyAlt = (keystate[VK_MENU] & 0x80) != 0;
+			io.KeyShift = (keystate[VK_SHIFT] & 0x80) != 0;
 
 			iVec2& mousePos = INPUT->MousePosition();
-			io.MousePos = ImVec2(mousePos.x, mousePos.y);
+			io.MousePos = ImVec2((float)mousePos.x, (float)mousePos.y);
 			io.MouseDown[0] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_LEFT);
 			io.MouseDown[1] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_RIGHT);
 			io.MouseDown[2] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_MIDDLE);
@@ -300,9 +300,9 @@ CreateRenderer(E_RENDERER _type)
 	{
 	case OPENGL:
 	{
-		OGL_Renderer* context = new OGL_Renderer();
-		context->Initialize();
-		result = (IRenderer*)context;
+		OGL_Renderer* renderer = new OGL_Renderer();
+		renderer->Initialize();
+		result = (IRenderer*)renderer;
 	} break;
 	case D3D11:
 		break;
@@ -317,100 +317,6 @@ void
 ImGui_RenderWrapper(ImDrawData* _data)
 {
 	g_Renderer->ImGui_RenderDrawLists(_data);
-}
-
-
-#include <fstream>
-#include "OGL_Shader.hpp"
-#include "OGL_RenderObject.hpp"
-#include "Node.hpp"
-#include "Camera.hpp"
-#include "Light.hpp"
-#include "RotateAround.hpp"
-OGL_Shader g_Shader;
-void
-INIT_TEST_SCENE()
-{
-	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.vs", GL_VERTEX_SHADER);
-	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
-	g_Shader.LinkShaders();
-
-
-	ObjParser parser;
-	MultiMeshData data;
-
-	//std::string name = "_zero_model/zero";
-	std::string name = "../Resources/MODELS/_ciri_model/ciri";
-	//std::string name = "_lightning_model/lightning_obj";
-	//std::string name = "sphere";
-
-	if (!std::fstream(name + ".mys").good())
-	{
-		parser.ParseFile(name + ".obj");
-		data = parser.GenerateMeshData();
-		data.Serialize(name + ".mys");
-	}
-	else
-		data.Deserialize(name + ".mys");
-
-
-	Node* modelNode = ROOTNODE->CreateChild();
-	modelNode->LocalTransform().Position = Vec3(0.f, 8.f, 1.f);
-	RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
-	controller->Attach(modelNode);
-	//controller->Attach(MAINCAMERANODE);
-
-	Node* offsetNode = modelNode->CreateChild();
-	offsetNode->LocalTransform().Position = Vec3(0.f, -8.f, -1.f);
-	OGL_RenderObject* model = COMPONENTINCUBATOR->Create<OGL_RenderObject>();
-	model->AddMultiMesh(data, &g_Shader);
-	model->Attach(offsetNode);
-
-	
-	MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
-	MAINCAMERANODE->LocalTransform().Rotation = Quaternion(180.f, Vec3::Up());
-	
-	modelNode->LocalTransform().Scale = Vec3(0.02f);
-	//m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
-
-
-	Node* lightNode = NODEINCUBATOR->Create();
-	Light* light0 = COMPONENTINCUBATOR->Create<Light>();
-	light0->Attach(lightNode);
-	light0->m_Type = Light::DIRECTIONAL;
-	light0->m_Ia = Vec3(.25f, .2f, .15f);
-	light0->m_Id = Vec3(0.8f, 0.75f, 0.75f);
-	light0->m_Is = Vec3(.8f, .8f, .7f);
-	light0->m_Direction = Vec3(0.f, 0.f, 1.f);
-
-	lightNode = NODEINCUBATOR->Create();
-	Light* light1 = COMPONENTINCUBATOR->Create<Light>();
-	light1->Attach(lightNode);
-	light1->m_Type = Light::POINT;
-	light1->m_Ia = Vec3(0.f, 0.f, 0.f);
-	light1->m_Id = Vec3(0.f, 0.f, 1.f);
-	light1->m_Is = Vec3(0.f, 0.f, 1.f);
-	light1->m_Position = Vec3(5.f, 5.f, 0.f);
-
-	lightNode = NODEINCUBATOR->Create();
-	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	light2->Attach(lightNode);
-	light2->m_Type = Light::DIRECTIONAL;
-	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
-	light2->m_Id = Vec3(1.f, 0.f, 0.f);
-	light2->m_Is = Vec3(1.f, 0.f, 0.f);
-	light2->m_Direction = Vec3(0.f, 1.f, -1.f);
-
-	lightNode = NODEINCUBATOR->Create();
-	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
-	light3->Attach(lightNode);
-	light3->m_Type = Light::SPOT;
-	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
-	light3->m_Id = Vec3(0.f, 1.f, 0.f);
-	light3->m_Is = Vec3(0.f, 1.f, 0.f);
-	light3->m_Direction = Vec3(0.f, -0.8f, 1.f);
-	light3->m_Position = Vec3(0.f, 20.f, -5.f);
-	light3->m_Cutoff = 25.f;
 }
 
 

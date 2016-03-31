@@ -22,7 +22,7 @@ OGL_Mesh::OGL_Mesh(const MeshData& _source)
 	m_VerticesCount = _source.m_VerticesCount;
 	m_Indices = new GLuint[m_IndicesCount()];
 	m_Data = new GLfloat[_source.m_VertexSize * _source.m_VerticesCount];
-	SetAttribSizes((GLint*)_source.m_AttribSizes.data(), _source.m_AttribSizes.size());
+	SetAttribSizes((GLint*)_source.m_AttribSizes.data(), static_cast<GLint>(_source.m_AttribSizes.size()));
 
 	memcpy(m_Indices, _source.m_Indices.data(), _source.m_Indices.size() * sizeof(unsigned int));
 	

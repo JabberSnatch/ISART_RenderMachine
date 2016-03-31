@@ -15,8 +15,7 @@ Device::Initialize(int _width, int _height)
 
 	m_CurrentScene = new Scene();
 	Camera* camera = m_CurrentScene->MainCamera();
-	camera->Initialize();
-	camera->SetAspectRatio((float)_width / _height);
+	camera->Initialize({ 0, 0, _width, _height });
 	camera->ComputePerspective();
 }
 
@@ -54,6 +53,16 @@ Device::Render()
 	m_RenderContext->ClearBuffer();
 
 	m_Renderer->Render(m_CurrentScene);
+}
+
+
+void
+Device::SetDimensions(int _width, int _height)
+{
+	m_Width = _width;
+	m_Height = _height;
+	if (m_CurrentScene)
+		m_CurrentScene->MainCamera()->SetViewport({0, 0, _width, _height});
 }
 
 

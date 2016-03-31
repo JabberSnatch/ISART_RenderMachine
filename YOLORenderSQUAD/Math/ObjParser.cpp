@@ -149,8 +149,8 @@ ObjParser::m_FinishCurrentGroup(const std::string& _path) -> void
 	auto normalSize = m_CurrentOBJ.m_NormalSize;
 
 	m_CurrentMeshData->m_VertexSize = m_CurrentMeshData->m_Points[0].m_Size;
-	m_CurrentMeshData->m_VerticesCount = m_CurrentMeshData->m_Points.size();
-	m_CurrentMeshData->m_PolyCount = m_CurrentMeshData->m_Indices.size() / 3;
+	m_CurrentMeshData->m_VerticesCount = static_cast<int32_t>(m_CurrentMeshData->m_Points.size());
+	m_CurrentMeshData->m_PolyCount = static_cast<int32_t>(m_CurrentMeshData->m_Indices.size()) / 3;
 	m_CurrentMeshData->m_AttribSizes.push_back(positionSize);
 	m_CurrentMeshData->m_AttribSizes.push_back(texSize);
 	m_CurrentMeshData->m_AttribSizes.push_back(normalSize);
@@ -164,7 +164,7 @@ ObjParser::m_SetPointData(float* _pointArray, int _index, int _componentSize, st
 	if (_index != UNDEFINED_VALUE)
 	{
 		int localIndex = _index;
-		if (localIndex <= 0) localIndex += (_componentArray.size() / _componentSize) + 1;
+		if (localIndex <= 0) localIndex += (static_cast<int32_t>(_componentArray.size()) / _componentSize) + 1;
 
 		int realIndex = (localIndex - 1) * _componentSize;
 		memcpy(_pointArray, &_componentArray[realIndex], _componentSize * sizeof(float));
@@ -181,7 +181,7 @@ ObjParser::m_ComputeFaceIndices(OBJ& _obj, MeshData& _mesh) -> void
 	auto normalSize = _obj.m_NormalSize;
 
 	int faceSize = 9;
-	int faceIndex = ((*indices).size() / (faceSize)) - 1;
+	int faceIndex = ((int)(*indices).size() / faceSize) - 1;
 	int valueIndex = faceSize * faceIndex;
 
 	for (int i = valueIndex; i < valueIndex + faceSize; i += 3)
@@ -204,7 +204,7 @@ ObjParser::m_ComputeFaceIndices(OBJ& _obj, MeshData& _mesh) -> void
 		else
 		{
 			_mesh.m_Points.push_back(candidate);
-			_mesh.m_Indices.push_back(_mesh.m_Points.size() - 1);
+			_mesh.m_Indices.push_back(static_cast<uint32_t>(_mesh.m_Points.size()) - 1);
 		}
 	}
 }

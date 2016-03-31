@@ -69,16 +69,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,7 +101,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(Platform)\$(Configuration)\glew32.dll"</Command>
+      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(ProjectName)\$(Platform)\$(Configuration)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,7 +120,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\Libs\$(Platform)\$(Configuration)\;..\Libs\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(Platform)\$(Configuration)\glew32.dll"</Command>
+      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(ProjectName)\$(Platform)\$(Configuration)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -151,7 +151,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(Platform)\$(Configuration)\glew32.dll"</Command>
+      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(ProjectName)\$(Platform)\$(Configuration)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -174,7 +174,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\Libs\$(Platform)\$(Configuration)\;..\Libs\glew\lib\Release\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(Platform)\$(Configuration)\glew32.dll"</Command>
+      <Command>copy /Y "$(SolutionDir)Libs\glew\bin\Release\$(Platform)\glew32.dll" "$(SolutionDir)Build\$(ProjectName)\$(Platform)\$(Configuration)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -119,7 +119,7 @@ ImGui_OGL_RenderDrawLists(ImDrawData* _data)
 
 
 	ImGuiIO& io = ImGui::GetIO();
-	glViewport(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	glViewport(0, 0, (GLsizei)io.DisplaySize.x, (GLsizei)io.DisplaySize.y);
 	static const float ortho_projection[4][4] =
 	{
 		{ 2.0f / io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },

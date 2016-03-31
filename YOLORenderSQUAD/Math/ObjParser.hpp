@@ -4,6 +4,7 @@
 #include <regex>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 #include <boost/tokenizer.hpp>
 
@@ -20,9 +21,9 @@ struct OBJ
 {
 	std::string				m_Name;
 	
-	int						m_PositionSize = 3;
-	int						m_NormalSize = 3;
-	int						m_TexCoordSize = 2;
+	int32_t					m_PositionSize = 3;
+	int32_t					m_NormalSize = 3;
+	int32_t					m_TexCoordSize = 2;
 
 	std::vector<float>		m_Positions;
 	std::vector<float>		m_Normals;
@@ -45,7 +46,7 @@ struct OBJ
 
 struct Point
 {
-	Point(int _pos, int _tex, int _norm)
+	Point(int32_t _pos, int32_t _tex, int32_t _norm)
 		:m_Size(_pos + _tex + _norm)
 	{
 		m_Position = new float[m_Size];
@@ -65,14 +66,14 @@ struct Point
 		delete[] m_Position;
 	}
 
-	float*	m_Position;
-	float*	m_Texture;
-	float*	m_Normal;
-	int		m_Size;
+	float*		m_Position;
+	float*		m_Texture;
+	float*		m_Normal;
+	int32_t		m_Size;
 
-	auto	GetPositionSize() const -> int { return m_Texture - m_Position; }
-	auto	GetTextureSize() const -> int { return m_Normal - m_Texture; }
-	auto	GetNormalSize() const -> int { return m_Size - (m_Normal - m_Position); }
+	auto	GetPositionSize() const -> int32_t { return static_cast<int32_t>(m_Texture - m_Position); }
+	auto	GetTextureSize() const -> int32_t { return static_cast<int32_t>(m_Normal - m_Texture); }
+	auto	GetNormalSize() const -> int32_t { return m_Size - static_cast<int32_t>(m_Normal - m_Position); }
 
 	auto	operator == (const Point& other) const -> bool
 	{
@@ -96,12 +97,12 @@ struct Point
 struct MeshData
 {
 	std::vector<Point>			m_Points;
-	std::vector<unsigned int>	m_Indices;
+	std::vector<uint32_t>		m_Indices;
 
-	int							m_VerticesCount = 0;
-	int							m_VertexSize = 0;
-	int							m_PolyCount = 0;
-	std::vector<int>			m_AttribSizes;
+	int32_t						m_VerticesCount = 0;
+	int32_t						m_VertexSize = 0;
+	int32_t						m_PolyCount = 0;
+	std::vector<int32_t>		m_AttribSizes;
 
 	MaterialData				m_Material;
 

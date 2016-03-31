@@ -1,6 +1,7 @@
 #include "ObjParser.hpp"
 
 #include <fstream>
+#include <cstdint>
 
 #include "Vec3.hpp"
 
@@ -101,35 +102,35 @@ MeshData::Serialize(const std::string& _path) -> void
 auto
 MeshData::Serialize(std::fstream& _stream) -> void
 {
-	size_t pointsSize = m_Points.size();
-	_stream.write((char*)&pointsSize, sizeof(size_t));
+	int64_t pointsCount = static_cast<int64_t>(m_Points.size());
+	_stream.write((char*)&pointsCount, sizeof(int64_t));
 	for (auto&& point : m_Points)
 	{
-		ptrdiff_t posSize, texSize, normSize;
-		posSize = point.m_Texture - point.m_Position;
-		texSize = point.m_Normal - point.m_Texture;
-		normSize = point.m_Size - (point.m_Normal - point.m_Position);
+		int32_t posSize, texSize, normSize;
+		posSize = point.GetPositionSize();
+		texSize = point.GetTextureSize();
+		normSize = point.GetNormalSize();
 
-		_stream.write((char*)&posSize, sizeof(ptrdiff_t));
-		_stream.write((char*)&texSize, sizeof(ptrdiff_t));
-		_stream.write((char*)&normSize, sizeof(ptrdiff_t));
+		_stream.write((char*)&posSize, sizeof(int32_t));
+		_stream.write((char*)&texSize, sizeof(int32_t));
+		_stream.write((char*)&normSize, sizeof(int32_t));
 
 		_stream.write((char*)point.m_Position, point.m_Size * sizeof(float));
 	}
 
-	size_t indicesSize;
-	indicesSize = m_Indices.size();
-	_stream.write((char*)&indicesSize, sizeof(size_t));
-	_stream.write((char*)m_Indices.data(), indicesSize * sizeof(unsigned int));
+	int64_t indicesCount;
+	indicesCount = static_cast<int64_t>(m_Indices.size());
+	_stream.write((char*)&indicesCount, sizeof(int64_t));
+	_stream.write((char*)m_Indices.data(), indicesCount * sizeof(uint32_t));
 
-	size_t attribSize;
-	attribSize = m_AttribSizes.size();
-	_stream.write((char*)&attribSize, sizeof(size_t));
-	_stream.write((char*)m_AttribSizes.data(), attribSize * sizeof(int));
+	int32_t attribCount;
+	attribCount = static_cast<int32_t>(m_AttribSizes.size());
+	_stream.write((char*)&attribCount, sizeof(int32_t));
+	_stream.write((char*)m_AttribSizes.data(), attribCount * sizeof(int32_t));
 
-	_stream.write((char*)&(m_VerticesCount), sizeof(m_VerticesCount));
-	_stream.write((char*)&(m_VertexSize), sizeof(m_VertexSize));
-	_stream.write((char*)&(m_PolyCount), sizeof(m_PolyCount));
+	_stream.write((char*)&(m_VerticesCount), sizeof(int32_t));
+	_stream.write((char*)&(m_VertexSize), sizeof(int32_t));
+	_stream.write((char*)&(m_PolyCount), sizeof(int32_t));
 
 	m_Material.Serialize(_stream);
 }
@@ -148,33 +149,34 @@ MeshData::Deserialize(const std::string& _path) -> void
 auto
 MeshData::Deserialize(std::fstream& _stream) -> void
 {
-	int pointsCount = 0;
-	_stream.read((char*)&pointsCount, sizeof(size_t));
-	for (int i = 0; i < pointsCount; ++i)
+	int64_t pointsCount = 0;
+	_stream.read((char*)&pointsCount, sizeof(int64_t));
+	for (int64_t i = 0; i < pointsCount; ++i)
 	{
-		ptrdiff_t posSize = 0, normSize = 0, texSize = 0;
-		_stream.read((char*)&posSize, sizeof(ptrdiff_t));
-		_stream.read((char*)&texSize, sizeof(ptrdiff_t));
-		_stream.read((char*)&normSize, sizeof(ptrdiff_t));
+		int32_t posSize = 0, normSize = 0, texSize = 0;
+		_stream.read((char*)&posSize, sizeof(int32_t));
+		_stream.read((char*)&texSize, sizeof(int32_t));
+		_stream.read((char*)&normSize, sizeof(int32_t));
 
 		Point candidate(posSize, texSize, normSize);
-		_stream.read((char*)candidate.m_Position, candidate.m_Size * sizeof(candidate.m_Position));
+		_stream.read((char*)candidate.m_Position, candidate.m_Size * sizeof(float));
 
 		m_Points.push_back(candidate);
 	}
 
-	size_t indicesCount = 0, attribCount = 0;
-	_stream.read((char*)&indicesCount, sizeof(size_t));
-	m_Indices.resize(indicesCount);
-	_stream.read((char*)m_Indices.data(), indicesCount * sizeof(unsigned int));
+	int64_t indicesCount = 0;
+	_stream.read((char*)&indicesCount, sizeof(int64_t));
+	m_Indices.resize((size_t)indicesCount);
+	_stream.read((char*)m_Indices.data(), indicesCount * sizeof(uint32_t));
 
-	_stream.read((char*)&attribCount, sizeof(size_t));
-	m_AttribSizes.resize(attribCount);
-	_stream.read((char*)m_AttribSizes.data(), attribCount * sizeof(int));
+	int32_t attribCount = 0;
+	_stream.read((char*)&attribCount, sizeof(int32_t));
+	m_AttribSizes.resize((size_t)attribCount);
+	_stream.read((char*)m_AttribSizes.data(), attribCount * sizeof(int32_t));
 
-	_stream.read((char*)&m_VerticesCount, sizeof(m_VerticesCount));
-	_stream.read((char*)&m_VertexSize, sizeof(m_VertexSize));
-	_stream.read((char*)&m_PolyCount, sizeof(m_PolyCount));
+	_stream.read((char*)&m_VerticesCount, sizeof(int32_t));
+	_stream.read((char*)&m_VertexSize, sizeof(int32_t));
+	_stream.read((char*)&m_PolyCount, sizeof(int32_t));
 
 	m_Material.Deserialize(_stream);
 }
@@ -185,9 +187,9 @@ MultiMeshData::Serialize(const std::string& _path) -> void
 {
 	std::fstream stream(_path, std::fstream::out | std::fstream::trunc | std::fstream::binary);
 
-	int meshesCount = m_Meshes.size();
-	stream.write((char*)&meshesCount, sizeof(int));
-	for (int i = 0; i < meshesCount; ++i)
+	int32_t meshesCount = static_cast<int32_t>(m_Meshes.size());
+	stream.write((char*)&meshesCount, sizeof(int32_t));
+	for (int32_t i = 0; i < meshesCount; ++i)
 		m_Meshes[i].Serialize(stream);
 
 	stream.close();
@@ -200,10 +202,10 @@ MultiMeshData::Deserialize(const std::string& _path) -> void
 	m_Meshes.clear();
 	std::fstream stream(_path, std::fstream::in | std::fstream::binary);
 
-	int meshesCount = 0;
-	stream.read((char*)&meshesCount, sizeof(int));
+	int32_t meshesCount = 0;
+	stream.read((char*)&meshesCount, sizeof(int32_t));
 	m_Meshes.resize(meshesCount);
-	for (int i = 0; i < meshesCount; ++i)
+	for (int32_t i = 0; i < meshesCount; ++i)
 	{
 		m_Meshes[i].Deserialize(stream);
 		m_Meshes[i].ExtractFolder(_path);

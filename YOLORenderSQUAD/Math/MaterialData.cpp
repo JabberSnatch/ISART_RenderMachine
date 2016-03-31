@@ -1,6 +1,7 @@
 #include "MaterialData.hpp"
 
 #include <fstream>
+#include <cstdint>
 
 
 auto
@@ -121,8 +122,8 @@ MaterialData::Deserialize(std::fstream& _stream) -> void
 auto	
 MaterialData::WriteStringToStream(const std::string& _str, std::fstream& _stream) -> void
 {
-	size_t strSize = _str.size() + 1;
-	_stream.write((char*)&strSize, sizeof(size_t));
+	uint64_t strSize = _str.size() + 1;
+	_stream.write((char*)&strSize, sizeof(uint64_t));
 	const char* cStr = _str.c_str() + '\0';
 	_stream.write(cStr, strSize * sizeof(char));
 }
@@ -131,9 +132,9 @@ MaterialData::WriteStringToStream(const std::string& _str, std::fstream& _stream
 auto	
 MaterialData::ReadStringFromStream(std::string& _str, std::fstream& _stream) -> void
 {
-	size_t strSize = 0;
-	_stream.read((char*)&strSize, sizeof(size_t));
-	char* cStr = new char[strSize];
+	uint64_t strSize = 0;
+	_stream.read((char*)&strSize, sizeof(uint64_t));
+	char* cStr = new char[(unsigned int)strSize];
 	_stream.read(cStr, strSize * sizeof(char));
 	_str = std::string(cStr);
 	delete[] cStr;

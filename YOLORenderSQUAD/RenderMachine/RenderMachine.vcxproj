@@ -177,6 +177,7 @@
     <ClInclude Include="NodeIncubator.hpp" />
     <ClInclude Include="RotateAround.hpp" />
     <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="TESTSCENE.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
