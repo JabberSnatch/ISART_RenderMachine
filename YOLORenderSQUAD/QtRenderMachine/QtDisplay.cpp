@@ -4,6 +4,8 @@
 #include <QWindow>
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QDockWidget>
+#include <QLineEdit>
 
 #include "Device.hpp"
 #include "OGL_RenderContext.hpp"
@@ -38,6 +40,15 @@ QtDisplay::Initialize()
 	//m_RootLayout->addWidget(renderWidget);
 	QWidget* renderWidget = QWidget::createWindowContainer(&m_RenderWindow);
 	setCentralWidget(renderWidget);
+
+	QDockWidget* dockWidget = new QDockWidget();
+	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, dockWidget);
+	QWidget* dockRoot = new QWidget(dockWidget);
+	dockWidget->setWidget(dockRoot);
+
+	QVBoxLayout* layout = new QVBoxLayout(dockRoot);
+	QWidget* lineedit = new QLineEdit();
+	layout->addWidget(lineedit);
 
 	INIT_TEST_SCENE();
 }

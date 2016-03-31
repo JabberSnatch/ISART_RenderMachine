@@ -35,12 +35,9 @@ public:
 	void	SetFar(float _v) { m_Far = _v; }
 	void	SetViewport(const Viewport& _v) 
 	{ 
-		float oldFOV = m_FOV;
-		float oldAspectRatio = m_AspectRatio;
 		m_Viewport = _v; 
 		m_AspectRatio = _v.width / (float)_v.height; 
 		ComputePerspective();
-		//m_FOV = m_AspectRatio * oldFOV / oldAspectRatio;
 	}
 
 	const Viewport&	GetViewport() { return m_Viewport; }
