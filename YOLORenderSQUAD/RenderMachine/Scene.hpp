@@ -7,6 +7,7 @@
 #include "Node.hpp"
 
 class Camera; // :public Component
+class ISkybox;
 class IRenderObject; // :public Component
 class IDynamicObject; // :public Component
 class Light; // :public Component
@@ -26,7 +27,9 @@ public:
 
 	Node*		Root() { return m_Root; }
 	Camera*		MainCamera() const { return m_MainCamera; }
+	ISkybox*	Skybox() const { return m_Skybox; }
 
+	void		SetSkybox(ISkybox* _skybox) { m_Skybox = _skybox; }
 	void		AddRenderObject(IRenderObject* _object);
 	void		AddDynamicObject(IDynamicObject* _object);
 	void		AddLight(Light* _light);
@@ -41,6 +44,7 @@ public:
 private:
 	Node*		m_Root = nullptr;
 	Camera*		m_MainCamera;
+	ISkybox*	m_Skybox = nullptr;
 
 	RenderObjectMap_t		m_RenderObjectsMap;
 	DynamicObjectMap_t		m_DynamicObjectsMap;

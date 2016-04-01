@@ -39,6 +39,7 @@ OGL_RenderContext::Initialize(QWindow* _win)
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
+	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(.5f, .5f, .5f, 1.f);
 }

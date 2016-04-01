@@ -34,6 +34,7 @@ public:
 
 	auto	FreeOGLResources() -> void;
 	auto	GetTexture(const std::string& _path, bool _forceAlpha = false) -> Texture;
+	auto	GetCubeMap(const std::string* _path, bool _forceAlpha = false) -> Texture;
 
 	auto	operator = (const OGL_TextureLoader&) -> OGL_TextureLoader& = delete;
 	auto	operator = (OGL_TextureLoader&&) -> OGL_TextureLoader& = delete;

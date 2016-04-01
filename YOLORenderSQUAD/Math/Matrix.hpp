@@ -22,6 +22,7 @@ struct Matrix
 	auto	Transposed() -> Matrix& { Matrix result; transpose(result.data, data); return result; }
 
 	auto	Set(int _row, int _col, float _v) -> void { data[_row * 4 + _col] = _v; }
+	auto	Get(int _row, int _col) -> float { return data[_row * 4 + _col]; }
 
 	auto	operator * (const Matrix& _v) -> Matrix
 	{

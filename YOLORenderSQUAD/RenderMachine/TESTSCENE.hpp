@@ -4,6 +4,7 @@
 #include <fstream>
 #include "OGL_Shader.hpp"
 #include "OGL_RenderObject.hpp"
+#include "OGL_Skybox.hpp"
 #include "Node.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
@@ -28,23 +29,21 @@ INIT_TEST_SCENE()
 	if (!std::fstream(name + ".mys").good())
 	{
 		parser.ParseFile(name + ".obj");
-//#ifndef WIN64
 		data = parser.GenerateMeshData();
 		data.Serialize(name + ".mys");
 	}
 	else
 	{
-//#else
 		data.Deserialize(name + ".mys");
 	}
-//#endif
 
 
+	// MODELS
 	Node* modelNode = ROOTNODE->CreateChild();
 	modelNode->LocalTransform().Position = Vec3(0.f, 8.f, 1.f);
 	RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
-	controller->Attach(modelNode);
-	//controller->Attach(MAINCAMERANODE);
+	//controller->Attach(modelNode);
+	controller->Attach(MAINCAMERANODE);
 
 	Node* offsetNode = modelNode->CreateChild();
 	offsetNode->LocalTransform().Position = Vec3(0.f, -8.f, -1.f);
@@ -52,14 +51,41 @@ INIT_TEST_SCENE()
 	model->AddMultiMesh(data, &g_Shader);
 	model->Attach(offsetNode);
 
+	// SKYBOX
+	OGL_Skybox* skybox = COMPONENTINCUBATOR->Create<OGL_Skybox>();
+	//skybox->SetTexturePath(ISkybox::BACK, "../Resources/TEXTURES/lake_sb/lake1_bk.JPG");
+	//skybox->SetTexturePath(ISkybox::FRONT, "../Resources/TEXTURES/lake_sb/lake1_ft.JPG");
+	//skybox->SetTexturePath(ISkybox::LEFT, "../Resources/TEXTURES/lake_sb/lake1_lf.JPG");
+	//skybox->SetTexturePath(ISkybox::RIGHT, "../Resources/TEXTURES/lake_sb/lake1_rt.JPG");
+	//skybox->SetTexturePath(ISkybox::TOP, "../Resources/TEXTURES/lake_sb/lake1_up.JPG");
+	//skybox->SetTexturePath(ISkybox::BOTTOM, "../Resources/TEXTURES/lake_sb/lake1_dn.JPG");
+	skybox->SetTexturePath(ISkybox::BACK, "../Resources/TEXTURES/yokohama/posz.jpg");
+	skybox->SetTexturePath(ISkybox::FRONT, "../Resources/TEXTURES/yokohama/negz.jpg");
+	skybox->SetTexturePath(ISkybox::LEFT, "../Resources/TEXTURES/yokohama/negx.jpg");
+	skybox->SetTexturePath(ISkybox::RIGHT, "../Resources/TEXTURES/yokohama/posx.jpg");
+	skybox->SetTexturePath(ISkybox::TOP, "../Resources/TEXTURES/yokohama/posy.jpg");
+	skybox->SetTexturePath(ISkybox::BOTTOM, "../Resources/TEXTURES/yokohama/negy.jpg");
+	skybox->AllocateResources();
+	OGL_Shader* skyboxShader = new OGL_Shader();
+	skyboxShader->LoadShaderAndCompile("../Resources/SHADERS/Skybox.vs", GL_VERTEX_SHADER);
+	skyboxShader->LoadShaderAndCompile("../Resources/SHADERS/Skybox.fs", GL_FRAGMENT_SHADER);
+	skyboxShader->LinkShaders();
 
+	parser.ParseFile("../Resources/MODELS/SKYBOX/Skybox.obj");
+	data = parser.GenerateMeshData();
+	skybox->SetBoxMesh(data.m_Meshes[0], skyboxShader);
+	DEVICE->CurrentScene()->SetSkybox(skybox);
+
+	// CAMERA
+	//MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
 	MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
-	MAINCAMERANODE->LocalTransform().Rotation = Quaternion(180.f, Vec3::Up());
+	//MAINCAMERANODE->LocalTransform().Rotation = Quaternion(180.f, Vec3::Up());
 
 	modelNode->LocalTransform().Scale = Vec3(0.02f);
 	//m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
 
 
+	// LIGHTS
 	Node* lightNode = NODEINCUBATOR->Create();
 	Light* light0 = COMPONENTINCUBATOR->Create<Light>();
 	light0->Attach(lightNode);

@@ -44,9 +44,33 @@ Camera::PerspectiveMatrix() const
 }
 
 
-Matrix
+Matrix 
 Camera::ViewMatrix() const
 {
-	return c_getNode()->WorldTransform().GetInverseMatrix();
+	Matrix result;
+
+	Transform& worldTransform = c_getNode()->WorldTransform();
+	Vec3 right = worldTransform.Rotation * Vec3::Right();
+	Vec3 up = worldTransform.Rotation * Vec3::Up();
+	Vec3 forward = worldTransform.Rotation * Vec3::Forward();
+	Vec3 translate = worldTransform.Position * -1.f;
+
+	result.Set(0, 0, right.x);
+	result.Set(1, 0, right.y);
+	result.Set(2, 0, right.z);
+
+	result.Set(0, 1, up.x);
+	result.Set(1, 1, up.y);
+	result.Set(2, 1, up.z);
+
+	result.Set(0, 2, forward.x);
+	result.Set(1, 2, forward.y);
+	result.Set(2, 2, forward.z);
+	
+	result.Set(3, 0, right.dot(translate));
+	result.Set(3, 1, up.dot(translate));
+	result.Set(3, 2, forward.dot(translate));
+
+	return result;
 }
 

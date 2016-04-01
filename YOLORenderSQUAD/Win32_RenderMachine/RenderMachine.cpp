@@ -137,7 +137,7 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 			io.MouseWheel = 0.f;
 		}
 		ImGui::NewFrame();
-		ImGui::ShowTestWindow();
+		//ImGui::ShowTestWindow();
 
 		DEVICE->Update(1. / 60.);
 		DEVICE->Render();

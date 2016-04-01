@@ -16,6 +16,8 @@ public:
 	Node(Node&&) = delete;
 	~Node() = default;
 
+	Node*		Parent() { return m_Parent; }
+
 	void		SetParent(Node* _parent);
 
 	void		AddChild(Node* _child);

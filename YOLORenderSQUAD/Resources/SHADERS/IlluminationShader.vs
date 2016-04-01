@@ -45,7 +45,7 @@ void main(void)
 	OUT.v_Normal = normalize(tiWorldMatrix * a_Normal);
 	OUT.v_Tangent = normalize(tiWorldMatrix * a_Tangent);
 	OUT.v_Bitangent = normalize(tiWorldMatrix * a_Bitangent);
-	OUT.v_ViewDirection = normalize(u_ViewPosition - (tiWorldMatrix * a_Position));
+	OUT.v_ViewDirection = normalize(u_ViewPosition - (mat3(u_WorldMatrix) * a_Position));
 
 	if (u_LightPosition.w == 0.0)
 		OUT.v_LightDirection = u_LightPosition.xyz;

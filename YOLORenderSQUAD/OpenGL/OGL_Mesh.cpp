@@ -10,6 +10,12 @@
 #include "MaterialData.hpp"
 #include "OGL_TextureLoader.hpp"
 
+// TODO: The OGL_Mesh probably should not know about these four
+#include "Device.hpp"
+#include "Scene.hpp"
+#include "ISkybox.hpp"
+#include "OGL_Skybox.hpp"
+
 #define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
 
 using MD = MaterialData;
@@ -143,6 +149,18 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 				glUniform1i(m_Shader->GetUniform(uniformName + "_bound"), 0);
 		}
 
+		if (DEVICE->CurrentScene()->Skybox())
+		{
+			GLuint cubemap = static_cast<OGL_Skybox*>(DEVICE->CurrentScene()->Skybox())->Cubemap();
+			glActiveTexture(GL_TEXTURE0 + MD::TEX_ID_COUNT);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+			glUniform1i(m_Shader->GetUniform("u_skybox"), MD::TEX_ID_COUNT);
+			glUniform1i(m_Shader->GetUniform("u_skybox_bound"), 1);
+		}
+		else
+			glUniform1i(m_Shader->GetUniform("u_skybox_bound"), 0);
+
+
 		if (!_shaderEnabled) m_Shader->EnableShader();
 	}
 
@@ -150,7 +168,7 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 	glDrawElements(GL_TRIANGLES, m_IndicesCount(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 
-	for (int index = 0; index < MD::TEX_ID_COUNT; ++index)
+	for (int index = 0; index < MD::TEX_ID_COUNT + 1; ++index)
 	{
 		if (m_Textures[index] != 0)
 		{
@@ -162,6 +180,8 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 }
 
 
+//TODELETE
+/*
 auto
 OGL_Mesh::Render(GLuint _pvMatricesBuffer) -> void
 {
@@ -179,6 +199,7 @@ OGL_Mesh::Render(GLuint _pvMatricesBuffer) -> void
 
 	Render(true);
 }
+*/
 
 
 auto
@@ -240,22 +261,6 @@ OGL_Mesh::CreateTexture(const std::string& _path, MD::TEXTURE_ID _id, bool _forc
 	if (!std::fstream(_path).good()) return;
 
 	m_Textures[_id] = OGL_TextureLoader::Get()->GetTexture(_path, _forceAlpha);
-	if (0)
-	{
-		int w, h, d;
-		auto* data = stbi_load(_path.c_str(), &w, &h, &d, _forceAlpha ? STBI_rgb_alpha : STBI_rgb);
-
-		if (data)
-		{
-			glGenTextures(1, &m_Textures[_id]);
-			glBindTexture(GL_TEXTURE_2D, m_Textures[_id]);
-			glTexImage2D(GL_TEXTURE_2D, 0, _forceAlpha ? GL_RGBA : GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			stbi_image_free(data);
-		}
-	}
 
 	if (!m_HasSampler)
 	{

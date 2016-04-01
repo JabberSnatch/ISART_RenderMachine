@@ -105,6 +105,9 @@ uniform sampler2D u_map_Kd;
 uniform sampler2D u_map_Ks;
 uniform sampler2D u_map_N;
 
+uniform bool u_skybox_bound;
+uniform samplerCube u_skybox;
+
 out vec4 FragmentColor;
 
 
@@ -295,10 +298,15 @@ void main(void)
     vec3 diffuse = ComputeDiffuse(MATERIAL, false);
     vec3 specular = ComputeSpecular(MATERIAL, true);
 
-
     vec3 linearColor = ambient + diffuse * 3 + specular;
+    if (u_skybox_bound)
+    {
+        vec3 R = reflect(-CPY.v_ViewDirection, CPY.v_Normal);
+        linearColor += texture(u_skybox, R).xyz / 10.0;
+    }
+
     gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
-    //gl_FragColor = vec4(abs(IN.v_Normal), 1.0);//ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(abs(CPY.v_ViewDirection), 1.0);//ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
     //gl_FragColor = vec4(specular * 1000, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);

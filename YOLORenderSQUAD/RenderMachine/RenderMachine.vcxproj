@@ -177,6 +177,7 @@
     <ClInclude Include="NodeIncubator.hpp" />
     <ClInclude Include="RotateAround.hpp" />
     <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="ISkybox.hpp" />
     <ClInclude Include="TESTSCENE.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +186,7 @@
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="IDynamicObject.cpp" />
     <ClCompile Include="IRenderObject.cpp" />
+    <ClCompile Include="ISkybox.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeIncubator.cpp" />

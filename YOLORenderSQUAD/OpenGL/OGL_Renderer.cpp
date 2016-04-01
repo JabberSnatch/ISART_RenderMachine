@@ -8,6 +8,7 @@
 #include "Camera.hpp"
 #include "IRenderObject.hpp"
 #include "Light.hpp"
+#include "ISkybox.hpp"
 
 
 void
@@ -39,7 +40,7 @@ OGL_Renderer::Render(const Scene* _scene)
 	// Bind matrices to buffer
 	glBindBuffer(GL_UNIFORM_BUFFER, m_MatricesBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, 16 * sizeof(GLfloat), camera->PerspectiveMatrix().data);
-	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), cameraTransform.GetInverseMatrix().data);
+	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), camera->ViewMatrix().data);//cameraTransform.GetInverseMatrix().data);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// For each light in scene
@@ -74,12 +75,19 @@ OGL_Renderer::Render(const Scene* _scene)
 		}
 	}
 	for (std::list<OGL_Shader*>::iterator ite = shaders.begin(); ite != shaders.end(); ++ite)
+	{
+		(*ite)->EnableShader();
 		glUniform3fv((*ite)->GetUniform("u_ViewPosition"), 1, cameraTransform.Position.ToStdVec().data());
+		glUseProgram(0);
+	}
 	
+	// Render skybox
 	// For each render object
 		// object.Render()
 	for (auto& pair : renderObjectsMap)
 		pair.second->Render();
+	if (_scene->Skybox())
+		_scene->Skybox()->Render();
 
 	glUseProgram(0);
 }

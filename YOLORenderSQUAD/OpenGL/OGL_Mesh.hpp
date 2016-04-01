@@ -10,6 +10,7 @@
 
 class OGL_Mesh
 {
+	friend class OGL_Skybox;
 	enum BUFFEROBJECTS
 	{
 		VAO = 0,
@@ -28,7 +29,8 @@ public:
 	~OGL_Mesh();
 
 	auto	Render(bool _shaderEnabled = false) -> void;
-	auto	Render(GLuint _pvMatricesBuffer) -> void;
+	//TODELETE
+	//auto	Render(GLuint _pvMatricesBuffer) -> void;
 
 	auto	FillBuffers() -> void;
 	auto	FreeOGLResources() -> void;

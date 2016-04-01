@@ -182,7 +182,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="OGL_Light.cpp" />
     <ClCompile Include="OGL_Mesh.cpp" />
     <ClCompile Include="OGL_Model.cpp" />
@@ -190,6 +189,7 @@
     <ClCompile Include="OGL_RenderObject.cpp" />
     <ClCompile Include="OGL_Scene.cpp" />
     <ClCompile Include="OGL_Shader.cpp" />
+    <ClCompile Include="OGL_Skybox.cpp" />
     <ClCompile Include="OGL_TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +201,7 @@
     <ClInclude Include="OGL_RenderObject.hpp" />
     <ClInclude Include="OGL_Scene.hpp" />
     <ClInclude Include="OGL_Shader.hpp" />
+    <ClInclude Include="OGL_Skybox.hpp" />
     <ClInclude Include="OGL_TextureLoader.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +216,8 @@
     <None Include="..\Resources\SHADERS\IlluminationShader.fs" />
     <None Include="..\Resources\SHADERS\IlluminationShader.vs" />
     <None Include="..\Resources\SHADERS\shaderDuQ.vs" />
+    <None Include="..\Resources\SHADERS\Skybox.fs" />
+    <None Include="..\Resources\SHADERS\Skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
