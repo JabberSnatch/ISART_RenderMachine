@@ -20,6 +20,7 @@ struct MaterialData
 		TEX_ID_COUNT
 	};
 
+	// TODO: Switch color components to 4 floats
 	float Ka[3] = { 1.f, 1.f, 1.f };
 	float Kd[3] = { 1.f, 1.f, 1.f };
 	float Ks[3] = { 1.f, 1.f, 1.f };
