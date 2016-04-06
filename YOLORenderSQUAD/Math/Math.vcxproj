@@ -19,12 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoostTokHelper.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="iVec2.hpp" />
     <ClInclude Include="MaterialData.hpp" />
     <ClInclude Include="Matrix.hpp" />
+    <ClInclude Include="MeshData.hpp" />
     <ClInclude Include="MtlParser.hpp" />
     <ClInclude Include="ObjParser.hpp" />
+    <ClInclude Include="Point.hpp" />
     <ClInclude Include="Quaternion.hpp" />
     <ClInclude Include="Transform.hpp" />
     <ClInclude Include="Types.hpp" />

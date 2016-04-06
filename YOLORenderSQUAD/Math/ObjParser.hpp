@@ -6,14 +6,10 @@
 #include <string>
 #include <cstdint>
 
-#include <boost/tokenizer.hpp>
-
-using bSeparator = boost::char_separator<char>;
-using bTokenizer = boost::tokenizer<bSeparator>;
-using bIterator = boost::token_iterator_generator<bSeparator>::type;
-
+#include "BoostTokHelper.hpp"
 
 #include "MtlParser.hpp"
+#include "MeshData.hpp"
 
 #define UNDEFINED_VALUE (int)0x0fffffff
 
@@ -41,91 +37,6 @@ struct OBJ
 		m_TexCoords.clear();
 		m_Indices.clear();
 	}
-};
-
-
-struct Point
-{
-	Point(int32_t _pos, int32_t _tex, int32_t _norm)
-		:m_Size(_pos + _tex + _norm)
-	{
-		m_Position = new float[m_Size];
-		m_Texture = m_Position + _pos;
-		m_Normal = m_Texture + _tex;
-	}
-	Point(const Point& other)
-	{
-		m_Size = other.m_Size;
-		m_Position = new float[m_Size];
-		m_Texture = m_Position + (other.m_Texture - other.m_Position);
-		m_Normal = m_Texture + (other.m_Normal - other.m_Texture);
-		memcpy(m_Position, other.m_Position, m_Size * sizeof(float));
-	}
-	~Point()
-	{
-		delete[] m_Position;
-	}
-
-	float*		m_Position;
-	float*		m_Texture;
-	float*		m_Normal;
-	int32_t		m_Size;
-
-	auto	GetPositionSize() const -> int32_t { return static_cast<int32_t>(m_Texture - m_Position); }
-	auto	GetTextureSize() const -> int32_t { return static_cast<int32_t>(m_Normal - m_Texture); }
-	auto	GetNormalSize() const -> int32_t { return m_Size - static_cast<int32_t>(m_Normal - m_Position); }
-
-	auto	operator == (const Point& other) const -> bool
-	{
-		return (!memcmp(this->m_Position, other.m_Position, m_Size * sizeof(float)));
-	}
-	auto	operator = (const Point& _other) -> Point&
-	{
-		delete[] m_Position;
-
-		m_Size = _other.m_Size;
-		m_Position = new float[m_Size];
-
-		memcpy(m_Position, _other.m_Position, m_Size * sizeof(float));
-		m_Texture = m_Position + _other.GetPositionSize();
-		m_Normal = m_Texture + _other.GetTextureSize();
-
-		return *this;
-	}
-};
-
-struct MeshData
-{
-	std::vector<Point>			m_Points;
-	std::vector<uint32_t>		m_Indices;
-
-	int32_t						m_VerticesCount = 0;
-	int32_t						m_VertexSize = 0;
-	int32_t						m_PolyCount = 0;
-	std::vector<int32_t>		m_AttribSizes;
-
-	MaterialData				m_Material;
-
-	std::string					m_Folder;
-
-	auto	ComputeNormalSpaces() -> void;
-
-	auto	ExtractFolder(const std::string& _path) -> void;
-
-	auto	Serialize(const std::string& _path) -> void;
-	auto	Serialize(std::fstream& _stream) -> void;
-
-	auto	Deserialize(const std::string& _path) -> void;
-	auto	Deserialize(std::fstream& _stream) -> void;
-};
-
-struct MultiMeshData
-{
-	std::string					m_Name;
-	std::vector<MeshData>		m_Meshes;
-
-	auto	Serialize(const std::string& _path) -> void;
-	auto	Deserialize(const std::string& _path) -> void;
 };
 
 

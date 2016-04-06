@@ -48,6 +48,15 @@
     <ClInclude Include="iVec2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MeshData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoostTokHelper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Matrix.cpp">

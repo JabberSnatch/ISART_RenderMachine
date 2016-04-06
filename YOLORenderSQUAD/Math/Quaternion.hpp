@@ -90,7 +90,7 @@ struct Quaternion
 			result.z = (2.f * x*w - 2.f * y*z, 1.f - 2.f * x *x - 2.f * z * z);
 		}
 
-		return result * MC::Rad2Deg();
+		return result * (float)MC::Rad2Deg();
 	}
 
 	Quaternion	operator * (const Quaternion& _other) const
