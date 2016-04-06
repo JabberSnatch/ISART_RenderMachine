@@ -33,6 +33,7 @@
     <ClInclude Include="Types.hpp" />
     <ClInclude Include="UUID.hpp" />
     <ClInclude Include="Vec3.hpp" />
+    <ClInclude Include="_Point.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaterialData.cpp" />

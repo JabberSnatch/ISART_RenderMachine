@@ -34,9 +34,31 @@ IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 void				ImGui_RenderWrapper(ImDrawData* _data);
 
+#include "_Point.hpp"
+#include "Point.hpp"
+
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
+	refactor::Point A(3, 2, 3);
+	refactor::Point B(3, 2, 3);
+	float a[] = { 1.f, 2.f, 3.f };
+	float b[] = { 2.f, 3.f, 1.f };
+
+	A.Set(refactor::Point::POSITION, a);
+	B.Set(refactor::Point::POSITION, a);
+
+	if (A == B)
+		printf("A == B\n");
+
+	Point C(3, 2, 3);
+	Point D(3, 2, 3);
+	memcpy(C.m_Position, a, sizeof(float) * 3);
+	memcpy(D.m_Position, a, sizeof(float) * 3);
+	if (C == D)
+		printf("C == D\n");
+
+
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
 
