@@ -68,6 +68,7 @@ struct Quaternion
 		return result;
 	}
 
+	// TODO: Fix. It yields results ranging from -50deg to 50deg
 	Vec3		toEuler() const
 	{
 		Vec3 result;

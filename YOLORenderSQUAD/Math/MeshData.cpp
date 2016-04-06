@@ -12,7 +12,7 @@ MeshData::ComputeNormalSpaces() -> void
 	// TODO: Compute Tangent and Bitangent average
 	// http://www.terathon.com/code/tangent.html
 
-#if 1
+#if 0
 	int vertexCount = m_Points.size();
 
 	Vec3* tangents = new Vec3[vertexCount * 2];
@@ -124,7 +124,8 @@ MeshData::ComputeNormalSpaces() -> void
 
 
 				Vec3 N(result.m_Normal[0], result.m_Normal[1], result.m_Normal[2]);
-				float signB = (N.cross(T)).dot(B) < 0.f ? 1.f : -1.f;
+				T = (T - N * N.dot(T)).normalized();
+				float signB = (N.cross(T)).dot(B) < 0.f ? -1.f : 1.f;
 				B = (N.cross(T)).normalized() * signB;
 
 				result.m_Normal[3] = T.x;
