@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "RotateAround.hpp"
+#include "CameraFlyAroundController.hpp"
 OGL_Shader g_Shader;
 void
 INIT_TEST_SCENE()
@@ -17,19 +18,26 @@ INIT_TEST_SCENE()
 	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
 	g_Shader.LinkShaders();
 
+	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/shaderDuQ.vs", GL_VERTEX_SHADER);
+	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/fsDuQ.fs", GL_FRAGMENT_SHADER);
+	//g_Shader.LinkShaders();
 
 	ObjParser parser;
 	MultiMeshData data;
 
-	//std::string name = "_zero_model/zero";
+	//std::string name = "../Resources/MODELS/_zero_model/zero";
 	std::string name = "../Resources/MODELS/_ciri_model/ciri";
+	//std::string name = "../Resources/MODELS/_door_whatever/door";
+	//std::string name = "../Resources/MODELS/_lei_fang_circus/DOA5_Lei_Fang_Circus_";
 	//std::string name = "_lightning_model/lightning_obj";
-	//std::string name = "sphere";
+	//std::string name = "../Resources/MODELS/sphere";
+	//std::string name = "../Resources/MODELS/Blade";
+	//std::string name = "../Resources/MODELS/ciri";
 
 	if (!std::fstream(name + ".mys").good())
 	{
 		parser.ParseFile(name + ".obj");
-		data = parser.GenerateMeshData();
+		data = parser.GenerateMeshData(true);
 		data.Serialize(name + ".mys");
 	}
 	else
@@ -40,13 +48,14 @@ INIT_TEST_SCENE()
 
 	// MODELS
 	Node* modelNode = ROOTNODE->CreateChild();
-	modelNode->LocalTransform().Position = Vec3(0.f, 8.f, 1.f);
-	RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
-	//controller->Attach(modelNode);
-	controller->Attach(MAINCAMERANODE);
+	modelNode->LocalTransform().Position = Vec3(0.f, 0.f, 0.f);
+	{
+		RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
+		//controller->Attach(modelNode);
+	}
 
 	Node* offsetNode = modelNode->CreateChild();
-	offsetNode->LocalTransform().Position = Vec3(0.f, -8.f, -1.f);
+	offsetNode->LocalTransform().Position = Vec3(0.f, 0.f, 0.f);
 	OGL_RenderObject* model = COMPONENTINCUBATOR->Create<OGL_RenderObject>();
 	model->AddMultiMesh(data, &g_Shader);
 	model->Attach(offsetNode);
@@ -74,15 +83,21 @@ INIT_TEST_SCENE()
 	parser.ParseFile("../Resources/MODELS/SKYBOX/Skybox.obj");
 	data = parser.GenerateMeshData();
 	skybox->SetBoxMesh(data.m_Meshes[0], skyboxShader);
-	DEVICE->CurrentScene()->SetSkybox(skybox);
+	//DEVICE->CurrentScene()->SetSkybox(skybox);
 
 	// CAMERA
 	//MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
-	MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 8.f, 15.f);
+	MAINCAMERANODE->LocalTransform().Position = Vec3(0.f, 0.f, 10.f);
 	//MAINCAMERANODE->LocalTransform().Rotation = Quaternion(180.f, Vec3::Up());
 
 	modelNode->LocalTransform().Scale = Vec3(0.02f);
+	//modelNode->LocalTransform().Scale = Vec3(0.5f);
 	//m_OGL_Scene.CenterCamera(m_Model.GetMin(), m_Model.GetMax(), 60.f);
+	DEVICE->CurrentScene()->MainCamera()->CenterOnBounds(model->Min(), model->Max());
+	{
+		CameraFlyAroundController* controller = COMPONENTINCUBATOR->Create<CameraFlyAroundController>();
+		controller->Attach(MAINCAMERANODE);
+	}
 
 
 	// LIGHTS
@@ -106,7 +121,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	light2->Attach(lightNode);
+	//light2->Attach(lightNode);
 	light2->m_Type = Light::DIRECTIONAL;
 	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2->m_Id = Vec3(1.f, 0.f, 0.f);
@@ -115,7 +130,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
-	light3->Attach(lightNode);
+	//light3->Attach(lightNode);
 	light3->m_Type = Light::SPOT;
 	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3->m_Id = Vec3(0.f, 1.f, 0.f);

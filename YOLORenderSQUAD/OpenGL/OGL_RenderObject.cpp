@@ -8,7 +8,10 @@ OGL_RenderObject::Render()
 	{
 		OGL_Shader* shader = ite->GetShader();
 		if (shader)
+		{
+			shader->EnableShader();
 			glUniformMatrix4fv(shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, getNode()->WorldTransform().GetMatrix().data);
+		}
 
 		ite->Render();
 	}

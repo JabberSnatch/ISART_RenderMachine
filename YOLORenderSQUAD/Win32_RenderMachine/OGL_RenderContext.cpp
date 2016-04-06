@@ -53,6 +53,7 @@ OGL_RenderContext::Initialize(HWND _window)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	glDepthFunc(GL_LEQUAL);

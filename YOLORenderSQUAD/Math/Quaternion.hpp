@@ -68,6 +68,30 @@ struct Quaternion
 		return result;
 	}
 
+	Vec3		toEuler() const
+	{
+		Vec3 result;
+		result.x = asin(2.f * x*y + 2.f * z*w);
+
+		if (abs(x * y + z * w - 0.5f) < 0.001f) // north pole
+		{
+			result.y = 2.f * atan2(x, w);
+			result.z = 0.f;
+		}
+		else if (abs(x * y + z * w + 0.5f) < 0.001f) // south pole
+		{
+			result.y = -2.f * atan2(x, w);
+			result.z = 0.f;
+		}
+		else
+		{
+			result.y = (2.f * y*w - 2.f * x*z, 1.f - 2.f * y * y - 2.f * z * z);
+			result.z = (2.f * x*w - 2.f * y*z, 1.f - 2.f * x *x - 2.f * z * z);
+		}
+
+		return result * MC::Rad2Deg();
+	}
+
 	Quaternion	operator * (const Quaternion& _other) const
 	{
 		Quaternion result;

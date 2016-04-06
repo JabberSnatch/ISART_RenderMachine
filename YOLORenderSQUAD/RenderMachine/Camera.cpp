@@ -74,3 +74,17 @@ Camera::ViewMatrix() const
 	return result;
 }
 
+
+void
+Camera::CenterOnBounds(Vec3 _min, Vec3 _max)
+{
+	float H = _max.y - _min.y;
+	float W = _max.x - _min.x;
+	float D = _max.z - _min.z;
+
+	Transform& t = getNode()->LocalTransform();
+
+	t.Position.x = _min.x + W / 2.f;
+	t.Position.y = _min.y + H / 2.f;
+	t.Position.z = D / 2.f + ((H / 2.f) / (float)tan(m_FOV * (MC::PI() / 180.) / 2.));
+}

@@ -76,18 +76,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\SHADERS\defaultShader.gs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\SHADERS\DrawNormals.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\SHADERS\DrawNormals.gs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\SHADERS\DrawNormals.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Resources\SHADERS\fsDuQ.fs">
       <Filter>Resource Files</Filter>
     </None>
@@ -100,6 +88,12 @@
     <None Include="..\Resources\SHADERS\shaderDuQ.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Resources\SHADERS\Skybox.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\Skybox.vs">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="..\Resources\SHADERS\BoundingBox.fs">
       <Filter>Resource Files</Filter>
     </None>
@@ -109,10 +103,16 @@
     <None Include="..\Resources\SHADERS\BoundingBox.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\SHADERS\Skybox.fs">
+    <None Include="..\Resources\SHADERS\defaultShader.gs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\SHADERS\Skybox.vs">
+    <None Include="..\Resources\SHADERS\DrawNormals.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DrawNormals.gs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DrawNormals.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -23,7 +23,7 @@ MtlParser::ParseFile(const std::string& _path) -> void
 		{
 			if (*ite == "newmtl")
 				success = m_NewMaterial(++ite);
-			if (*ite == "map_Ka" || 
+			else if (*ite == "map_Ka" || 
 				*ite == "map_Kd" ||
 				*ite == "map_Ks" ||
 				*ite == "map_Ns" ||
@@ -34,10 +34,13 @@ MtlParser::ParseFile(const std::string& _path) -> void
 				*ite == "bump")
 			{
 				MaterialData::TEXTURE_ID texID = MaterialData::StringToTexID(*ite);
-				m_CurrentMaterial->tex_maps[texID] = *++ite; 
-				success = true;
+				if (texID < MaterialData::TEX_ID_COUNT)
+				{
+					m_CurrentMaterial->tex_maps[texID] = *++ite; 
+					success = true;
+				}
 			}
-			if (*ite == "Ka" ||
+			else if (*ite == "Ka" ||
 				*ite == "Kd" ||
 				*ite == "Ks" ||
 				*ite == "Tf")
@@ -45,7 +48,7 @@ MtlParser::ParseFile(const std::string& _path) -> void
 				float* component = m_CurrentMaterial->GetComponent(*ite);
 				success = m_ParseColor(component, ++ite);
 			}
-			if (*ite == "illum" ||
+			else if (*ite == "illum" ||
 				*ite == "d" ||
 				*ite == "Ns" ||
 				*ite == "sharpness" ||

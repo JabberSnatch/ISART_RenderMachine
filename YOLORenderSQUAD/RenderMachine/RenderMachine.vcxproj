@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="CameraFlyAroundController.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />

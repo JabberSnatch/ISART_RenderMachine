@@ -125,6 +125,8 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 
 	if (m_Shader)
 	{
+		if (!_shaderEnabled) m_Shader->EnableShader();
+
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ka"), 1, m_Material.Ka);
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Kd"), 1, m_Material.Kd);
 		glUniform3fv(m_Shader->GetUniform("IN_MATERIAL.Ks"), 1, m_Material.Ks);
@@ -159,9 +161,6 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 		}
 		else
 			glUniform1i(m_Shader->GetUniform("u_skybox_bound"), 0);
-
-
-		if (!_shaderEnabled) m_Shader->EnableShader();
 	}
 
 	glBindVertexArray(m_BufferObjects[VAO]);

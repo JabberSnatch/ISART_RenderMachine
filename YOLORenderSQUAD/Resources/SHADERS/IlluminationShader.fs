@@ -281,13 +281,16 @@ void main(void)
         MATERIAL.Ks *= TEX_COLOR.xyz;
     }
 
+    vec3 BT;
     if (u_map_N_bound)
     {
         vec4 TEX_COLOR = texture(u_map_N, IN.v_TexCoords);
         vec3 bitangent = cross(IN.v_Normal, IN.v_Tangent);
-        mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(bitangent), normalize(IN.v_Normal));
+        mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(IN.v_Bitangent), normalize(IN.v_Normal));
         
-        CPY.v_Normal += normalSpace * ((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
+        CPY.v_Normal = normalSpace * normalize((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
+           
+        BT = bitangent;
     }
 
     CPY.v_Normal = normalize(CPY.v_Normal);
@@ -302,12 +305,12 @@ void main(void)
     if (u_skybox_bound)
     {
         vec3 R = reflect(-CPY.v_ViewDirection, CPY.v_Normal);
-        linearColor += texture(u_skybox, R).xyz / 10.0;
+        linearColor = texture(u_skybox, R).xyz / 10.0;
     }
 
-    gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
-    //gl_FragColor = vec4(abs(CPY.v_ViewDirection), 1.0);//ambient + diffuse + specular, 1.0);
+    //gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
+    gl_FragColor = vec4(abs(CPY.v_Normal), 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-    //gl_FragColor = vec4(specular * 1000, 1.0);
+    //gl_FragColor = vec4(1.0, 0, 0, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }

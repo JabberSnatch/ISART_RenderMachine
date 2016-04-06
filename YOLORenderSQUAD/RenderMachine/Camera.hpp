@@ -3,6 +3,7 @@
 
 #include "Component.hpp"
 
+#include "Vec3.hpp"
 #include "Matrix.hpp"
 
 struct Viewport
@@ -14,7 +15,7 @@ struct Viewport
 };
 
 
-class Camera
+class Camera final
 	:public Component
 {
 public:
@@ -29,6 +30,8 @@ public:
 	const Matrix&	PerspectiveMatrix() const;
 	// Watch out for the FOUR matrices creations and assignment
 	Matrix			ViewMatrix() const;
+
+	void	CenterOnBounds(Vec3 _min, Vec3 _max);
 
 	void	SetFOV(float _v) { m_FOV = _v; }
 	void	SetNear(float _v) { m_Near = _v; }

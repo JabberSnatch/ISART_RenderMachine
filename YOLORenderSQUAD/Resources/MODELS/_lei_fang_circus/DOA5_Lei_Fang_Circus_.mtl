@@ -1,0 +1,143 @@
+# Blender MTL File: 'None'
+# Material Count: 11
+
+newmtl 24_body_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_body_d.tga
+map_N Lei_body_n.tga
+map_d Lei_body_d.tga
+
+newmtl 24_boot_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_boots_d.tga
+map_N Lei_boots_n.tga
+map_d Lei_boots_d.tga
+
+newmtl 24_face_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_face_d.tga
+map_N Lei_face_n.tga
+map_d Lei_face_d.tga
+
+newmtl 24_pant_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_pants_d.tga
+map_N Lei_pants_n.tga
+map_d Lei_pants_d.tga
+
+newmtl 24_ribbon_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_ribbon_d.tga
+map_N Lei_ribbon_n.tga
+map_d Lei_ribbon_d.tga
+
+newmtl 25_chain_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_chain_d.tga
+map_N Lei_chain_n.tga
+map_d Lei_chain_d.tga
+
+newmtl 25_flower_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_acc_d.tga
+map_N Lei_acc_n.tga
+map_d Lei_acc_d.tga
+
+newmtl 25_hair1_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_hair1_d.tga
+map_N Lei_hair1_n.tga
+map_d Lei_hair1_d.tga
+
+newmtl 25_hair2_1_0_0
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_hair2_d.tga
+map_N Lei_hair2_n.tga
+map_d Lei_hair2_d.tga
+
+newmtl 7_lashlow_0.1_16_16
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_lashlow_d.tga
+map_d Lei_lashlow_d.tga
+
+newmtl 7_lashup.001_0.1_16_16
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Lei_lashup_d.tga
+map_d Lei_lashup_d.tga
