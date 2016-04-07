@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <cstdint>
+#include <fstream>
 
 
 // TODO: After refactor is complete, don't forget to remove both the namespace and REF_ in the header guard
@@ -50,6 +51,9 @@ struct Point
 	std::vector<float>			_Data;
 	int32_t						_Size = 0;
 
+
+	void	Serialize(std::fstream& _stream);
+	void	Deserialize(std::fstream& _stream);
 };
 
 }

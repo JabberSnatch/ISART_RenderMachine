@@ -24,8 +24,8 @@ Point::Reserve(Point::VertexComponent _comp, int32_t _size)
 		_Data.resize(_Data.size() + _size);
 
 		// Keep the vector sorted by increasing VertexComponent index
-		int cursor = _Components.size() - 1;
-		int dataCursor = _Data.size() - _size;
+		int cursor = (int)_Components.size() - 1;
+		int dataCursor = (int)_Data.size() - _size;
 		while (cursor > 0)
 		{
 			if (_Components[cursor - 1].first > _comp)
@@ -137,6 +137,46 @@ Point::operator [] (VertexComponent _index)
 	}
 
 	return element;
+}
+
+
+void
+Point::Serialize(std::fstream& _stream)
+{
+	int32_t componentCount = static_cast<int32_t>(_Components.size());
+	_stream.write((char*)&componentCount, sizeof(componentCount));
+	
+	for (int i = 0; i < componentCount; ++i)
+	{
+		int16_t componentName = static_cast<int16_t>(_Components[i].first);
+		int32_t componentSize = _Components[i].second;
+
+		_stream.write((char*)&componentName, sizeof(componentName));
+		_stream.write((char*)&componentSize, sizeof(componentSize));
+	}
+
+	_stream.write((char*)_Data.data(), _Size * sizeof(float));
+}
+
+
+void
+Point::Deserialize(std::fstream& _stream)
+{
+	int32_t componentCount;
+	_stream.read((char*)&componentCount, sizeof(componentCount));
+
+	for (int i = 0; i < componentCount; ++i)
+	{
+		int16_t componentName;
+		int32_t componentSize;
+
+		_stream.read((char*)&componentName, sizeof(componentName));
+		_stream.read((char*)&componentSize, sizeof(componentSize));
+
+		Reserve((VertexComponent)componentName, componentSize);
+	}
+
+	_stream.read((char*)_Data.data(), _Size * sizeof(float));
 }
 
 

@@ -33,6 +33,8 @@
     <ClInclude Include="Types.hpp" />
     <ClInclude Include="UUID.hpp" />
     <ClInclude Include="Vec3.hpp" />
+    <ClInclude Include="_MeshData.hpp" />
+    <ClInclude Include="_ObjParser.hpp" />
     <ClInclude Include="_Point.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +44,8 @@
     <ClCompile Include="MtlParser.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="_MeshData.cpp" />
+    <ClCompile Include="_ObjParser.cpp" />
     <ClCompile Include="_Point.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -10,21 +10,12 @@
 #include "Light.hpp"
 #include "RotateAround.hpp"
 #include "CameraFlyAroundController.hpp"
+
+#include "_ObjParser.hpp"
 OGL_Shader g_Shader;
 void
 INIT_TEST_SCENE()
 {
-	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.vs", GL_VERTEX_SHADER);
-	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
-	g_Shader.LinkShaders();
-
-	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/shaderDuQ.vs", GL_VERTEX_SHADER);
-	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/fsDuQ.fs", GL_FRAGMENT_SHADER);
-	//g_Shader.LinkShaders();
-
-	ObjParser parser;
-	MultiMeshData data;
-
 	//std::string name = "../Resources/MODELS/_zero_model/zero";
 	std::string name = "../Resources/MODELS/_ciri_model/ciri";
 	//std::string name = "../Resources/MODELS/_door_whatever/door";
@@ -33,6 +24,34 @@ INIT_TEST_SCENE()
 	//std::string name = "../Resources/MODELS/sphere";
 	//std::string name = "../Resources/MODELS/Blade";
 	//std::string name = "../Resources/MODELS/ciri";
+	
+	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.vs", GL_VERTEX_SHADER);
+	g_Shader.LoadShaderAndCompile("../Resources/SHADERS/IlluminationShader.fs", GL_FRAGMENT_SHADER);
+	g_Shader.LinkShaders();
+
+	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/shaderDuQ.vs", GL_VERTEX_SHADER);
+	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/fsDuQ.fs", GL_FRAGMENT_SHADER);
+	//g_Shader.LinkShaders();
+
+	{
+		refactor::ObjParser parser;
+		refactor::MultiMeshData data;
+
+		if (!std::fstream(name + ".mys").good())
+		{
+			parser.ParseFile(name + ".obj");
+			data = parser.GenerateMeshData(true);
+			data.Serialize(name + ".mys");
+		}
+		else
+		{
+			data.Deserialize(name + ".mys");
+		}
+	}
+
+	ObjParser parser;
+	MultiMeshData data;
+
 
 	if (!std::fstream(name + ".mys").good())
 	{
