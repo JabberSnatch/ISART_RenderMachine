@@ -42,6 +42,7 @@
     <ClCompile Include="MtlParser.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="_Point.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEF35BD6-E9E7-4BBD-BA62-9BD50682A265}</ProjectGuid>

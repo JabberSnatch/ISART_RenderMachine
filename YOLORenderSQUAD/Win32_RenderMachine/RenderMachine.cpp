@@ -40,16 +40,20 @@ void				ImGui_RenderWrapper(ImDrawData* _data);
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
-	refactor::Point A(3, 2, 3);
-	refactor::Point B(3, 2, 3);
 	float a[] = { 1.f, 2.f, 3.f };
 	float b[] = { 2.f, 3.f, 1.f };
+	refactor::Point A(3, 2, 3);
+	refactor::Point B(3, 2, 3);
+	refactor::Point E;
 
 	A.Set(refactor::Point::POSITION, a);
-	B.Set(refactor::Point::POSITION, a);
+	B.Set(refactor::Point::NORMAL, a);
+	E.Set(refactor::Point::TEXTURE, 2, b);
 
 	if (A == B)
 		printf("A == B\n");
+
+	A = B;
 
 	Point C(3, 2, 3);
 	Point D(3, 2, 3);
