@@ -6,6 +6,8 @@
 #include "BoostTokHelper.hpp"
 
 #include "Vec3.hpp"
+#include "Constants.hpp"
+#include "Quaternion.hpp"
 
 
 auto
@@ -43,24 +45,37 @@ MeshData::ComputeNormalSpaces() -> void
 				Vec3 T = (dPosition1 * dUV2.y - dPosition2 * dUV1.y) / r;
 				Vec3 B = (dPosition2 * dUV1.x - dPosition1 * dUV2.x) / r;
 
-				if (T.x == 0.f && T.y == 0.f && T.z == 0.f)
-					T = Vec3(1.0f, 0.f, 0.f);
+				Vec3 N(target[Point::NORMAL][0], target[Point::NORMAL][1], target[Point::NORMAL][2]);
+				Vec3 Nface = dPosition1.cross(dPosition2).normalized();
+				float angle = acos(N.dot(Nface)) * MC::Rad2Deg();
+				Vec3 axis = Nface.cross(N).normalized();
+				Quaternion faceToVertex(angle, axis);
+				
+				T = faceToVertex * T;
+				B = faceToVertex * B;
 
-				Vec3 t(target[Point::TANGENT][0], target[Point::TANGENT][1], target[Point::TANGENT][2]);
-				Vec3 b(target[Point::BITANGENT][0], target[Point::BITANGENT][1], target[Point::BITANGENT][2]);
-
-				T += t;
-				B += b;
+				T = (T - N * N.dot(T)).normalized();
+				float signB = (N.cross(T)).dot(B) < 0.f ? -1.f : 1.f;
+				B = (N.cross(T)).normalized() * signB;
 
 				target.Set(Point::TANGENT, 3, T.ToArray().get());
 				target.Set(Point::BITANGENT, 3, B.ToArray().get());
 
+				//Vec3 t(target[Point::TANGENT][0], target[Point::TANGENT][1], target[Point::TANGENT][2]);
+				//Vec3 b(target[Point::BITANGENT][0], target[Point::BITANGENT][1], target[Point::BITANGENT][2]);
+				//
+				//T += t;
+				//B += b;
+
 				//T = Vec3(1.f, 0.f, 0.f);
 				//B = T;
+
+				int i = 0;
 			}
 		}
 	}
 
+	/*
 	for (int i = 0; i < m_Points.size(); ++i)
 	{
 		Point& target = m_Points[i];
@@ -75,6 +90,7 @@ MeshData::ComputeNormalSpaces() -> void
 		target.Set(Point::TANGENT, 3, T.ToArray().get());
 		target.Set(Point::BITANGENT, 3, B.ToArray().get());
 	}
+	*/
 
 	m_VertexSize = m_Points[0]._Size;
 	m_AttribSizes.push_back(3);

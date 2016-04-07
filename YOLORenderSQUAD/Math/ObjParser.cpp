@@ -67,6 +67,7 @@ ObjParser::ParseFile(std::string const& _path)
 			}
 			else if (*ite == "mtllib")
 			{
+				// TODO: Ensure that materials are parsed the right way, especially for texture files paths
 				m_MtlParser.ParseFile(ExtractFolderFromPath(_path) + *++ite);
 				success = true;
 			}
