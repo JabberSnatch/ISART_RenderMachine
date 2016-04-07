@@ -1,14 +1,12 @@
-#ifndef __REF_MESH_DATA_HPP__
-#define __REF_MESH_DATA_HPP__
+#ifndef __OLD_MESH_DATA_HPP__
+#define __OLD_MESH_DATA_HPP__
 
 #include <cstdint>
 #include <vector>
 
-#include "_Point.hpp"
+#include "_Old_Point.hpp"
 #include "MaterialData.hpp"
-
-// TODO: After refactor remember to remove REF_ from header guard
-namespace refactor {
+namespace old {
 
 
 struct MeshData
@@ -45,7 +43,5 @@ struct MultiMeshData
 	auto	Deserialize(const std::string& _path) -> void;
 };
 
-
-} // refactor
-
-#endif /*__REF_MESH_DATA_HPP__*/
+} // old
+#endif // __OLD_MESH_DATA_HPP__

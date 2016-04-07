@@ -33,6 +33,7 @@ struct MeshData
 	auto	Deserialize(std::fstream& _stream) -> void;
 };
 
+
 struct MultiMeshData
 {
 	std::string					m_Name;
@@ -42,4 +43,5 @@ struct MultiMeshData
 	auto	Deserialize(const std::string& _path) -> void;
 };
 
-#endif // __MESH_DATA_HPP__
+
+#endif /*__MESH_DATA_HPP__*/

@@ -1,111 +1,103 @@
 #include "ObjParser.hpp"
 
-#include <boost/tokenizer.hpp>
-
 #include <fstream>
-#include <algorithm>
+#include <sstream>
+#include <array>
 
-const std::regex 
-ObjParser::Object("o ((\\w* ?)+)");
-const std::regex 
-ObjParser::Face("f (-?\\d+)\\/(-?\\d*)\\/(-?\\d*) (-?\\d+)\\/(-?\\d*)\\/(-?\\d*) (-?\\d+)\\/(-?\\d*)\\/(-?\\d*)");
-const std::regex 
-ObjParser::VertexLine("v [\\s\\S]*");
-const std::regex 
-ObjParser::TextureLine("vt [\\s\\S]*");
-const std::regex 
-ObjParser::NormalLine("vn [\\s\\S]*");
-const std::regex 
-ObjParser::FloatComponent("(-?\\d+(\\.\\d+(E-?\\d+)?)?)");
+#include "Point.hpp"
 
 
-auto
-ObjParser::ParseFile(std::string const& _path) -> void
+void
+ObjParser::ParseFile(std::string const& _path)
 {
-	m_CurrentOBJ.Clear();
+	m_OBJStorage.Clear();
 	m_WorkingData.m_Meshes.clear();
 	m_WorkingData.m_Name = "";
 
 	std::ifstream file(_path);
-	// TODO(samu): file should be closed right away and its content put into a buffer
+	if (!file.good()) return;
+
+	std::stringstream contents;
+	{
+		int length = 0;
+		file.seekg(0, std::ios::end);
+		length = (int)file.tellg();
+		file.seekg(0, std::ios::beg);
+		char* buffer = new char[length];
+		file.read(buffer, length);
+		file.close();
+		contents.str(std::string(buffer));
+	}
 
 	std::string line;
 	int lineIndex = 0;
-	bSeparator separator(" ");
-
-	m_NewMeshGroup();
+	bSeparator space(" ");
+	NewMeshGroup();
 	bool inFirstGroup = true;
-	while (std::getline(file, line))
+
+	while (std::getline(contents, line))
 	{
-		bTokenizer parser(line, separator);
-		auto ite = parser.begin();
+		bTokenizer parser(line, space);
+		bTokenizer::iterator ite = parser.begin();
 		bool success = false;
-		
+
 		if (!ite.at_end())
 		{
 			if (*ite == "v")
-				success = m_ParseFloatGroup(m_CurrentOBJ, m_CurrentOBJ.m_PositionSize, m_CurrentOBJ.m_Positions, ++ite);
-			if (*ite == "vt")
-				success = m_ParseFloatGroup(m_CurrentOBJ, m_CurrentOBJ.m_TexCoordSize, m_CurrentOBJ.m_TexCoords, ++ite);
-			if (*ite == "vn")
-				success = m_ParseFloatGroup(m_CurrentOBJ, m_CurrentOBJ.m_NormalSize, m_CurrentOBJ.m_Normals, ++ite);
-			if (*ite == "f")
+				success = GetFloatGroup(++ite, m_OBJStorage._PositionSize, m_OBJStorage._Positions);
+			else if (*ite == "vt")
+				success = GetFloatGroup(++ite, m_OBJStorage._TexCoordSize, m_OBJStorage._TexCoords);
+			else if (*ite == "vn")
+				success = GetFloatGroup(++ite, m_OBJStorage._NormalSize, m_OBJStorage._Normals);
+			else if (*ite == "f")
 			{
-				success = m_ParseFace(m_CurrentOBJ, ++ite);
+				success = GetFace(++ite);
 				if (success)
-					m_ComputeFaceIndices(m_CurrentOBJ, *m_CurrentMeshData);
+					ComputeFaceIndices(m_CurrentMeshData);
 			}
-			if (*ite == "o")
-				success = m_ParseName(m_CurrentOBJ, ++ite);
-			if (*ite == "g")
+			else if (*ite == "g")
 			{
-				if (inFirstGroup) inFirstGroup = false;
-				else
+				if (!inFirstGroup)
 				{
-					m_FinishCurrentGroup(_path);
-					m_NewMeshGroup();
+					FinishCurrentGroup(_path);
+					NewMeshGroup();
 				}
+				else inFirstGroup = false;
 				success = true;
 			}
-			if (*ite == "mtllib")
+			else if (*ite == "mtllib")
 			{
 				m_MtlParser.ParseFile(ExtractFolderFromPath(_path) + *++ite);
 				success = true;
 			}
-			if (*ite == "usemtl")
+			else if (*ite == "usemtl")
 				success = m_MtlParser.Get(*++ite, m_CurrentMeshData->m_Material);
 		}
 
-		if (!success)
-		{
-			//printf("ObjParser : Line %d did not match.\n", lineIndex);
-		}
 		if (lineIndex % 5000 == 0)
-		{
 			printf("ObjParser : Line %d \n", lineIndex);
-		}
 
 		lineIndex++;
 	}
-	m_FinishCurrentGroup(_path);
-
-	file.close();
+	FinishCurrentGroup(_path);
 }
 
 
-auto
-ObjParser::GenerateMeshData(bool _computeNormalSpaces) -> MultiMeshData&
+MultiMeshData&
+ObjParser::GenerateMeshData(bool _computeNormalSpaces)
 {
 	if (_computeNormalSpaces)
+	{
 		for (auto& mesh : m_WorkingData.m_Meshes)
 			mesh.ComputeNormalSpaces();
-			
+	}
+
 	return m_WorkingData;
 }
 
 
-auto
-ObjParser::ExtractFolderFromPath(std::string const& _path) -> std::string
+std::string
+ObjParser::ExtractFolderFromPath(std::string const& _path)
 {
 	std::string result;
 
@@ -131,26 +123,29 @@ ObjParser::ExtractFolderFromPath(std::string const& _path) -> std::string
 }
 
 
-auto
-ObjParser::m_NewMeshGroup() -> void
+void
+ObjParser::NewMeshGroup()
 {
 	MeshData nextMeshData;
-
 	m_WorkingData.m_Meshes.push_back(nextMeshData);
 	m_CurrentMeshData = &m_WorkingData.m_Meshes[m_WorkingData.m_Meshes.size() - 1];
 }
 
 
-auto
-ObjParser::m_FinishCurrentGroup(const std::string& _path) -> void
+void
+ObjParser::FinishCurrentGroup(std::string const& _path)
 {
-	auto positionSize = m_CurrentOBJ.m_PositionSize;
-	auto texSize = m_CurrentOBJ.m_TexCoordSize;
-	auto normalSize = m_CurrentOBJ.m_NormalSize;
+	auto positionSize = m_OBJStorage._PositionSize;
+	auto texSize = m_OBJStorage._TexCoordSize;
+	auto normalSize = m_OBJStorage._NormalSize;
 
-	m_CurrentMeshData->m_VertexSize = m_CurrentMeshData->m_Points[0].m_Size;
+	m_CurrentMeshData->m_VertexSize = 0;
+	if (m_CurrentMeshData->m_Points.size() > 0)
+		m_CurrentMeshData->m_VertexSize = m_CurrentMeshData->m_Points[0]._Size;
+	
 	m_CurrentMeshData->m_VerticesCount = static_cast<int32_t>(m_CurrentMeshData->m_Points.size());
 	m_CurrentMeshData->m_PolyCount = static_cast<int32_t>(m_CurrentMeshData->m_Indices.size()) / 3;
+	
 	m_CurrentMeshData->m_AttribSizes.push_back(positionSize);
 	m_CurrentMeshData->m_AttribSizes.push_back(texSize);
 	m_CurrentMeshData->m_AttribSizes.push_back(normalSize);
@@ -158,121 +153,124 @@ ObjParser::m_FinishCurrentGroup(const std::string& _path) -> void
 }
 
 
-auto
-ObjParser::m_SetPointData(float* _pointArray, int _index, int _componentSize, std::vector<float>& _componentArray) -> void
+void
+ObjParser::ComputeFaceIndices(MeshData* _mesh)
 {
-	if (_index != UNDEFINED_VALUE)
-	{
-		int localIndex = _index;
-		if (localIndex <= 0) localIndex += (static_cast<int32_t>(_componentArray.size()) / _componentSize) + 1;
+	std::vector<int32_t>&	indices = m_OBJStorage._Indices;
+	int32_t					positionSize = m_OBJStorage._PositionSize;
+	int32_t					texCoordSize = m_OBJStorage._TexCoordSize;
+	int32_t					normalSize = m_OBJStorage._NormalSize;
+	int32_t					positionCount = (int32_t)m_OBJStorage._Positions.size() / positionSize;
+	int32_t					texCoordCount = (int32_t)m_OBJStorage._TexCoords.size() / texCoordSize;
+	int32_t					normalCount = (int32_t)m_OBJStorage._Normals.size() / normalSize;
 
-		int realIndex = (localIndex - 1) * _componentSize;
-		memcpy(_pointArray, &_componentArray[realIndex], _componentSize * sizeof(float));
-	}
-}
-
-
-auto 
-ObjParser::m_ComputeFaceIndices(OBJ& _obj, MeshData& _mesh) -> void
-{
-	auto indices = &_obj.m_Indices;
-	auto positionSize = _obj.m_PositionSize;
-	auto texSize = _obj.m_TexCoordSize;
-	auto normalSize = _obj.m_NormalSize;
-
+	// NOTE: At this point it's assumed that every vertex is 9 float long.
+	// Getting the faces's indices array offset from the current number of indices
 	int faceSize = 9;
-	int faceIndex = ((int)(*indices).size() / faceSize) - 1;
+	int faceIndex = ((int)indices.size() / faceSize) - 1;
 	int valueIndex = faceSize * faceIndex;
 
 	for (int i = valueIndex; i < valueIndex + faceSize; i += 3)
 	{
-		Point candidate(positionSize, texSize, normalSize);
+		Point		candidate(positionSize, texCoordSize, normalSize);
+		int32_t		positionIndex = ComputeArrayOffset(indices[i], positionSize, positionCount);
+		int32_t		texCoordIndex = ComputeArrayOffset(indices[i + 1], texCoordSize, texCoordCount);
+		int32_t		normalIndex = ComputeArrayOffset(indices[i + 2], normalSize, normalCount);
+		
+		if (positionIndex != UNDEFINED_VALUE)
+			candidate.Set(Point::POSITION, &m_OBJStorage._Positions[positionIndex]);
+		if (texCoordIndex != UNDEFINED_VALUE)
+			candidate.Set(Point::TEXTURE, &m_OBJStorage._TexCoords[texCoordIndex]);
+		if (normalIndex != UNDEFINED_VALUE)
+			candidate.Set(Point::NORMAL, &m_OBJStorage._Normals[normalIndex]);
 
-		m_SetPointData(candidate.m_Position, (*indices)[i], positionSize, _obj.m_Positions);
-		m_SetPointData(candidate.m_Texture, (*indices)[i + 1], texSize, _obj.m_TexCoords);
-		m_SetPointData(candidate.m_Normal, (*indices)[i + 2], normalSize, _obj.m_Normals);
-
-		int index;
-		bool found = false;
-		for (index = 0; index < (int)_mesh.m_Points.size() && !found; ++index)
-		{
-			found = (_mesh.m_Points[index] == candidate);
-		}
+		int		index;
+		bool	found = false;
+		for (index = 0; index < (int)_mesh->m_Points.size() && !found; ++index)
+			found = (_mesh->m_Points[index] == candidate);
 
 		if (found)
-			_mesh.m_Indices.push_back(index - 1);
+			_mesh->m_Indices.push_back(index - 1);
 		else
 		{
-			_mesh.m_Points.push_back(candidate);
-			_mesh.m_Indices.push_back(static_cast<uint32_t>(_mesh.m_Points.size()) - 1);
+			_mesh->m_Points.push_back(candidate);
+			_mesh->m_Indices.push_back(static_cast<uint32_t>(_mesh->m_Points.size()) - 1);
 		}
 	}
 }
 
 
-auto 
-ObjParser::m_ParseName(OBJ& _currentOBJ, bIterator _ite) -> bool
+int32_t
+ObjParser::ComputeArrayOffset(int32_t _readIndex, int32_t _componentSize, int32_t _componentCount)
 {
-	std::string name("");
-	
-	while (!_ite.at_end())
-		name += *_ite++;
-
-	_currentOBJ.m_Name = name;
-
-	return true;
-}
-
-
-auto
-ObjParser::m_ParseFace(OBJ& _currentOBJ, bIterator _ite) -> bool
-{
-	int i = 0;
-	while (!_ite.at_end() && i < 3)
+	if (_readIndex != UNDEFINED_VALUE)
 	{
-		bSeparator slashSep("/", "", boost::keep_empty_tokens);
-		bTokenizer faceParser(*_ite, slashSep);
-
-		/*
-		bIterator index = faceParser.begin();
-		for (int j = 0; j < 3; ++j)
-			_currentOBJ.m_Indices.push_back(std::stoi(*index));
-		*/
-		for (auto& index : faceParser)
-		{
-			if (index == "")
-				_currentOBJ.m_Indices.push_back(UNDEFINED_VALUE);
-			else
-				_currentOBJ.m_Indices.push_back(std::stoi(index));
-		}
-
-		_ite++;
-		++i;
+		int32_t arrayOffset;
+		if (_readIndex <= 0)
+			arrayOffset = (_readIndex + _componentCount + 1) * _componentSize;
+		else
+			arrayOffset = (_readIndex - 1) * _componentSize;
+		return arrayOffset;
 	}
-
-	return true;
-}
-
-
-auto 
-ObjParser::m_ParseFloatGroup(OBJ& _currentOBJ, int& _componentSize, std::vector<float>& _componentArray, bIterator _ite) -> bool
-{
-	/*
-	int match_count = 0;
-	{
-		auto itecpy(_ite);
-		while (!itecpy.at_end())
-		{
-			itecpy++; match_count++;
-		}
-	}
-
-	if (_componentSize == UNDEFINED_VALUE)
-		_componentSize = (int)match_count;
 	else
-		if ((int)match_count != _componentSize)
-			return false;
-	*/
+		return _readIndex;
+}
+
+
+bool
+ObjParser::GetFace(bIterator _ite)
+{
+	bSeparator	slash("/", "", boost::keep_empty_tokens);
+	int			i = 0;
+	
+	std::vector<std::array<int32_t, 3>>	readFace;
+
+	while (!_ite.at_end())
+	{
+		bTokenizer	faceParser(*_ite, slash);
+		bIterator	readIndex = faceParser.begin();
+
+		readFace.resize(readFace.size() + 1);
+		for (int i = 0; i < 3; ++i)
+		{
+			int32_t	storedIndex = UNDEFINED_VALUE;
+
+			if (!readIndex.at_end())
+				if (*readIndex != "")
+					storedIndex = (int32_t)std::stoi(*readIndex);
+
+			readFace.back()[i] = storedIndex;
+			++readIndex;
+		}
+		++_ite;
+	}
+	if (readFace.size() < 3) return false;
+
+	// Triangularize any non-triangle face as a triangle fan
+	std::array<int32_t, 3>		pivot = readFace[0];
+	for (int i = 1; i <= readFace.size() - 2; ++i)
+	{
+		std::array<int32_t, 3>	first = readFace[i];
+		std::array<int32_t, 3>	second = readFace[i + 1];
+
+		for (int i = 0; i < 3; ++i)
+			m_OBJStorage._Indices.push_back(pivot[i]);
+		for (int i = 0; i < 3; ++i)
+			m_OBJStorage._Indices.push_back(first[i]);
+		for (int i = 0; i < 3; ++i)
+			m_OBJStorage._Indices.push_back(second[i]);
+	}
+	return true;
+}
+
+
+bool
+ObjParser::GetFloatGroup(bIterator _ite, int& _componentSize, std::vector<float>& _componentArray)
+{
+	// NOTE: The process relies on the fact that we now beforehand what the components sizes will be.
+	//		 The other way to do it would be to base the component size on the first float group read.
+	//	     It would mean that we would have to loop twice over the float group. 
+	//       Once to check if it matches the stored size, and a second time to actually store values.
 
 	int i = 0;
 	while (!_ite.at_end() && i < _componentSize)
@@ -285,103 +283,6 @@ ObjParser::m_ParseFloatGroup(OBJ& _currentOBJ, int& _componentSize, std::vector<
 	{
 		_componentArray.push_back(0.f);
 		++i;
-	}
-
-	return true;
-}
-
-
-auto	
-ObjParser::m_Regex_ParseName(std::smatch const& _match) -> bool
-{
-	m_CurrentOBJ.m_Name = _match[1].str();
-
-	return true;
-}
-
-
-auto	
-ObjParser::m_Regex_ParseFace(std::smatch const& _match) -> bool
-{
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 1; j < 4; ++j)
-		{
-			std::string matchString = _match[j + i * 3].str();
-			if (matchString == "")
-				m_CurrentOBJ.m_Indices.push_back(UNDEFINED_VALUE);
-			else
-				m_CurrentOBJ.m_Indices.push_back(std::stoi(matchString));
-		}
-	}
-
-	return true;
-}
-
-
-auto	
-ObjParser::m_Regex_ParseVertex(std::string const& _line) -> bool
-{
-	std::ptrdiff_t match_count(std::distance(std::sregex_iterator(_line.begin(), _line.end(), FloatComponent),
-											 std::sregex_iterator()));
-	if (m_CurrentOBJ.m_PositionSize == UNDEFINED_VALUE)
-		m_CurrentOBJ.m_PositionSize = (int)match_count;
-	else
-	{
-		if ((int)match_count != m_CurrentOBJ.m_PositionSize)
-			return false;
-	}
-
-	for (auto ite = std::sregex_iterator(_line.begin(), _line.end(), FloatComponent);
-		 ite != std::sregex_iterator(); ++ite)
-	{
-		m_CurrentOBJ.m_Positions.push_back(std::stof(ite->str()));
-	}
-
-	return true;
-}
-
-
-auto	
-ObjParser::m_Regex_ParseTexture(std::string const& _line) -> bool
-{
-	std::ptrdiff_t match_count(std::distance(std::sregex_iterator(_line.begin(), _line.end(), FloatComponent),
-											 std::sregex_iterator()));
-	if (m_CurrentOBJ.m_TexCoordSize == UNDEFINED_VALUE)
-		m_CurrentOBJ.m_TexCoordSize = (int)match_count;
-	else
-	{
-		if ((int)match_count != m_CurrentOBJ.m_TexCoordSize)
-			return false;
-	}
-
-	for (auto ite = std::sregex_iterator(_line.begin(), _line.end(), FloatComponent);
-	ite != std::sregex_iterator(); ++ite)
-	{
-		m_CurrentOBJ.m_TexCoords.push_back(std::stof(ite->str()));
-	}
-
-	return true;
-}
-
-
-auto	
-ObjParser::m_Regex_ParseNormal(std::string const& _line) -> bool
-{
-	std::ptrdiff_t match_count(std::distance(std::sregex_iterator(_line.begin(), _line.end(), FloatComponent),
-											 std::sregex_iterator()));
-	if (m_CurrentOBJ.m_NormalSize == UNDEFINED_VALUE)
-		m_CurrentOBJ.m_NormalSize = (int)match_count;
-	else
-	{
-		if ((int)match_count != m_CurrentOBJ.m_NormalSize)
-			return false;
-	}
-
-	for (auto ite = std::sregex_iterator(_line.begin(), _line.end(), FloatComponent);
-	ite != std::sregex_iterator(); ++ite)
-	{
-		m_CurrentOBJ.m_Normals.push_back(std::stof(ite->str()));
 	}
 
 	return true;

@@ -1,7 +1,4 @@
-#include "_Point.hpp"
-
-
-namespace refactor {
+#include "Point.hpp"
 
 
 Point::Point(int32_t _pos, int32_t _tex, int32_t _norm)
@@ -140,6 +137,24 @@ Point::operator [] (VertexComponent _index)
 }
 
 
+const float*
+Point::operator [] (VertexComponent _index) const
+{
+	// TODO: Implement binary search
+	const float* element = nullptr;
+
+	int index = 0;
+	for (size_t i = 0; i < _Components.size() && element == nullptr; ++i)
+	{
+		if (_Components[i].first == _index)
+			element = &_Data[index];
+		index += _Components[i].second;
+	}
+
+	return element;
+}
+
+
 void
 Point::Serialize(std::fstream& _stream)
 {
@@ -179,6 +194,4 @@ Point::Deserialize(std::fstream& _stream)
 	_stream.read((char*)_Data.data(), _Size * sizeof(float));
 }
 
-
-}
 

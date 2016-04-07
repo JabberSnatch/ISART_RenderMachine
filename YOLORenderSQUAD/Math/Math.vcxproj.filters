@@ -18,9 +18,6 @@
     <ClInclude Include="Matrix.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjParser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Transform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,22 +45,25 @@
     <ClInclude Include="iVec2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshData.hpp">
+    <ClInclude Include="BoostTokHelper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Old_ObjParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Old_MeshData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Old_Point.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Point.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BoostTokHelper.hpp">
+    <ClInclude Include="ObjParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="_Point.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="_ObjParser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="_MeshData.hpp">
+    <ClInclude Include="MeshData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,13 +71,7 @@
     <ClCompile Include="Matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MtlParser.cpp">
@@ -86,13 +80,19 @@
     <ClCompile Include="MaterialData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="_Point.cpp">
+    <ClCompile Include="_Old_ObjParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="_ObjParser.cpp">
+    <ClCompile Include="_Old_MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="_MeshData.cpp">
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

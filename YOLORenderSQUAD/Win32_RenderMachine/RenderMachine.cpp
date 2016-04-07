@@ -34,8 +34,6 @@ IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 void				ImGui_RenderWrapper(ImDrawData* _data);
 
-#include "_Point.hpp"
-#include "Point.hpp"
 
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)

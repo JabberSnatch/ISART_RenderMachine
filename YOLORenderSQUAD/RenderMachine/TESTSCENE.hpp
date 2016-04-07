@@ -10,8 +10,6 @@
 #include "Light.hpp"
 #include "RotateAround.hpp"
 #include "CameraFlyAroundController.hpp"
-
-#include "_ObjParser.hpp"
 OGL_Shader g_Shader;
 void
 INIT_TEST_SCENE()
@@ -33,22 +31,6 @@ INIT_TEST_SCENE()
 	//g_Shader.LoadShaderAndCompile("../Resources/SHADERS/fsDuQ.fs", GL_FRAGMENT_SHADER);
 	//g_Shader.LinkShaders();
 
-	{
-		refactor::ObjParser parser;
-		refactor::MultiMeshData data;
-
-		if (!std::fstream(name + ".mys").good())
-		{
-			parser.ParseFile(name + ".obj");
-			data = parser.GenerateMeshData(true);
-			data.Serialize(name + ".mys");
-		}
-		else
-		{
-			data.Deserialize(name + ".mys");
-		}
-	}
-
 	ObjParser parser;
 	MultiMeshData data;
 
@@ -61,7 +43,9 @@ INIT_TEST_SCENE()
 	}
 	else
 	{
-		data.Deserialize(name + ".mys");
+		parser.LoadDebugBinary("debug.mys");
+		data = parser.GenerateMeshData(true);
+		//data.Deserialize(name + ".mys");
 	}
 
 

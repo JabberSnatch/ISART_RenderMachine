@@ -11,140 +11,72 @@
 auto
 MeshData::ComputeNormalSpaces() -> void
 {
-	// TODO: Compute Tangent and Bitangent average
-	// http://www.terathon.com/code/tangent.html
-
-#if 0
-	int vertexCount = m_Points.size();
-
-	Vec3* tangents = new Vec3[vertexCount * 2];
-	Vec3* bitangents = tangents + vertexCount;
-	memset(tangents, 0, sizeof(Vec3) * vertexCount * 2);
-
-	for (size_t face = 0; face < m_PolyCount; ++face)
-	{
-		int i0 = m_Indices[face * 3];
-		int i1 = m_Indices[face * 3 + 1];
-		int i2 = m_Indices[face * 3 + 2];
-
-		Point target = m_Points[i0];
-		Point next = m_Points[i1];
-		Point previous = m_Points[i2];
-
-		{
-			Vec3 v0(target.m_Position[0], target.m_Position[1], target.m_Position[2]);
-			Vec3 v1(next.m_Position[0], next.m_Position[1], next.m_Position[2]);
-			Vec3 v2(previous.m_Position[0], previous.m_Position[1], previous.m_Position[2]);
-		
-			Vec3 uv0(target.m_Texture[0], target.m_Texture[1], target.m_Texture[2]);
-			Vec3 uv1(next.m_Texture[0], next.m_Texture[1], next.m_Texture[2]);
-			Vec3 uv2(previous.m_Texture[0], previous.m_Texture[1], previous.m_Texture[2]);
-		
-			Vec3 dPosition1 = v1 - v0;
-			Vec3 dPosition2 = v2 - v0;
-			Vec3 dUV1 = uv1 - uv0;
-			Vec3 dUV2 = uv2 - uv0;
-
-			float r = 1.0f / (dUV1.x * dUV2.y - dUV1.y * dUV2.x);
-
-			Vec3 T = ((dPosition1 * dUV2.y - dPosition2 * dUV1.y) * r);
-			Vec3 B = ((dPosition2 * dUV1.x - dPosition1 * dUV2.x) * r);
-		
-			tangents[i0] += T;
-			tangents[i1] += T;
-			tangents[i2] += T;
-
-			bitangents[i0] += B;
-			bitangents[i1] += B;
-			bitangents[i2] += B;
-		}
-	}
-
-	for (int vertex = 0; vertex < vertexCount; ++vertex)
-	{
-		Point target = m_Points[vertex];
-
-		Point result(target.GetPositionSize(), target.GetTextureSize(), 9);
-		memcpy(result.m_Position, target.m_Position, target.GetPositionSize() * sizeof(float));
-		memcpy(result.m_Texture, target.m_Texture, target.GetTextureSize() * sizeof(float));
-		memcpy(result.m_Normal, target.m_Normal, 3 * sizeof(float));
-
-		Vec3 N(result.m_Normal[0], result.m_Normal[1], result.m_Normal[2]);
-		Vec3& t = tangents[vertex];
-		Vec3& b = bitangents[vertex];
-
-		Vec3 T = (t - N * N.dot(t)).normalized();
-		float signB = (N.cross(T)).dot(b) < 0.f ? -1.f : 1.f;
-		Vec3 B = (N.cross(T)).normalized() * signB;
-
-		result.m_Normal[3] = T.x;
-		result.m_Normal[4] = T.y;
-		result.m_Normal[5] = T.z;
-
-		result.m_Normal[6] = B.x;
-		result.m_Normal[7] = B.y;
-		result.m_Normal[8] = B.z;
-		
-		m_Points[vertex] = result;
-	}
-
-	delete[] tangents;
-
-#else
 	for (size_t face = 0; face < m_Indices.size(); face += 3)
 	{
 		for (int point = 0; point < 3; ++point)
 		{
-			Point target = m_Points[m_Indices[face + point]];
+			Point& target = m_Points[m_Indices[face + point]];
+			target.Reserve(Point::TANGENT, 3);
+			target.Reserve(Point::BITANGENT, 3);
 
-			Point next = m_Points[m_Indices[face + ((point + 1) % 3)]];
-			Point previous = m_Points[m_Indices[face + ((point + 2) % 3)]];
-
-			Point result(target.GetPositionSize(), target.GetTextureSize(), 9);
-			memcpy(result.m_Position, target.m_Position, target.GetPositionSize() * sizeof(float));
-			memcpy(result.m_Texture, target.m_Texture, target.GetTextureSize() * sizeof(float));
-			memcpy(result.m_Normal, target.m_Normal, 3 * sizeof(float));
+			Point& next = m_Points[m_Indices[face + ((point + 1) % 3)]];
+			Point& previous = m_Points[m_Indices[face + ((point + 2) % 3)]];
+			//Point& next = m_Points[m_Indices[face + ((point + 1) % 3)]];
+			//Point& previous = m_Points[m_Indices[face + ((point + 2) % 3)]];
 
 			{
-				Vec3 v0(target.m_Position[0], target.m_Position[1], target.m_Position[2]);
-				Vec3 v1(next.m_Position[0], next.m_Position[1], next.m_Position[2]);
-				Vec3 v2(previous.m_Position[0], previous.m_Position[1], previous.m_Position[2]);
-				
-				Vec3 uv0(target.m_Texture[0], target.m_Texture[1], 0.f);
-				Vec3 uv1(next.m_Texture[0], next.m_Texture[1], 0.f);
-				Vec3 uv2(previous.m_Texture[0], previous.m_Texture[1], 0.f);
+				Vec3 v0(target[Point::POSITION][0], target[Point::POSITION][1], target[Point::POSITION][2]);
+				Vec3 v1(next[Point::POSITION][0], next[Point::POSITION][1], next[Point::POSITION][2]);
+				Vec3 v2(previous[Point::POSITION][0], previous[Point::POSITION][1], previous[Point::POSITION][2]);
+
+				Vec3 uv0(target[Point::TEXTURE][0], target[Point::TEXTURE][1], 0.f);
+				Vec3 uv1(next[Point::TEXTURE][0], next[Point::TEXTURE][1], 0.f);
+				Vec3 uv2(previous[Point::TEXTURE][0], previous[Point::TEXTURE][1], 0.f);
 
 				Vec3 dPosition1 = v1 - v0;
 				Vec3 dPosition2 = v2 - v0;
 				Vec3 dUV1 = uv1 - uv0;
 				Vec3 dUV2 = uv2 - uv0;
 
-				float r = 1.0f / (dUV1.x * dUV2.y - dUV1.y * dUV2.x);
+				float r = (dUV1.x * dUV2.y - dUV1.y * dUV2.x);
 
-				Vec3 T = ((dPosition1 * dUV2.y - dPosition2 * dUV1.y) * r).normalized();
-				Vec3 B = ((dPosition2 * dUV1.x - dPosition1 * dUV2.x) * r).normalized();
+				Vec3 T = (dPosition1 * dUV2.y - dPosition2 * dUV1.y) / r;
+				Vec3 B = (dPosition2 * dUV1.x - dPosition1 * dUV2.x) / r;
 
+				if (T.x == 0.f && T.y == 0.f && T.z == 0.f)
+					T = Vec3(1.0f, 0.f, 0.f);
 
-				Vec3 N(result.m_Normal[0], result.m_Normal[1], result.m_Normal[2]);
-				T = (T - N * N.dot(T)).normalized();
-				float signB = (N.cross(T)).dot(B) < 0.f ? -1.f : 1.f;
-				B = (N.cross(T)).normalized() * signB;
+				Vec3 t(target[Point::TANGENT][0], target[Point::TANGENT][1], target[Point::TANGENT][2]);
+				Vec3 b(target[Point::BITANGENT][0], target[Point::BITANGENT][1], target[Point::BITANGENT][2]);
 
-				result.m_Normal[3] = T.x;
-				result.m_Normal[4] = T.y;
-				result.m_Normal[5] = T.z;
+				T += t;
+				B += b;
 
-				result.m_Normal[6] = B.x;
-				result.m_Normal[7] = B.y;
-				result.m_Normal[8] = B.z;
+				target.Set(Point::TANGENT, 3, T.ToArray().get());
+				target.Set(Point::BITANGENT, 3, B.ToArray().get());
+
+				//T = Vec3(1.f, 0.f, 0.f);
+				//B = T;
 			}
-
-			m_Points[m_Indices[face + point]] = result;
 		}
 	}
-#endif
 
-	m_VertexSize = m_Points[0].m_Size;
+	for (int i = 0; i < m_Points.size(); ++i)
+	{
+		Point& target = m_Points[i];
+
+		Vec3 N(target[Point::NORMAL][0], target[Point::NORMAL][1], target[Point::NORMAL][2]);
+		Vec3 B(target[Point::BITANGENT][0], target[Point::BITANGENT][1], target[Point::BITANGENT][2]);
+			
+		Vec3 T = (T - N * N.dot(T)).normalized();
+		float signB = (N.cross(T)).dot(B) < 0.f ? -1.f : 1.f;
+		B = (N.cross(T)).normalized() * signB;
+
+		target.Set(Point::TANGENT, 3, T.ToArray().get());
+		target.Set(Point::BITANGENT, 3, B.ToArray().get());
+	}
+
+	m_VertexSize = m_Points[0]._Size;
 	m_AttribSizes.push_back(3);
 	m_AttribSizes.push_back(3);
 }
@@ -188,18 +120,7 @@ MeshData::Serialize(std::fstream& _stream) -> void
 	int64_t pointsCount = static_cast<int64_t>(m_Points.size());
 	_stream.write((char*)&pointsCount, sizeof(int64_t));
 	for (auto&& point : m_Points)
-	{
-		int32_t posSize, texSize, normSize;
-		posSize = point.GetPositionSize();
-		texSize = point.GetTextureSize();
-		normSize = point.GetNormalSize();
-
-		_stream.write((char*)&posSize, sizeof(int32_t));
-		_stream.write((char*)&texSize, sizeof(int32_t));
-		_stream.write((char*)&normSize, sizeof(int32_t));
-
-		_stream.write((char*)point.m_Position, point.m_Size * sizeof(float));
-	}
+		point.Serialize(_stream);
 
 	int64_t indicesCount;
 	indicesCount = static_cast<int64_t>(m_Indices.size());
@@ -236,14 +157,8 @@ MeshData::Deserialize(std::fstream& _stream) -> void
 	_stream.read((char*)&pointsCount, sizeof(int64_t));
 	for (int64_t i = 0; i < pointsCount; ++i)
 	{
-		int32_t posSize = 0, normSize = 0, texSize = 0;
-		_stream.read((char*)&posSize, sizeof(int32_t));
-		_stream.read((char*)&texSize, sizeof(int32_t));
-		_stream.read((char*)&normSize, sizeof(int32_t));
-
-		Point candidate(posSize, texSize, normSize);
-		_stream.read((char*)candidate.m_Position, candidate.m_Size * sizeof(float));
-
+		Point candidate;
+		candidate.Deserialize(_stream);
 		m_Points.push_back(candidate);
 	}
 
@@ -296,4 +211,5 @@ MultiMeshData::Deserialize(const std::string& _path) -> void
 
 	stream.close();
 }
+
 

@@ -35,7 +35,7 @@ OGL_Mesh::OGL_Mesh(const MeshData& _source)
 	for (size_t i = 0; i < _source.m_Points.size(); ++i)
 	{
 		auto& point = _source.m_Points[i];
-		memcpy(m_Data + i * m_VertexSize, point.m_Position, m_VertexSize * sizeof(float));
+		memcpy(m_Data + i * m_VertexSize, point._Data.data(), m_VertexSize * sizeof(float));
 	}
 
 	FillBuffers();

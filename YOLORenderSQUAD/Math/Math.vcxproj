@@ -24,29 +24,29 @@
     <ClInclude Include="iVec2.hpp" />
     <ClInclude Include="MaterialData.hpp" />
     <ClInclude Include="Matrix.hpp" />
-    <ClInclude Include="MeshData.hpp" />
+    <ClInclude Include="_Old_MeshData.hpp" />
     <ClInclude Include="MtlParser.hpp" />
-    <ClInclude Include="ObjParser.hpp" />
-    <ClInclude Include="Point.hpp" />
+    <ClInclude Include="_Old_ObjParser.hpp" />
+    <ClInclude Include="_Old_Point.hpp" />
     <ClInclude Include="Quaternion.hpp" />
     <ClInclude Include="Transform.hpp" />
     <ClInclude Include="Types.hpp" />
     <ClInclude Include="UUID.hpp" />
     <ClInclude Include="Vec3.hpp" />
-    <ClInclude Include="_MeshData.hpp" />
-    <ClInclude Include="_ObjParser.hpp" />
-    <ClInclude Include="_Point.hpp" />
+    <ClInclude Include="MeshData.hpp" />
+    <ClInclude Include="ObjParser.hpp" />
+    <ClInclude Include="Point.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="MeshData.cpp" />
+    <ClCompile Include="_Old_MeshData.cpp" />
     <ClCompile Include="MtlParser.cpp" />
-    <ClCompile Include="ObjParser.cpp" />
+    <ClCompile Include="_Old_ObjParser.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="_MeshData.cpp" />
-    <ClCompile Include="_ObjParser.cpp" />
-    <ClCompile Include="_Point.cpp" />
+    <ClCompile Include="MeshData.cpp" />
+    <ClCompile Include="ObjParser.cpp" />
+    <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEF35BD6-E9E7-4BBD-BA62-9BD50682A265}</ProjectGuid>

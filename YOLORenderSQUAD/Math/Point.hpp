@@ -1,60 +1,59 @@
 #ifndef __POINT_HPP__
 #define __POINT_HPP__
 
+#include <vector>
+#include <utility>
 #include <cstdint>
-#include <string>
+#include <fstream>
 
 
 struct Point
 {
-	Point(int32_t _pos, int32_t _tex, int32_t _norm)
-		:m_Size(_pos + _tex + _norm)
+	// TODO: Take this enum into account when generating shader attributes
+	enum VertexComponent
 	{
-		m_Position = new float[m_Size];
-		m_Texture = m_Position + _pos;
-		m_Normal = m_Texture + _tex;
-	}
-	Point(const Point& other)
-	{
-		m_Size = other.m_Size;
-		m_Position = new float[m_Size];
-		m_Texture = m_Position + (other.m_Texture - other.m_Position);
-		m_Normal = m_Texture + (other.m_Normal - other.m_Texture);
-		memcpy(m_Position, other.m_Position, m_Size * sizeof(float));
-	}
-	~Point()
-	{
-		delete[] m_Position;
-	}
+		POSITION = 0,
+		TEXTURE,
+		NORMAL,
+		TANGENT,
+		BITANGENT,
+		COLOR,
 
-	float*		m_Position;
-	float*		m_Texture;
-	float*		m_Normal;
-	int32_t		m_Size;
+		VC_COUNT
+	};
+	using VertexComponentVector_t = std::vector<std::pair<VertexComponent, int32_t>>;
 
-	auto	GetPositionSize() const -> int32_t { return static_cast<int32_t>(m_Texture - m_Position); }
-	auto	GetTextureSize() const -> int32_t { return static_cast<int32_t>(m_Normal - m_Texture); }
-	auto	GetNormalSize() const -> int32_t { return m_Size - static_cast<int32_t>(m_Normal - m_Position); }
+	Point() = default;
+	Point(int32_t _pos, int32_t _tex, int32_t _norm);
+	Point(const Point& _other) = default;
+	~Point() = default;
 
-	auto	operator == (const Point& other) const -> bool
-	{
-		return (!memcmp(this->m_Position, other.m_Position, m_Size * sizeof(float)));
-	}
-	auto	operator = (const Point& _other) -> Point&
-	{
-		delete[] m_Position;
+	// TODO: Reserve won't do anything if the component already exists.
+	float*		Reserve(VertexComponent _comp, int32_t _size);
 
-		m_Size = _other.m_Size;
-		m_Position = new float[m_Size];
+	// Shortcut to Reserve and Set a component. It might be the fastest way to set a component value.
+	float*		Set(VertexComponent _comp, int32_t _size, float* _data); 
+	// Copies given data in the vertex array according to the component size. No overflow.
+	float*		Set(VertexComponent _comp, float* _data);
+	// Sets the component at the specified index. Doesn't check for size, so it could overflow.
+	float*		Set(VertexComponent _comp, int _index, float _data);
 
-		memcpy(m_Position, _other.m_Position, m_Size * sizeof(float));
-		m_Texture = m_Position + _other.GetPositionSize();
-		m_Normal = m_Texture + _other.GetTextureSize();
+	int32_t		ComponentSize(VertexComponent _comp) const;
 
-		return *this;
-	}
+	bool		operator == (const Point& _other) const;
+	Point&		operator = (const Point& _other);
+
+	float*			operator [] (VertexComponent _index);
+	const float*	operator [] (VertexComponent _index) const;
+
+	VertexComponentVector_t		_Components;
+	std::vector<float>			_Data;
+	int32_t						_Size = 0;
+
+
+	void	Serialize(std::fstream& _stream);
+	void	Deserialize(std::fstream& _stream);
 };
-
 
 
 #endif // __POINT_HPP__

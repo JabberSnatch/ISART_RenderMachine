@@ -27,19 +27,19 @@ OGL_RenderObject::AddMesh(const MeshData& _source, OGL_Shader* _shader)
 
 	for (Point const& point : _source.m_Points)
 	{
-		if (m_Min.x > point.m_Position[0])
-			m_Min.x = point.m_Position[0];
-		if (m_Min.y > point.m_Position[1])
-			m_Min.y = point.m_Position[1];
-		if (m_Min.z > point.m_Position[2])
-			m_Min.z = point.m_Position[2];
+		if (m_Min.x > point[Point::POSITION][0])
+			m_Min.x = point[Point::POSITION][0];
+		if (m_Min.y > point[Point::POSITION][1])
+			m_Min.y = point[Point::POSITION][1];
+		if (m_Min.z > point[Point::POSITION][2])
+			m_Min.z = point[Point::POSITION][2];
 
-		if (m_Max.x < point.m_Position[0])
-			m_Max.x = point.m_Position[0];
-		if (m_Max.y < point.m_Position[1])
-			m_Max.y = point.m_Position[1];
-		if (m_Max.z < point.m_Position[2])
-			m_Max.z = point.m_Position[2];
+		if (m_Max.x < point[Point::POSITION][0])
+			m_Max.x = point[Point::POSITION][0];
+		if (m_Max.y < point[Point::POSITION][1])
+			m_Max.y = point[Point::POSITION][1];
+		if (m_Max.z < point[Point::POSITION][2])
+			m_Max.z = point[Point::POSITION][2];
 	}
 }
 
