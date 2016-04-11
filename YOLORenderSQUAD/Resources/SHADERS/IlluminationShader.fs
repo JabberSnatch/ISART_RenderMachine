@@ -257,6 +257,12 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 
 void main(void)
 {
+    vec4 halfPosition = fract(gl_FragCoord * 0.5);
+    if ((halfPosition.x < 0.5 && halfPosition.y > 0.5) 
+//        || (halfPosition.x > 0.5 && halfPosition.y < 0.5))
+        )
+        discard;
+
     Input_Material MATERIAL = IN_MATERIAL;
 	
     CPY.v_Normal = IN.v_Normal;
@@ -288,7 +294,7 @@ void main(void)
         vec3 bitangent = cross(IN.v_Normal, IN.v_Tangent);
         mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(IN.v_Bitangent), normalize(IN.v_Normal));
         
-        CPY.v_Normal = normalSpace * normalize((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
+        //CPY.v_Normal = normalSpace * normalize((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
 
         BT = bitangent;
     }
@@ -305,12 +311,13 @@ void main(void)
     if (u_skybox_bound)
     {
         vec3 R = reflect(-CPY.v_ViewDirection, CPY.v_Normal);
-        linearColor = texture(u_skybox, R).xyz / 10.0;
+        //linearColor = texture(u_skybox, R).xyz / 10.0;
     }
 
     //gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
-    gl_FragColor = vec4(abs(CPY.v_Normal), 1.0);
+    //gl_FragColor = vec4(pow(abs(CPY.v_Normal), vec3(2.2)), 1.0);
     //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+    gl_FragColor = vec4(linearColor, 1.0);
     //gl_FragColor = vec4(1.0, 0, 0, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }

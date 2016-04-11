@@ -23,7 +23,11 @@ OGL_Skybox::Render()
 {
 	OGL_Shader* shader = m_Box->GetShader();
 
-	//glDisable(GL_CULL_FACE);
+	GLboolean	CullWasEnabled =	glIsEnabled(GL_CULL_FACE);
+	GLint		FrontFace;			glGetIntegerv(GL_FRONT_FACE, &FrontFace);
+	GLboolean	DepthMask;			glGetBooleanv(GL_DEPTH_WRITEMASK, &DepthMask);
+
+	glDisable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
 	glDepthMask(GL_FALSE);
 
@@ -38,9 +42,9 @@ OGL_Skybox::Render()
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-	glDepthMask(GL_TRUE);
-	glFrontFace(GL_CCW);
-	glEnable(GL_CULL_FACE);
+	if (CullWasEnabled) glEnable(GL_CULL_FACE);
+	if (DepthMask)		glDepthMask(GL_TRUE);
+	glFrontFace(FrontFace);
 }
 
 

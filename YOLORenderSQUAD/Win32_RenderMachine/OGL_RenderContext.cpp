@@ -52,10 +52,11 @@ OGL_RenderContext::Initialize(HWND _window)
 	std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(.5f, .5f, .5f, 1.f);

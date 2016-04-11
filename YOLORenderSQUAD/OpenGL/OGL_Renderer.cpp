@@ -30,6 +30,7 @@ OGL_Renderer::Initialize()
 void
 OGL_Renderer::Render(const Scene* _scene)
 {
+	// TODO: Turn Render warmup phase into a protected function so that it can be used by OGL_DeferredRenderer
 	// Get Camera from scene
 	Camera* camera = _scene->MainCamera();
 	Transform cameraTransform = camera->getNode()->WorldTransform();
@@ -93,6 +94,7 @@ OGL_Renderer::Render(const Scene* _scene)
 }
 
 
+// TODO: Unused, the function is properly implemented in ImGui_OGL_RenderSystem.cpp
 void
 OGL_Renderer::ImGui_RenderDrawLists(ImDrawData* _data)
 {

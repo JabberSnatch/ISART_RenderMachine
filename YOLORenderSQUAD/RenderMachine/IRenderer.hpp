@@ -15,7 +15,6 @@ public:
 
 	virtual void	Initialize() = 0;
 	virtual void	Render(const Scene* _scene) = 0;
-	virtual void	ImGui_RenderDrawLists(ImDrawData* _data) = 0;
 	virtual void	Shutdown() = 0;
 
 	auto	operator = (const IRenderer&) -> IRenderer& = delete;

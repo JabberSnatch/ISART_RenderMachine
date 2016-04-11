@@ -19,6 +19,8 @@ public:
 
 	virtual void Attach(Node* _node);
 
+	// TODO: If colors are in linear space, constant linear and quadratic are useless.
+	//		 Replace them with a single range parameter and implement 1/range^2
 	float	Constant() const { return 1.f; }
 	float	Linear() const { return .22f; }
 	float	Quadratic() const { return 0.20f; }

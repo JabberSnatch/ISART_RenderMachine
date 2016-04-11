@@ -46,13 +46,13 @@ MeshData::ComputeNormalSpaces() -> void
 				Vec3 B = (dPosition2 * dUV1.x - dPosition1 * dUV2.x) / r;
 
 				Vec3 N(target[Point::NORMAL][0], target[Point::NORMAL][1], target[Point::NORMAL][2]);
-				Vec3 Nface = dPosition1.cross(dPosition2).normalized();
-				float angle = acos(N.dot(Nface)) * MC::Rad2Deg();
-				Vec3 axis = Nface.cross(N).normalized();
-				Quaternion faceToVertex(angle, axis);
-				
-				T = faceToVertex * T;
-				B = faceToVertex * B;
+				//Vec3 Nface = dPosition1.cross(dPosition2).normalized();
+				//float angle = acos(N.dot(Nface)) * MC::Rad2Deg();
+				//Vec3 axis = Nface.cross(N).normalized();
+				//Quaternion faceToVertex(angle, axis);
+				//
+				//T = faceToVertex * T;
+				//B = faceToVertex * B;
 
 				T = (T - N * N.dot(T)).normalized();
 				float signB = (N.cross(T)).dot(B) < 0.f ? -1.f : 1.f;
@@ -161,6 +161,8 @@ MeshData::Deserialize(const std::string& _path) -> void
 {
 	std::fstream stream(_path, std::fstream::in | std::fstream::binary);
 	Deserialize(stream);
+	// NOTE: As we extract folder here, any .mys that is not in the same folder as the .obj won't load any texture.
+	// TODO: Should the folder be serialized along with the mesh data ?
 	ExtractFolder(_path);
 	stream.close();
 }

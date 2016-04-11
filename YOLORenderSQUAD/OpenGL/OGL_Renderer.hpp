@@ -34,7 +34,7 @@ public:
 	auto	operator = (const OGL_Renderer&) -> OGL_Renderer& = delete;
 	auto	operator = (OGL_Renderer&&) -> OGL_Renderer& = delete;
 
-private:
+protected:
 	void	BindLightIntoBuffer(const Light& _light, unsigned int _lightIndex) const;
 	GLint	ComputeLightOffset(const Light& _light, unsigned int _lightIndex) const;
 

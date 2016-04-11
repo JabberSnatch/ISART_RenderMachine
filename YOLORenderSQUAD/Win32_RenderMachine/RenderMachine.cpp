@@ -32,7 +32,6 @@ enum E_RENDERER { OPENGL, D3D11, COUNT };
 LRESULT WINAPI		DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam);
 IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
-void				ImGui_RenderWrapper(ImDrawData* _data);
 
 
 int WINAPI 
@@ -313,11 +312,5 @@ CreateRenderer(E_RENDERER _type)
 	return result;
 }
 
-
-void
-ImGui_RenderWrapper(ImDrawData* _data)
-{
-	g_Renderer->ImGui_RenderDrawLists(_data);
-}
 
 
