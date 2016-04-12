@@ -49,7 +49,7 @@ Camera::ViewMatrix() const
 {
 	Matrix result;
 
-	Transform& worldTransform = c_getNode()->WorldTransform();
+	Transform& worldTransform = getNode()->WorldTransform();
 	Vec3 right = worldTransform.Rotation * Vec3::Right();
 	Vec3 up = worldTransform.Rotation * Vec3::Up();
 	Vec3 forward = worldTransform.Rotation * Vec3::Forward();

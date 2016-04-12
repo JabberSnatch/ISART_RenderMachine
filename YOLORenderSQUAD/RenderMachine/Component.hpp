@@ -17,7 +17,7 @@ public:
 
 	utility::UUID	UniqueID() { return m_ID; }
 	Node*	getNode() { return m_Node; }
-	Node*	c_getNode() const { return m_Node; }
+	Node*	getNode() const { return m_Node; }
 
 	auto	operator = (const Component&) -> Component& = delete;
 	auto	operator = (Component&&) -> Component& = delete;

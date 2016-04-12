@@ -30,35 +30,18 @@ OGL_Renderer::Initialize()
 void
 OGL_Renderer::Render(const Scene* _scene)
 {
-	// TODO: Turn Render warmup phase into a protected function so that it can be used by OGL_DeferredRenderer
 	// Get Camera from scene
 	Camera* camera = _scene->MainCamera();
 	Transform cameraTransform = camera->getNode()->WorldTransform();
-	Viewport vp = camera->GetViewport();
-	glViewport(vp.x, vp.y, vp.width, vp.height);
+	SetViewport(camera);
 
 	// Retrieve Perspective and View matrices from it
 	// Bind matrices to buffer
-	glBindBuffer(GL_UNIFORM_BUFFER, m_MatricesBuffer);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 16 * sizeof(GLfloat), camera->PerspectiveMatrix().data);
-	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), camera->ViewMatrix().data);//cameraTransform.GetInverseMatrix().data);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	LoadPVMatrices(camera);
 
 	// For each light in scene
 		// Bind light data to buffer
-	unsigned int lightCounts[Light::COUNT]; memset(lightCounts, 0, Light::COUNT * sizeof(unsigned int));
-	const LightMap_t& lightMap = _scene->LightsMap();
-	for (LightMap_t::const_iterator ite = lightMap.cbegin(); ite != lightMap.cend(); ++ite)
-		BindLightIntoBuffer(*ite->second, lightCounts[ite->second->m_Type]++);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, m_LightsBuffer);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLuint), &lightCounts[Light::DIRECTIONAL]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 1 * sizeof(GLuint), sizeof(GLuint), &lightCounts[Light::POINT]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(GLuint), sizeof(GLuint), &lightCounts[Light::SPOT]);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_BASE, m_LightsBuffer);
-	glBindBufferBase(GL_UNIFORM_BUFFER, MATRICES_BUFFER_BASE, m_MatricesBuffer);
+	LoadLightData(_scene->LightsMap());
 
 	// Lists all used shaders
 	// For each render objects shader
@@ -94,113 +77,6 @@ OGL_Renderer::Render(const Scene* _scene)
 }
 
 
-// TODO: Unused, the function is properly implemented in ImGui_OGL_RenderSystem.cpp
-void
-OGL_Renderer::ImGui_RenderDrawLists(ImDrawData* _data)
-{
-	GLuint VBO, IBO;
-
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &IBO);
-
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_SCISSOR_TEST);
-
-	const float width = ImGui::GetIO().DisplaySize.x;
-	const float height = ImGui::GetIO().DisplaySize.y;
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0.f, width, height, 0.f, -1.f, 1.f);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	for (int n = 0; n < _data->CmdListsCount; ++n)
-	{
-		const ImDrawList*	cmd_list = _data->CmdLists[n];
-		ImDrawIdx*			idx_buffer = cmd_list->IdxBuffer.Data;
-		ImDrawVert*			vtx_buffer = cmd_list->VtxBuffer.Data;
-
-		glBufferData(GL_ARRAY_BUFFER, cmd_list->VtxBuffer.Size * (4 * sizeof(GLfloat) + sizeof(GLint)), vtx_buffer, GL_STREAM_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)(0));
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)(4 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(2 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(2);
-
-		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); ++cmd_i)
-		{
-			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-			unsigned int elem_count = pcmd->ElemCount;
-
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, elem_count * sizeof(GLushort), idx_buffer, GL_STREAM_DRAW);
-
-			if (pcmd->UserCallback)
-				pcmd->UserCallback(cmd_list, pcmd);
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-				glScissor((GLint)pcmd->ClipRect.x, (GLint)(height - pcmd->ClipRect.w),
-						  (GLint)(pcmd->ClipRect.z - pcmd->ClipRect.x), (GLint)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-				glDrawElements(GL_TRIANGLES, elem_count, GL_UNSIGNED_SHORT, nullptr);
-			}
-
-			idx_buffer += elem_count;
-		}
-		/*
-		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); ++cmd_i)
-		{
-			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-			unsigned int elem_count = pcmd->ElemCount;
-			
-			if (pcmd->UserCallback)
-				pcmd->UserCallback(cmd_list, pcmd);
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, (GLuint)pcmd->TextureId);
-				glScissor((GLint)pcmd->ClipRect.x, (GLint)(height - pcmd->ClipRect.w),
-					(GLint)(pcmd->ClipRect.z - pcmd->ClipRect.x), (GLint)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-				
-				glBegin(GL_TRIANGLES);
-				for (int i = 0; i < elem_count; ++i)
-				{
-					ImDrawVert vertex = vtx_buffer[*(idx_buffer + i)];
-					glColor4bv((GLbyte*)&vertex.col);
-					glTexCoord2f(vertex.uv.x, vertex.uv.y);
-					glVertex2f(vertex.pos.x, vertex.pos.y);
-				}
-				glEnd();
-				
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-
-			idx_buffer += elem_count;
-		}
-		*/
-	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-
-	glDisable(GL_SCISSOR_TEST);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &IBO);
-}
-
-
 void
 OGL_Renderer::Shutdown()
 {
@@ -208,6 +84,45 @@ OGL_Renderer::Shutdown()
 		glDeleteBuffers(1, &m_MatricesBuffer);
 	if (m_LightsBuffer)
 		glDeleteBuffers(1, &m_LightsBuffer);
+}
+
+
+void
+OGL_Renderer::SetViewport(const Camera* _camera)
+{
+	Viewport vp = _camera->GetViewport();
+	glViewport(vp.x, vp.y, vp.width, vp.height);
+}
+
+
+void
+OGL_Renderer::LoadPVMatrices(const Camera* _camera)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, m_MatricesBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 16 * sizeof(GLfloat), _camera->PerspectiveMatrix().data);
+	glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), _camera->ViewMatrix().data);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, MATRICES_BUFFER_BASE, m_MatricesBuffer);
+}
+
+
+void
+OGL_Renderer::LoadLightData(const LightMap_t& _lights)
+{
+	unsigned int lightCounts[Light::COUNT]; 
+	memset(lightCounts, 0, Light::COUNT * sizeof(unsigned int));
+
+	for (LightMap_t::const_iterator ite = _lights.cbegin(); ite != _lights.cend(); ++ite)
+		BindLightIntoBuffer(*ite->second, lightCounts[ite->second->m_Type]++);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, m_LightsBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLuint), &lightCounts[Light::DIRECTIONAL]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 1 * sizeof(GLuint), sizeof(GLuint), &lightCounts[Light::POINT]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(GLuint), sizeof(GLuint), &lightCounts[Light::SPOT]);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_BUFFER_BASE, m_LightsBuffer);
 }
 
 

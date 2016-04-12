@@ -23,7 +23,9 @@ public:
 		POSITION = 0,
 		NORMAL,
 		DIFFUSE_SPEC,
-		RENDER_TARGET_COUNT
+
+		DEPTH,
+		RENDER_TARGET_COUNT,
 	};
 
 	struct RenderTargetDesc
@@ -43,7 +45,7 @@ public:
 	virtual void	Render(const Scene* _scene) override;
 	virtual void	Shutdown() override;
 
-	void	Resize(int _width, int _height) {};
+	void	Resize(int _width, int _height);
 	
 	// TODO: Implement these if we find a use to making the DeferredRenderer tweakable
 	//void	EnableRenderTargets(unsigned int _mask);
@@ -59,20 +61,15 @@ private:
 	int		m_Width;
 	int		m_Height;
 
+	void	AllocateRenderTextures();
+	void	FreeRenderTextures();
+
 	GLuint	m_FrameBuffer = 0;
 	GLuint	m_RenderTextures[RENDER_TARGET_COUNT];
 
 
+	// NOTE: Defined in .cpp
 	static const RenderTargetDesc AvailableTargets[RENDER_TARGET_COUNT];
-};
-
-
-const OGL_DeferredRenderer::RenderTargetDesc
-OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
-{
-	{POSITION, GL_RGB32F, GL_RGB, GL_FLOAT},
-	{NORMAL, GL_RGB32F, GL_RGB, GL_FLOAT},
-	{DIFFUSE_SPEC, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE}
 };
 
 

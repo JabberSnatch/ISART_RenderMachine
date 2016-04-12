@@ -28,7 +28,6 @@ public:
 
 	void			ComputePerspective();
 	const Matrix&	PerspectiveMatrix() const;
-	// Watch out for the FOUR matrices creations and assignment
 	Matrix			ViewMatrix() const;
 
 	void	CenterOnBounds(Vec3 _min, Vec3 _max);
@@ -43,7 +42,7 @@ public:
 		ComputePerspective();
 	}
 
-	const Viewport&	GetViewport() { return m_Viewport; }
+	const Viewport&	GetViewport() const { return m_Viewport; }
 
 	auto	operator = (const Camera&) -> Camera& = delete;
 	auto	operator = (Camera&&) -> Camera& = delete;

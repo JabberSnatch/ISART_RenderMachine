@@ -28,13 +28,18 @@ public:
 
 	virtual void	Initialize();
 	virtual void	Render(const Scene* _scene);
-	virtual void	ImGui_RenderDrawLists(ImDrawData* _data);
 	virtual void	Shutdown();
 
 	auto	operator = (const OGL_Renderer&) -> OGL_Renderer& = delete;
 	auto	operator = (OGL_Renderer&&) -> OGL_Renderer& = delete;
 
 protected:
+	// These are utility function to be used during the render phase
+	void	SetViewport(const Camera* _camera);
+	void	LoadPVMatrices(const Camera* _camera);
+	void	LoadLightData(const LightMap_t& _lights);
+
+	// Utility functions for loading lights into buffer
 	void	BindLightIntoBuffer(const Light& _light, unsigned int _lightIndex) const;
 	GLint	ComputeLightOffset(const Light& _light, unsigned int _lightIndex) const;
 

@@ -34,6 +34,8 @@ IRenderer*			CreateRenderer(E_RENDERER _type);
 IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 
 
+#include "OGL_DeferredRenderer.hpp"
+
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
@@ -65,92 +67,95 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 			0, 0, _hInstance, 0);
 
 		if (!hWnd)
-		{
 			printf("Window creation failed.\n");
-			goto __SHUTDOWN;
-		}
 	}
 
-	IRenderContext* context = CreateContext(OPENGL, hWnd);
-	g_Renderer = CreateRenderer(OPENGL);
+	if (hWnd)
+	{
+		IRenderContext* context = CreateContext(OPENGL, hWnd);
+		g_Renderer = CreateRenderer(OPENGL);
 	
-	DEVICE->Initialize(width, height);
-	DEVICE->SetRenderContext(context);
-	DEVICE->SetRenderer(g_Renderer);
-	//DEVICE->OGL_SETUP();
+		OGL_DeferredRenderer test;
+		test.Resize(1920, 1080);
+		test.Initialize();
 
-	INIT_TEST_SCENE();
+		DEVICE->Initialize(width, height);
+		DEVICE->SetRenderContext(context);
+		DEVICE->SetRenderer(g_Renderer);
+		//DEVICE->OGL_SETUP();
 
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)width, (float)height);
-		io.DeltaTime = 1.f / 60.f;
-		io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
-		io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
-		io.KeyMap[ImGuiKey_Tab] = VK_TAB;
-		io.KeyMap[ImGuiKey_Home] = VK_HOME;
-		io.KeyMap[ImGuiKey_End] = VK_END;
-		io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
-		io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
-		io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
-		io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
-		io.KeyMap[ImGuiKey_A] = 'A';
-		io.KeyMap[ImGuiKey_C] = 'C';
-		io.KeyMap[ImGuiKey_V] = 'V';
-		io.KeyMap[ImGuiKey_X] = 'X';
-		io.KeyMap[ImGuiKey_Y] = 'Y';
-		io.KeyMap[ImGuiKey_Z] = 'Z';
-		io.RenderDrawListsFn = ImGui_OGL_RenderDrawLists;
-
-		ImGui_OGL_InitResources();
-	}
-
-
-	// RUN LOOP
-	MSG msg = { 0 };
-	while (msg.message != WM_QUIT)
-	{
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		INIT_TEST_SCENE();
 
 		{
 			ImGuiIO& io = ImGui::GetIO();
+			io.DisplaySize = ImVec2((float)width, (float)height);
+			io.DeltaTime = 1.f / 60.f;
+			io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
+			io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
+			io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
+			io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
+			io.KeyMap[ImGuiKey_Tab] = VK_TAB;
+			io.KeyMap[ImGuiKey_Home] = VK_HOME;
+			io.KeyMap[ImGuiKey_End] = VK_END;
+			io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
+			io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+			io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
+			io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+			io.KeyMap[ImGuiKey_A] = 'A';
+			io.KeyMap[ImGuiKey_C] = 'C';
+			io.KeyMap[ImGuiKey_V] = 'V';
+			io.KeyMap[ImGuiKey_X] = 'X';
+			io.KeyMap[ImGuiKey_Y] = 'Y';
+			io.KeyMap[ImGuiKey_Z] = 'Z';
+			io.RenderDrawListsFn = ImGui_OGL_RenderDrawLists;
 
-			BYTE keystate[256];
-			GetKeyboardState(keystate);
-			for (int i = 0; i < 256; ++i)
-				io.KeysDown[i] = (keystate[i] & 0x80) != 0;
-			io.KeyCtrl = (keystate[VK_CONTROL] & 0x80) != 0;
-			io.KeyAlt = (keystate[VK_MENU] & 0x80) != 0;
-			io.KeyShift = (keystate[VK_SHIFT] & 0x80) != 0;
-
-			iVec2& mousePos = INPUT->MousePosition();
-			io.MousePos = ImVec2((float)mousePos.x, (float)mousePos.y);
-			io.MouseDown[0] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_LEFT);
-			io.MouseDown[1] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_RIGHT);
-			io.MouseDown[2] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_MIDDLE);
-			io.MouseWheel = 0.f;
+			ImGui_OGL_InitResources();
 		}
-		ImGui::NewFrame();
-		//ImGui::ShowTestWindow();
 
-		DEVICE->Update(1. / 60.);
-		DEVICE->Render();
+
+		// RUN LOOP
+		MSG msg = { 0 };
+		while (msg.message != WM_QUIT)
+		{
+			while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+
+			{
+				ImGuiIO& io = ImGui::GetIO();
+
+				BYTE keystate[256];
+				GetKeyboardState(keystate);
+				for (int i = 0; i < 256; ++i)
+					io.KeysDown[i] = (keystate[i] & 0x80) != 0;
+				io.KeyCtrl = (keystate[VK_CONTROL] & 0x80) != 0;
+				io.KeyAlt = (keystate[VK_MENU] & 0x80) != 0;
+				io.KeyShift = (keystate[VK_SHIFT] & 0x80) != 0;
+
+				iVec2& mousePos = INPUT->MousePosition();
+				io.MousePos = ImVec2((float)mousePos.x, (float)mousePos.y);
+				io.MouseDown[0] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_LEFT);
+				io.MouseDown[1] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_RIGHT);
+				io.MouseDown[2] = INPUT->IsMouseButtonDown(EMOUSE_BUTTON::MOUSE_MIDDLE);
+				io.MouseWheel = 0.f;
+			}
+			ImGui::NewFrame();
+			//ImGui::ShowTestWindow();
+
+			DEVICE->Update(1. / 60.);
+			DEVICE->Render();
 		
-		ImGui::Render();
-		DEVICE->SwapBuffers();
+			ImGui::Render();
+			DEVICE->SwapBuffers();
+		}
+
+
+		ImGui_OGL_FreeResources();
+		DEVICE->Shutdown();
 	}
 
-
-	ImGui_OGL_FreeResources();
-	DEVICE->Shutdown();
-
-__SHUTDOWN:
 	UnregisterClass(AppName, wc.hInstance);
 
 	return 0;
