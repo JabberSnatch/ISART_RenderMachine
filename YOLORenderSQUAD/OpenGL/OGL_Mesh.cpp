@@ -179,28 +179,6 @@ OGL_Mesh::Render(bool _shaderEnabled) -> void
 }
 
 
-//TODELETE
-/*
-auto
-OGL_Mesh::Render(GLuint _pvMatricesBuffer) -> void
-{
-	if (!m_Initialized) return;
-
-	if (m_Shader)
-	{
-		m_Shader->EnableShader();
-
-		glUniformBlockBinding(m_Shader->GetProgram(), glGetUniformBlockIndex(m_Shader->GetProgram(), "pvMatrices"), 42);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 42, _pvMatricesBuffer);
-
-		glUniformMatrix4fv(m_Shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, m_Transform.GetMatrix().data);
-	}
-
-	Render(true);
-}
-*/
-
-
 auto
 OGL_Mesh::FillBuffers() -> void
 {

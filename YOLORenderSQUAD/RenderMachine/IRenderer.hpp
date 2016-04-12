@@ -17,6 +17,8 @@ public:
 	virtual void	Render(const Scene* _scene) = 0;
 	virtual void	Shutdown() = 0;
 
+	virtual void	Resize(int _width, int _height) = 0;
+
 	auto	operator = (const IRenderer&) -> IRenderer& = delete;
 	auto	operator = (IRenderer&&) -> IRenderer& = delete;
 };

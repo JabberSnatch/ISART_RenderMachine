@@ -30,6 +30,8 @@ OGL_Renderer::Initialize()
 void
 OGL_Renderer::Render(const Scene* _scene)
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Get Camera from scene
 	Camera* camera = _scene->MainCamera();
 	Transform cameraTransform = camera->getNode()->WorldTransform();

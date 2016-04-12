@@ -42,7 +42,9 @@ public:
 	{ return m_ShaderResources[PROGRAM] != _other.m_ShaderResources[PROGRAM]; }
 
 private:
-	GLuint m_ShaderResources[RESOURCES_COUNT] = { 0 };
+	bool	m_IsLinked = false;
+
+	GLuint	m_ShaderResources[RESOURCES_COUNT] = { 0 };
 
 };
 

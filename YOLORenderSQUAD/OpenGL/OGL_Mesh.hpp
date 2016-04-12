@@ -27,10 +27,12 @@ public:
 	OGL_Mesh(const OGL_Mesh&);
 	OGL_Mesh(OGL_Mesh&&);
 	~OGL_Mesh();
-
+	
+	// TODO: OGL_Mesh should not have a render function. 
+	//		 Instead it should have a way to give its related data to a parent caller
+	//		 that would define a function Render(OGL_Mesh) or something.
+	//		 In this case, where are the material and texture going ?
 	auto	Render(bool _shaderEnabled = false) -> void;
-	//TODELETE
-	//auto	Render(GLuint _pvMatricesBuffer) -> void;
 
 	auto	FillBuffers() -> void;
 	auto	FreeOGLResources() -> void;

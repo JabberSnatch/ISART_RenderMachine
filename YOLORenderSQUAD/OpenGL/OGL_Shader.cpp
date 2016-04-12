@@ -16,6 +16,9 @@ OGL_Shader::~OGL_Shader()
 auto
 OGL_Shader::EnableShader() -> void
 {
+	if (!m_IsLinked)
+		LinkShaders();
+
 	glUseProgram(m_ShaderResources[PROGRAM]);
 }
 
@@ -66,34 +69,42 @@ OGL_Shader::LoadShaderAndCompile(std::string _path, GLenum _type) -> void
 auto
 OGL_Shader::LinkShaders() -> void
 {
-	m_ShaderResources[PROGRAM] = glCreateProgram();
-
-	if (m_ShaderResources[VERTEX]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[VERTEX]);
-	if (m_ShaderResources[FRAGMENT]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[FRAGMENT]);
-	if (m_ShaderResources[GEOMETRY]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[GEOMETRY]);
-	glLinkProgram(m_ShaderResources[PROGRAM]);
-
-	GLint linkingFailed = 0;
-	glGetProgramiv(m_ShaderResources[PROGRAM], GL_LINK_STATUS, &linkingFailed);
-
-	if (linkingFailed == GL_FALSE)
+	if (!m_IsLinked)
 	{
-		GLint size = 0;
-		GLint returnedSize = 0;
-		glGetProgramiv(m_ShaderResources[PROGRAM], GL_INFO_LOG_LENGTH, &size);
+		m_ShaderResources[PROGRAM] = glCreateProgram();
 
-		char* log = new char[size];
-		glGetProgramInfoLog(m_ShaderResources[PROGRAM], size, &returnedSize, log);
-		std::cout << log << std::endl;
+		if (m_ShaderResources[VERTEX]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[VERTEX]);
+		if (m_ShaderResources[FRAGMENT]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[FRAGMENT]);
+		if (m_ShaderResources[GEOMETRY]) glAttachShader(m_ShaderResources[PROGRAM], m_ShaderResources[GEOMETRY]);
+		glLinkProgram(m_ShaderResources[PROGRAM]);
+
+		GLint linkingFailed = 0;
+		glGetProgramiv(m_ShaderResources[PROGRAM], GL_LINK_STATUS, &linkingFailed);
+
+		if (linkingFailed == GL_FALSE)
+		{
+			GLint size = 0;
+			GLint returnedSize = 0;
+			glGetProgramiv(m_ShaderResources[PROGRAM], GL_INFO_LOG_LENGTH, &size);
+
+			char* log = new char[size];
+			glGetProgramInfoLog(m_ShaderResources[PROGRAM], size, &returnedSize, log);
+			std::cout << log << std::endl;
+		}
+
+		glValidateProgram(m_ShaderResources[PROGRAM]);
 	}
 
-	glValidateProgram(m_ShaderResources[PROGRAM]);
+	m_IsLinked = true;
 }
 
 
 auto
 OGL_Shader::GetShaderAttrib(std::string _name) -> GLint
 {
+	if (!m_IsLinked)
+		printf("Getting shader attrib on a unlinked program, please enable the shader.\n");
+
 	return glGetAttribLocation(m_ShaderResources[PROGRAM], _name.c_str());
 }
 
@@ -101,5 +112,8 @@ OGL_Shader::GetShaderAttrib(std::string _name) -> GLint
 auto
 OGL_Shader::GetUniform(std::string _name) -> GLint
 {
+	if (!m_IsLinked)
+		printf("Getting shader uniform on a unlinked program, please enable the shader.\n");
+
 	return glGetUniformLocation(m_ShaderResources[PROGRAM], _name.c_str());
 }

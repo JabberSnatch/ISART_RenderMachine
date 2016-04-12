@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\DEFERRED">
+      <UniqueIdentifier>{d6fa41e8-59a7-4573-8bb8-913747b698ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OGL_Mesh.cpp">
@@ -120,6 +123,30 @@
     </None>
     <None Include="..\Resources\SHADERS\DrawNormals.vs">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Geometry.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Geometry.vs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_PostProcessing.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_PostProcessing.gs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_BlinnPhong.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_BlinnPhong.vs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.vs">
+      <Filter>Resource Files\DEFERRED</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -30,6 +30,8 @@ public:
 	virtual void	Render(const Scene* _scene);
 	virtual void	Shutdown();
 
+	virtual void	Resize(int _width, int _height) override {}
+
 	auto	operator = (const OGL_Renderer&) -> OGL_Renderer& = delete;
 	auto	operator = (OGL_Renderer&&) -> OGL_Renderer& = delete;
 

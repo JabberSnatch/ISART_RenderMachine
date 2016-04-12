@@ -76,12 +76,12 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		g_Renderer = CreateRenderer(OPENGL);
 	
 		OGL_DeferredRenderer test;
-		test.Resize(1920, 1080);
+		test.Resize(width, height);
 		test.Initialize();
 
 		DEVICE->Initialize(width, height);
 		DEVICE->SetRenderContext(context);
-		DEVICE->SetRenderer(g_Renderer);
+		DEVICE->SetRenderer(&test);
 		//DEVICE->OGL_SETUP();
 
 		INIT_TEST_SCENE();

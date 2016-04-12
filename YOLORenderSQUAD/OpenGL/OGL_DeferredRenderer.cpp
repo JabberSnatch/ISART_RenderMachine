@@ -1,5 +1,7 @@
 #include "OGL_DeferredRenderer.hpp"
 
+#include "IRenderObject.hpp"
+#include "OGL_RenderObject.hpp"
 #include "Camera.hpp"
 
 
@@ -9,7 +11,7 @@ OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
 	{ POSITION, GL_RGB32F, GL_RGB, GL_FLOAT },
 	{ NORMAL, GL_RGB32F, GL_RGB, GL_FLOAT },
 	{ DIFFUSE_SPEC, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE },
-	{ DEPTH, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24 }
+	{ DEPTH, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT }
 };
 
 
@@ -26,6 +28,12 @@ OGL_DeferredRenderer::Initialize()
 	if (checkResult != GL_FRAMEBUFFER_COMPLETE)
 		printf("Error : Incomplete framebuffer \n");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.vs", GL_VERTEX_SHADER);
+	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.fs", GL_FRAGMENT_SHADER);
+
+	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
+	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.fs", GL_FRAGMENT_SHADER);
 }
 
 
@@ -41,14 +49,55 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	// Bind matrices to buffer
 	LoadPVMatrices(camera);
 
-	// For each light in scene
-	// Bind light data to buffer
-	LoadLightData(_scene->LightsMap());
+	//// For each light in scene
+	//// Bind light data to buffer
+	//LoadLightData(_scene->LightsMap());
+
+	static GLuint attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+	glDrawBuffers(3, attachments);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	const RenderObjectMap_t& renderObjectsMap = _scene->RenderObjectsMap();
+	for (auto& pair : renderObjectsMap)
+	{
+		OGL_RenderObject* object = reinterpret_cast<OGL_RenderObject*>(pair.second);
+		for(auto& mesh : object->Meshes())
+			mesh.SetShader(&m_GeometryPass);
+
+		pair.second->Render();
+	}
+
+
+#if 0
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDrawBuffer(GL_BACK);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FrameBuffer);
+
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glBlitFramebuffer(0, 0, 1280, 740, 0, 0, 640, 370, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	//glReadBuffer(GL_COLOR_ATTACHMENT1);
+	//glBlitFramebuffer(0, 0, 1280, 720, 640, 0, 1280, 360, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return;
+#endif
 
 
 	// Render each object using DeferredIlluminationShader
 	// Render a screen space quad using combination shader
-	DrawScreenQuad();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDrawBuffer(GL_BACK);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	DebugDrawBuffer(POSITION);
 }
 
 
@@ -73,19 +122,30 @@ OGL_DeferredRenderer::Resize(int _width, int _height)
 
 
 void
+OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
+{
+	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
+
+	glDisable(GL_DEPTH_TEST);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE0, m_RenderTextures[_target]);
+
+	m_QuadShader.EnableShader();
+	glUniform1i(m_QuadShader.GetUniform("source"), 0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glUseProgram(0);
+
+	glBindTexture(GL_TEXTURE0, 0);
+
+	if (DepthTest) glEnable(GL_DEPTH_TEST);
+}
+
+
+void
 OGL_DeferredRenderer::DrawScreenQuad()
 {
-	for (int i = 0; i < RENDER_TARGET_COUNT; ++i)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE0 + i, m_RenderTextures[i]);
-	}
-	
-	// Enable appropriate shader
-	// Render quad
 
-	for (int i = 0; i < RENDER_TARGET_COUNT; ++i)
-		glBindTexture(GL_TEXTURE0 + i, 0);
 }
 
 
@@ -115,6 +175,7 @@ OGL_DeferredRenderer::AllocateRenderTextures()
 
 			glBindTexture(GL_TEXTURE_2D, m_RenderTextures[i]);
 			glTexStorage2D(GL_TEXTURE_2D, 1, desc.InternalFormat, m_Width, m_Height);
+			//glTexImage2D(GL_TEXTURE_2D, 0, desc.InternalFormat, m_Width, m_Height, 0, desc.Format, desc.Type, nullptr);
 
 			// TODO ASAP: Logger system
 			auto error = glGetError();

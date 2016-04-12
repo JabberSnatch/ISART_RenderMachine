@@ -211,6 +211,14 @@
     <None Include="..\Resources\SHADERS\BoundingBox.gs" />
     <None Include="..\Resources\SHADERS\BoundingBox.vs" />
     <None Include="..\Resources\SHADERS\defaultShader.gs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_BlinnPhong.fs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_BlinnPhong.vs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Geometry.fs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Geometry.vs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_PostProcessing.fs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_PostProcessing.gs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.fs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.vs" />
     <None Include="..\Resources\SHADERS\DrawNormals.fs" />
     <None Include="..\Resources\SHADERS\DrawNormals.gs" />
     <None Include="..\Resources\SHADERS\DrawNormals.vs" />

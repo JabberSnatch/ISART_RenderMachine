@@ -13,7 +13,7 @@ OGL_RenderObject::Render()
 			glUniformMatrix4fv(shader->GetUniform("u_WorldMatrix"), 1, GL_FALSE, getNode()->WorldTransform().GetMatrix().data);
 		}
 
-		ite->Render();
+		ite->Render(true);
 	}
 }
 

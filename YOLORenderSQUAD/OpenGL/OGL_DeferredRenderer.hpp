@@ -2,6 +2,7 @@
 #define __OGL_DEFERRED_RENDERER_HPP__
 
 #include "OGL_Renderer.hpp"
+#include "OGL_Shader.hpp"
 
 #include "glew/include/GL/glew.h"
 
@@ -45,7 +46,7 @@ public:
 	virtual void	Render(const Scene* _scene) override;
 	virtual void	Shutdown() override;
 
-	void	Resize(int _width, int _height);
+	virtual void	Resize(int _width, int _height) override;
 	
 	// TODO: Implement these if we find a use to making the DeferredRenderer tweakable
 	//void	EnableRenderTargets(unsigned int _mask);
@@ -55,12 +56,17 @@ public:
 	auto	operator = (OGL_DeferredRenderer&&) -> OGL_DeferredRenderer& = delete;
 
 private:
+	void	DebugDrawBuffer(RenderTarget _target);
 	void	DrawScreenQuad();
 
 	// TODO: Probably bring these up to IRenderer class.
 	int		m_Width;
 	int		m_Height;
 
+	OGL_Shader	m_GeometryPass;
+	OGL_Shader	m_QuadShader;
+
+	// NOTE: If we were to make an OGL_FrameBuffer, it would need these.
 	void	AllocateRenderTextures();
 	void	FreeRenderTextures();
 

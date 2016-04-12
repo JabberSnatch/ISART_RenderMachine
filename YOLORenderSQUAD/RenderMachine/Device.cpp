@@ -50,7 +50,8 @@ Device::Update(double _deltaTime)
 void
 Device::Render()
 {
-	m_RenderContext->ClearBuffer();
+	// TODO: It is probably not the render context's job to clear the buffer
+	//m_RenderContext->ClearBuffer();
 
 	m_Renderer->Render(m_CurrentScene);
 }
@@ -63,6 +64,8 @@ Device::SetDimensions(int _width, int _height)
 	m_Height = _height;
 	if (m_CurrentScene)
 		m_CurrentScene->MainCamera()->SetViewport({0, 0, _width, _height});
+	//if (m_Renderer)
+	//	m_Renderer->Resize(_width, _height);
 }
 
 
