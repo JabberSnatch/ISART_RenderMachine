@@ -28,7 +28,7 @@ ObjParser::ParseFile(std::string const& _path) -> void
 	m_WorkingData.m_Name = "";
 
 	std::ifstream file(_path);
-	// TODO(samu): file should be closed right away and its content put into a buffer
+	// NOTE: file should be closed right away and its content put into a buffer
 
 	std::string line;
 	int lineIndex = 0;

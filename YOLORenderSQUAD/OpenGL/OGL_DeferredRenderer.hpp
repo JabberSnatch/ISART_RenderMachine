@@ -56,14 +56,15 @@ public:
 	auto	operator = (OGL_DeferredRenderer&&) -> OGL_DeferredRenderer& = delete;
 
 private:
+	void	LightingPass(const LightMap_t& _lights, const Transform& _cam);
 	void	DebugDrawBuffer(RenderTarget _target);
-	void	DrawScreenQuad();
 
 	// TODO: Probably bring these up to IRenderer class.
 	int		m_Width;
 	int		m_Height;
 
 	OGL_Shader	m_GeometryPass;
+	OGL_Shader	m_LightingPass;
 	OGL_Shader	m_QuadShader;
 
 	// NOTE: If we were to make an OGL_FrameBuffer, it would need these.
@@ -75,6 +76,7 @@ private:
 
 	// NOTE: Defined in .cpp
 	static const RenderTargetDesc AvailableTargets[RENDER_TARGET_COUNT];
+	static std::string	TargetToString(RenderTarget _target);
 };
 
 

@@ -32,6 +32,9 @@ OGL_DeferredRenderer::Initialize()
 	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.vs", GL_VERTEX_SHADER);
 	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.fs", GL_FRAGMENT_SHADER);
 
+	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
+	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_BlinnPhong.fs", GL_FRAGMENT_SHADER);
+
 	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
 	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.fs", GL_FRAGMENT_SHADER);
 }
@@ -45,19 +48,18 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	Transform cameraTransform = camera->getNode()->WorldTransform();
 	SetViewport(camera);
 
-	// Retrieve Perspective and View matrices from it
-	// Bind matrices to buffer
 	LoadPVMatrices(camera);
 
 	//// For each light in scene
 	//// Bind light data to buffer
 	//LoadLightData(_scene->LightsMap());
 
+	// TODO: Use stencil buffer to flag pixels that should be overwritten by sky
 	static GLuint attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 	glDrawBuffers(3, attachments);
-	glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	const RenderObjectMap_t& renderObjectsMap = _scene->RenderObjectsMap();
@@ -71,33 +73,12 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	}
 
 
-#if 0
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDrawBuffer(GL_BACK);
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FrameBuffer);
-
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glBlitFramebuffer(0, 0, 1280, 740, 0, 0, 640, 370, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-	//glReadBuffer(GL_COLOR_ATTACHMENT1);
-	//glBlitFramebuffer(0, 0, 1280, 720, 640, 0, 1280, 360, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	return;
-#endif
-
-
-	// Render each object using DeferredIlluminationShader
-	// Render a screen space quad using combination shader
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDrawBuffer(GL_BACK);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	DebugDrawBuffer(NORMAL);
+	LightingPass(_scene->LightsMap(), cameraTransform);
+	//DebugDrawBuffer(NORMAL);
 }
 
 
@@ -122,6 +103,40 @@ OGL_DeferredRenderer::Resize(int _width, int _height)
 
 
 void
+OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _cam)
+{
+	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
+
+	// TODO: Split lighting shader into one shader per type of light
+	m_LightingPass.EnableShader();
+	for (int i = 0; i < RENDER_TARGET_COUNT; ++i)
+	{
+		std::string targetName = TargetToString((RenderTarget)i);
+		std::string uniformName = "u_" + targetName + "Map";
+
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, m_RenderTextures[i]);
+		glUniform1i(m_LightingPass.GetUniform(uniformName), i);
+	}
+
+	LoadLightData(_lights);
+	glUniform3fv(m_LightingPass.GetUniform("u_ViewPosition"), 1, _cam.Position.ToStdVec().data());
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glUseProgram(0);
+
+	for (int i = 0; i < RENDER_TARGET_COUNT; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	if (DepthTest) glEnable(GL_DEPTH_TEST);
+}
+
+
+void
 OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
 {
 	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
@@ -139,13 +154,6 @@ OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	if (DepthTest) glEnable(GL_DEPTH_TEST);
-}
-
-
-void
-OGL_DeferredRenderer::DrawScreenQuad()
-{
-
 }
 
 
@@ -231,5 +239,24 @@ OGL_DeferredRenderer::FreeRenderTextures()
 		glDrawBuffers(RENDER_TARGET_COUNT, attachments);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+
+std::string
+OGL_DeferredRenderer::TargetToString(RenderTarget _target)
+{
+	switch (_target)
+	{
+	case POSITION:
+		return "Position";
+	case NORMAL:
+		return "Normal";
+	case DIFFUSE_SPEC:
+		return "DiffuseSpec";
+	case DEPTH:
+		return "Depth";
+	default:
+		return "";
 	}
 }

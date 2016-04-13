@@ -12,7 +12,7 @@ namespace old {
 auto
 MeshData::ComputeNormalSpaces() -> void
 {
-	// TODO: Compute Tangent and Bitangent average
+	// NOTE: Compute Tangent and Bitangent average
 	// http://www.terathon.com/code/tangent.html
 
 #if 0

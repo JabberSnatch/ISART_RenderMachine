@@ -178,7 +178,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	//light2->Attach(lightNode);
+	light2->Attach(lightNode);
 	light2->m_Type = Light::DIRECTIONAL;
 	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2->m_Id = Vec3(1.f, 0.f, 0.f);
@@ -187,7 +187,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
-	//light3->Attach(lightNode);
+	light3->Attach(lightNode);
 	light3->m_Type = Light::SPOT;
 	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3->m_Id = Vec3(0.f, 1.f, 0.f);

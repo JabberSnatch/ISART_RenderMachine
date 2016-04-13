@@ -68,4 +68,5 @@ void main()
     o_Position = IN.v_WorldPosition;
     o_Normal = CPY.v_Normal;
     o_DiffuseSpec.xyz = MATERIAL.Kd.xyz;
+    o_DiffuseSpec.w = MATERIAL.Ns;
 }

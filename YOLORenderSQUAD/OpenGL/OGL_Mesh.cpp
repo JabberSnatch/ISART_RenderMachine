@@ -10,7 +10,7 @@
 #include "MaterialData.hpp"
 #include "OGL_TextureLoader.hpp"
 
-// TODO: The OGL_Mesh probably should not know about these four
+// NOTE: The OGL_Mesh probably should not know about these four
 #include "Device.hpp"
 #include "Scene.hpp"
 #include "ISkybox.hpp"
