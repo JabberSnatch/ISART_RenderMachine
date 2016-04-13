@@ -73,7 +73,6 @@ private:
 	GLuint	m_FrameBuffer = 0;
 	GLuint	m_RenderTextures[RENDER_TARGET_COUNT];
 
-
 	// NOTE: Defined in .cpp
 	static const RenderTargetDesc AvailableTargets[RENDER_TARGET_COUNT];
 };

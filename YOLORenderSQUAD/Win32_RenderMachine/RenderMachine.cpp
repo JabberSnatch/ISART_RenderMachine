@@ -39,6 +39,9 @@ IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
+	//std::string muc;
+	//std::cin >> muc;
+
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
 

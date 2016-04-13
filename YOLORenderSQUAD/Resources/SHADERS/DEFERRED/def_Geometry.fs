@@ -1,8 +1,9 @@
 #version 420
 
-layout (location = 0) out vec3 o_Position;
-layout (location = 1) out vec3 o_Normal;
-layout (location = 2) out vec4 o_DiffuseSpec;
+layout(location = 0) out vec3 o_Position;
+layout(location = 1) out vec3 o_Normal;
+layout(location = 2) out vec4 o_DiffuseSpec;
+
 
 struct Input_Material
 {

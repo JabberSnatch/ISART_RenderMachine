@@ -29,19 +29,21 @@ OGL_RenderContext::Initialize(HWND _window)
 
 	if (glewInit() != GLEW_OK)
 		printf("glew failed to initialize.\n");
-	/*
+
 	int glAttribs[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 2,
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+		//WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
+	/*
 	*/
 
 	if (wglewIsSupported("WGL_ARB_create_context") == 1)
 	{
 		HGLRC temp = m_glRenderContext;
-		m_glRenderContext = wglCreateContextAttribsARB(m_DeviceContext, 0, nullptr);// glAttribs);
+		m_glRenderContext = wglCreateContextAttribsARB(m_DeviceContext, 0, glAttribs);
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(temp);
 		wglMakeCurrent(m_DeviceContext, m_glRenderContext);
@@ -51,10 +53,10 @@ OGL_RenderContext::Initialize(HWND _window)
 	std::cout << "Fabriquant : " << glGetString(GL_VENDOR) << std::endl;
 	std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;
 
+	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glDepthFunc(GL_LEQUAL);

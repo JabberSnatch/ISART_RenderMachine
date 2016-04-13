@@ -11,7 +11,7 @@ OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
 	{ POSITION, GL_RGB32F, GL_RGB, GL_FLOAT },
 	{ NORMAL, GL_RGB32F, GL_RGB, GL_FLOAT },
 	{ DIFFUSE_SPEC, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE },
-	{ DEPTH, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT }
+	{ DEPTH, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT }
 };
 
 
@@ -97,7 +97,7 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	glDrawBuffer(GL_BACK);
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	DebugDrawBuffer(POSITION);
+	DebugDrawBuffer(NORMAL);
 }
 
 
@@ -129,14 +129,14 @@ OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
 	glDisable(GL_DEPTH_TEST);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE0, m_RenderTextures[_target]);
-
+	glBindTexture(GL_TEXTURE_2D, m_RenderTextures[_target]);
+	
 	m_QuadShader.EnableShader();
 	glUniform1i(m_QuadShader.GetUniform("source"), 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glUseProgram(0);
-
-	glBindTexture(GL_TEXTURE0, 0);
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	if (DepthTest) glEnable(GL_DEPTH_TEST);
 }
@@ -177,10 +177,20 @@ OGL_DeferredRenderer::AllocateRenderTextures()
 			glTexStorage2D(GL_TEXTURE_2D, 1, desc.InternalFormat, m_Width, m_Height);
 			//glTexImage2D(GL_TEXTURE_2D, 0, desc.InternalFormat, m_Width, m_Height, 0, desc.Format, desc.Type, nullptr);
 
-			// TODO ASAP: Logger system
+			// TODO: GL error display
 			auto error = glGetError();
 			if (error != GL_NO_ERROR)
-				printf("Error when creating a render texture");
+			{
+				printf("Error when creating a render texture : ");
+				if (error == GL_INVALID_OPERATION)
+					printf("INVALID OPERATION\n");
+				else if (error == GL_INVALID_ENUM)
+					printf("INVALID ENUM\n");
+				else if (error == GL_INVALID_VALUE)
+					printf("INVALID VALUE\n");
+				else
+					printf("wat.\n");
+			}
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
