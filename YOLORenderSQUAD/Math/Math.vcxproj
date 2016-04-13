@@ -22,6 +22,7 @@
     <ClInclude Include="BoostTokHelper.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="iVec2.hpp" />
+    <ClInclude Include="Logger.hpp" />
     <ClInclude Include="MaterialData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="_Old_MeshData.hpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="Point.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="_Old_MeshData.cpp" />

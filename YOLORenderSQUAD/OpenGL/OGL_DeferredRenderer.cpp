@@ -15,14 +15,28 @@ OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
 };
 
 
+//OGL_DeferredRenderer::OGL_DeferredRenderer(int _width, int _height)
+//	: m_Framebuffer(_width, _height)
+//{}
+
+
 void
 OGL_DeferredRenderer::Initialize()
 {
 	OGL_Renderer::Initialize();
 
+	//for (int i = 0; i < DEPTH; ++i)
+	//{
+	//	RenderTargetDesc target = AvailableTargets[i];
+	//	m_Framebuffer.EmplaceColorAttachment(TargetToString((RenderTarget)i), target.InternalFormat, GL_COLOR_ATTACHMENT0 + i);
+	//}
+	//
+	//m_Framebuffer.SetDepthStencilAttachment(AvailableTargets[DEPTH].InternalFormat, GL_DEPTH_ATTACHMENT);
+	//m_Framebuffer.ValidateFramebuffer();
+	
 	glGenFramebuffers(1, &m_FrameBuffer);
 	AllocateRenderTextures();
-
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 	GLenum checkResult = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (checkResult != GL_FRAMEBUFFER_COMPLETE)
@@ -55,10 +69,14 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	//LoadLightData(_scene->LightsMap());
 
 	// TODO: Use stencil buffer to flag pixels that should be overwritten by sky
+	
 	static GLuint attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 	glDrawBuffers(3, attachments);
+	
+	//m_Framebuffer.Bind();
+	//m_Framebuffer.Activate();
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -95,6 +113,8 @@ OGL_DeferredRenderer::Shutdown()
 void
 OGL_DeferredRenderer::Resize(int _width, int _height)
 {
+	//m_Framebuffer.Resize(_width, _height);
+
 	FreeRenderTextures();
 	m_Width = _width;
 	m_Height = _height;
@@ -118,6 +138,8 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, m_RenderTextures[i]);
 		glUniform1i(m_LightingPass.GetUniform(uniformName), i);
+		
+		//const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(targetName);
 	}
 
 	LoadLightData(_lights);

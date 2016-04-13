@@ -183,6 +183,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="OGL_DeferredRenderer.cpp" />
+    <ClCompile Include="OGL_ErrorLog.cpp" />
+    <ClCompile Include="OGL_Framebuffer.cpp" />
     <ClCompile Include="OGL_Light.cpp" />
     <ClCompile Include="OGL_Mesh.cpp" />
     <ClCompile Include="OGL_Model.cpp" />
@@ -195,6 +197,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OGL_DeferredRenderer.hpp" />
+    <ClInclude Include="OGL_ErrorLog.hpp" />
+    <ClInclude Include="OGL_Framebuffer.hpp" />
     <ClInclude Include="OGL_InstancedMesh.hpp" />
     <ClInclude Include="OGL_Light.hpp" />
     <ClInclude Include="OGL_Mesh.hpp" />

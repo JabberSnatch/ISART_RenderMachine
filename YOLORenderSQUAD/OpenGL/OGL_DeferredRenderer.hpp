@@ -3,6 +3,7 @@
 
 #include "OGL_Renderer.hpp"
 #include "OGL_Shader.hpp"
+#include "OGL_Framebuffer.hpp"
 
 #include "glew/include/GL/glew.h"
 
@@ -38,6 +39,7 @@ public:
 	};
 
 	OGL_DeferredRenderer() = default;
+	//OGL_DeferredRenderer(int _width, int _height);
 	OGL_DeferredRenderer(const OGL_DeferredRenderer&) = delete;
 	OGL_DeferredRenderer(OGL_DeferredRenderer&&) = delete;
 	virtual ~OGL_DeferredRenderer() = default;
@@ -66,6 +68,8 @@ private:
 	OGL_Shader	m_GeometryPass;
 	OGL_Shader	m_LightingPass;
 	OGL_Shader	m_QuadShader;
+
+	//OGL_Framebuffer	m_Framebuffer;
 
 	// NOTE: If we were to make an OGL_FrameBuffer, it would need these.
 	void	AllocateRenderTextures();
