@@ -9,8 +9,8 @@ class OGL_ErrorLog
 {
 public:
 
-	inline static bool			PrintGLError(const std::string& _message);
-	inline static std::string	GLToString(GLenum _errorCode);
+	static bool			PrintGLError(const std::string& _message);
+	static std::string	GLToString(GLenum _errorCode);
 
 
 	OGL_ErrorLog() = delete;
@@ -23,7 +23,11 @@ public:
 };
 
 
+#ifdef _DEBUG
 #define OGL_ERROR_LOG(message) OGL_ErrorLog::PrintGLError(message)
+#else
+#define OGL_ERROR_LOG(message) glGetError() == GL_NO_ERROR
+#endif
 
 
 #endif /*__OGL_ERROR_LOG_HPP__*/

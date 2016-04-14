@@ -18,9 +18,10 @@ class OGL_Framebuffer
 public:
 	struct RenderTargetDesc
 	{
-		GLuint	TargetName;
-		GLenum	Format;
-		GLenum	AttachmentPoint;
+		bool	Valid = false;
+		GLuint	TargetName = 0;
+		GLenum	Format = 0;
+		GLenum	AttachmentPoint = 0;
 	};
 	typedef std::map<std::string, OGL_Framebuffer::RenderTargetDesc> RenderTargetMap_t;
 
@@ -47,6 +48,8 @@ public:
 	void	Resize(int _width, int _height);
 
 	bool	ValidateFramebuffer();
+
+	void	ClearAllAttachments();
 
 	void					SetDepthStencilAttachment(GLenum _format, GLenum _attachment);
 	const RenderTargetDesc*	GetDepthStencilAttachment() const;

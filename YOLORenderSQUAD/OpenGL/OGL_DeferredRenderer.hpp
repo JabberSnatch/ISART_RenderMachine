@@ -12,20 +12,12 @@ class OGL_DeferredRenderer
 	:public OGL_Renderer
 {
 public:
-	enum RenderTargetMask
-	{
-		NONE = 0,
-		POSITION_MASK = 0x1,
-		NORMAL_MASK = 0x2,
-		DIFFUSE_SPEC_MASK = 0x4
-	};
-
 	enum RenderTarget
 	{
 		POSITION = 0,
 		NORMAL,
 		DIFFUSE_SPEC,
-
+	
 		DEPTH,
 		RENDER_TARGET_COUNT,
 	};
@@ -39,7 +31,7 @@ public:
 	};
 
 	OGL_DeferredRenderer() = default;
-	//OGL_DeferredRenderer(int _width, int _height);
+	OGL_DeferredRenderer(int _width, int _height);
 	OGL_DeferredRenderer(const OGL_DeferredRenderer&) = delete;
 	OGL_DeferredRenderer(OGL_DeferredRenderer&&) = delete;
 	virtual ~OGL_DeferredRenderer() = default;
@@ -50,10 +42,6 @@ public:
 
 	virtual void	Resize(int _width, int _height) override;
 	
-	// TODO: Implement these if we find a use to making the DeferredRenderer tweakable
-	//void	EnableRenderTargets(unsigned int _mask);
-	//void	AllocateBuffers();
-
 	auto	operator = (const OGL_DeferredRenderer&) -> OGL_DeferredRenderer& = delete;
 	auto	operator = (OGL_DeferredRenderer&&) -> OGL_DeferredRenderer& = delete;
 
@@ -69,14 +57,7 @@ private:
 	OGL_Shader	m_LightingPass;
 	OGL_Shader	m_QuadShader;
 
-	//OGL_Framebuffer	m_Framebuffer;
-
-	// NOTE: If we were to make an OGL_FrameBuffer, it would need these.
-	void	AllocateRenderTextures();
-	void	FreeRenderTextures();
-
-	GLuint	m_FrameBuffer = 0;
-	GLuint	m_RenderTextures[RENDER_TARGET_COUNT];
+	OGL_Framebuffer	m_Framebuffer;
 
 	// NOTE: Defined in .cpp
 	static const RenderTargetDesc AvailableTargets[RENDER_TARGET_COUNT];

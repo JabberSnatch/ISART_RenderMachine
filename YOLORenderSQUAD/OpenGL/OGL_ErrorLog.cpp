@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 
 
-inline bool			
+bool			
 OGL_ErrorLog::PrintGLError(const std::string& _message)
 {
 	GLenum error = glGetError();
@@ -15,7 +15,7 @@ OGL_ErrorLog::PrintGLError(const std::string& _message)
 }
 
 
-inline std::string	
+std::string	
 OGL_ErrorLog::GLToString(GLenum _errorCode)
 {
 	switch (_errorCode)

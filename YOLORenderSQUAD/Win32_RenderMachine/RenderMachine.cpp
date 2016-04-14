@@ -39,8 +39,8 @@ IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
-	//std::string muc;
-	//std::cin >> muc;
+	std::string muc;
+	std::cin >> muc;
 
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
@@ -78,8 +78,9 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 		IRenderContext* context = CreateContext(OPENGL, hWnd);
 		g_Renderer = CreateRenderer(OPENGL);
 	
-		OGL_DeferredRenderer test;
-		test.Resize(width, height);
+		//OGL_DeferredRenderer test;
+		//test.Resize(width, height);
+		OGL_DeferredRenderer test(width, height);
 		test.Initialize();
 
 		DEVICE->Initialize(width, height);

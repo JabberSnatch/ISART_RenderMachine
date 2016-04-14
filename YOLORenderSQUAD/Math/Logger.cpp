@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-inline void		
+void		
 Logger::Log(LogLevel _level, const std::string& _message)
 {
 	if (_level < CurrentLevel)
@@ -11,7 +11,7 @@ Logger::Log(LogLevel _level, const std::string& _message)
 }
 
 
-inline std::string	
+std::string	
 Logger::LogLevelToString(LogLevel _level)
 {
 	switch (_level)
