@@ -96,6 +96,8 @@ INIT_TEST_SCENE()
 			data.Deserialize(name + ".mys");
 		}
 
+		data.m_Meshes[0].m_Material.Ns = 10.f;
+
 		Node* modelNode = ROOTNODE->CreateChild();
 		modelNode->LocalTransform().Position = Vec3(0.f, 10.f, 0.f);
 		{
@@ -158,18 +160,22 @@ INIT_TEST_SCENE()
 
 
 	// LIGHTS
-	Node* lightNode = NODEINCUBATOR->Create();
-	Light* light0 = COMPONENTINCUBATOR->Create<Light>();
-	light0->Attach(lightNode);
-	light0->m_Type = Light::DIRECTIONAL;
-	light0->m_Ia = Vec3(.25f, .2f, .15f);
-	light0->m_Id = Vec3(0.8f, 0.75f, 0.75f);
-	light0->m_Is = Vec3(.8f, .8f, .7f);
-	light0->m_Direction = Vec3(0.f, 0.f, 1.f);
+	//Node* lightNode = NODEINCUBATOR->Create();
+	//for (int i = 0; i < 20; ++i)
+	//{
+		Node* lightNode = NODEINCUBATOR->Create();
+		Light* light0 = COMPONENTINCUBATOR->Create<Light>();
+		light0->Attach(lightNode);
+		light0->m_Type = Light::DIRECTIONAL;
+		light0->m_Ia = Vec3(.25f, .2f, .15f);
+		light0->m_Id = Vec3(0.8f, 0.75f, 0.75f);
+		light0->m_Is = Vec3(.8f, .8f, .7f);
+		light0->m_Direction = Vec3(0.f, 0.f, 1.f);
+	//}
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light1 = COMPONENTINCUBATOR->Create<Light>();
-	light1->Attach(lightNode);
+	//light1->Attach(lightNode);
 	light1->m_Type = Light::POINT;
 	light1->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light1->m_Id = Vec3(0.f, 0.f, 1.f);
@@ -178,7 +184,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	light2->Attach(lightNode);
+	//light2->Attach(lightNode);
 	light2->m_Type = Light::DIRECTIONAL;
 	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2->m_Id = Vec3(1.f, 0.f, 0.f);
@@ -187,7 +193,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
-	light3->Attach(lightNode);
+	//light3->Attach(lightNode);
 	light3->m_Type = Light::SPOT;
 	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3->m_Id = Vec3(0.f, 1.f, 0.f);

@@ -13,8 +13,8 @@ OGL_DeferredRenderer::AvailableTargets =
 {
 	{ "Position", GL_RGB32F, GL_COLOR_ATTACHMENT0},
 	{ "Normal", GL_RGB32F, GL_COLOR_ATTACHMENT1 },
-	{ "DiffuseSpec", GL_RGBA8, GL_COLOR_ATTACHMENT2 },
-	{ "PostLighting", GL_RGBA8, GL_COLOR_ATTACHMENT3 },
+	{ "DiffuseSpec", GL_RGBA32F, GL_COLOR_ATTACHMENT2 },
+	{ "PostLighting", GL_RGB32F, GL_COLOR_ATTACHMENT3 },
 	{ "DepthStencil", GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT }
 };
 
@@ -46,9 +46,6 @@ OGL_DeferredRenderer::Initialize()
 	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
 	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_BlinnPhong.fs", GL_FRAGMENT_SHADER);
 
-	//m_SkyboxPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
-	//m_SkyboxPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Skybox.fs", GL_FRAGMENT_SHADER);
-
 	m_SolidBackgroundPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
 	m_SolidBackgroundPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_SolidBG.fs", GL_FRAGMENT_SHADER);
 
@@ -76,6 +73,7 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		m_Framebuffer.Bind();
 		m_Framebuffer.ActivateColorAttachments({ "Position", "Normal", "DiffuseSpec" });
 		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
 		glEnable(GL_STENCIL_TEST);
 		glStencilMask(0xff);
 		glStencilFunc(GL_ALWAYS, 0xf0, 0xff);
@@ -100,6 +98,7 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	{
 		m_Framebuffer.ActivateColorAttachments({ "PostLighting" });
 		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
 		glDisable(GL_STENCIL_TEST);
 
 		LightingPass(_scene->LightsMap(), cameraTransform);
@@ -114,22 +113,10 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		ISkybox* sky = _scene->Skybox();
 		if (sky)
-		{
-			//glDisable(GL_STENCIL_TEST);
-			//glEnable(GL_DEPTH_TEST);
 			sky->Render();
-			//OGL_Skybox* oglSky = (OGL_Skybox*)sky;
-			//GLuint		cubemap = oglSky->Cubemap();
-			//m_SkyboxPass.EnableShader();
-			//// TODO: Add a texture binding.
-			//glActiveTexture(GL_TEXTURE0);
-			//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-			//
-			//glUniform1i(m_SkyboxPass.GetUniform("u_Skybox"), cubemap);
-		}
 		else
 		{
-			Vec3 color(1.f, 0.f, 0.f);
+			Vec3 color(0.23f, 0.45f, 0.67f);
 			m_SolidBackgroundPass.EnableShader();
 			glUniform3fv(m_SolidBackgroundPass.GetUniform("u_Color"), 1, color.ToArray().get());
 		}

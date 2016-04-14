@@ -257,11 +257,11 @@ vec3 ComputeSpecular(Input_Material MATERIAL, bool blinnPhong)
 
 void main(void)
 {
-    vec4 halfPosition = fract(gl_FragCoord * 0.5);
-    if ((halfPosition.x < 0.5 && halfPosition.y > 0.5) 
-//        || (halfPosition.x > 0.5 && halfPosition.y < 0.5))
-        )
-        discard;
+    //vec4 halfPosition = fract(gl_FragCoord * 0.5);
+    //if ((halfPosition.x < 0.5 && halfPosition.y > 0.5) 
+//  //      || (halfPosition.x > 0.5 && halfPosition.y < 0.5))
+    //    )
+    //    discard;
 
     Input_Material MATERIAL = IN_MATERIAL;
 	
@@ -316,8 +316,8 @@ void main(void)
 
     //gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(pow(abs(CPY.v_Normal), vec3(2.2)), 1.0);
-    //gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-    gl_FragColor = vec4(linearColor, 1.0);
+    gl_FragColor = vec4(vec3(MATERIAL.Ns), 1.0);
+    //gl_FragColor = vec4(linearColor, 1.0);
     //gl_FragColor = vec4(1.0, 0, 0, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }

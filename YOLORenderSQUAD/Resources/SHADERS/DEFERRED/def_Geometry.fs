@@ -65,6 +65,11 @@ void main()
         MATERIAL.Kd *= TEX_COLOR.xyz;
     }
 
+    if (u_map_Ks_bound)
+    {
+        MATERIAL.Ns *= 1 - texture(u_map_Ks, IN.v_TexCoords).x;
+    }
+
     o_Position = IN.v_WorldPosition;
     o_Normal = CPY.v_Normal;
     o_DiffuseSpec.xyz = MATERIAL.Kd.xyz;

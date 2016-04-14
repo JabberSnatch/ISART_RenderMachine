@@ -44,7 +44,6 @@ private:
 
 	OGL_Shader	m_GeometryPass;
 	OGL_Shader	m_LightingPass;
-	OGL_Shader	m_SkyboxPass;
 	OGL_Shader	m_SolidBackgroundPass;
 	OGL_Shader	m_QuadShader;
 

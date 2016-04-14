@@ -55,7 +55,7 @@ in vec2 texCoord;
 uniform sampler2D u_PositionMap;
 uniform sampler2D u_NormalMap;
 uniform sampler2D u_DiffuseSpecMap;
-layout(location = 0) out vec4 FragmentColor;
+layout(location = 0) out vec3 FragmentColor;
 
 vec3 WorldPosition;
 vec3 Normal;
@@ -140,8 +140,8 @@ vec3 ComputeSpecular()
         DirectionalLight light = LIGHTS.DirectionalLights[i];
         light.Direction = -normalize(light.Direction);
         
-        vec3 H = normalize((light.Direction + ViewDirection) / length(light.Direction + ViewDirection));
-        specular += Albedo * light.Is * pow(max(dot(Normal, H), 0.0), SpecularIntensity * 4);
+        vec3 H = normalize(light.Direction + ViewDirection);// / length(light.Direction + ViewDirection));
+        specular += Albedo * light.Is * pow(max(dot(Normal, H), 0.0), SpecularIntensity * 4) * max(dot(Normal, light.Direction), 0.0);
     }
 
     for(unsigned int i = 0; i < LIGHTS.PointCount; ++i)
@@ -152,7 +152,7 @@ vec3 ComputeSpecular()
         direction = normalize(direction);
         float intensity = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * pow(distance, 2));
 
-        vec3 H = normalize((direction + ViewDirection) / length(direction + ViewDirection));
+        vec3 H = normalize(direction + ViewDirection);// / length(direction + ViewDirection));
         specular += Albedo * light.Is * intensity * pow(max(dot(Normal, H), 0.0), SpecularIntensity * 4);
     }
 
@@ -167,7 +167,7 @@ vec3 ComputeSpecular()
     
         if (theta >= light.OuterCutoff)
         {
-            vec3 H = normalize((direction + ViewDirection) / length(direction + ViewDirection));
+            vec3 H = normalize(direction + ViewDirection);// / length(direction + ViewDirection));
             specular += Albedo * light.Is * intensity * pow(max(dot(Normal, H), 0.0), SpecularIntensity * 4);
         }
     }
@@ -180,7 +180,7 @@ vec3 ComputeSpecular()
 void main()
 {
     WorldPosition = texture(u_PositionMap, texCoord).xyz;
-    Normal = texture(u_NormalMap, texCoord).xyz;
+    Normal = normalize(texture(u_NormalMap, texCoord).xyz);
     Albedo = texture(u_DiffuseSpecMap, texCoord).xyz;
     SpecularIntensity = texture(u_DiffuseSpecMap, texCoord).w;
     ViewDirection = normalize(u_ViewPosition - WorldPosition);
@@ -191,6 +191,7 @@ void main()
     vec3 specular = ComputeSpecular();
    
 
-    FragmentColor = vec4(ambient + diffuse + specular, 1.0);
-    //FragmentColor = vec4(abs(Normal), 1.0);
+    FragmentColor = ambient + diffuse + specular;
+    //FragmentColor = specular;
+    //FragmentColor = vec4(vec3(SpecularIntensity), 1.0);
 }

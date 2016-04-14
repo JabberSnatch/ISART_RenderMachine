@@ -191,10 +191,6 @@ OGL_Framebuffer::CreateRenderTarget(GLenum _format, GLenum _attachmentPoint)
 
 	glGenTextures(1, &desc.TargetName);
 	glBindTexture(GL_TEXTURE_2D, desc.TargetName);
-	desc.Valid &= OGL_ERROR_LOG("glBindTexture");
-
-	if (_format == GL_RGBA8)
-		LOG_DEBUG("_format is RGBA8");
 	glTexStorage2D(GL_TEXTURE_2D, 1, _format, m_Width, m_Height);
 	desc.Valid &= OGL_ERROR_LOG("glTexStorage2D");
 
