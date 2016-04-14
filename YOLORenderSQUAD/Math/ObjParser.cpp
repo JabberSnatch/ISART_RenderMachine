@@ -268,7 +268,7 @@ ObjParser::GetFace(bIterator _ite)
 bool
 ObjParser::GetFloatGroup(bIterator _ite, int& _componentSize, std::vector<float>& _componentArray)
 {
-	// NOTE: The process relies on the fact that we now beforehand what the components sizes will be.
+	// NOTE: The process relies on the fact that we know beforehand what the components sizes will be.
 	//		 The other way to do it would be to base the component size on the first float group read.
 	//	     It would mean that we would have to loop twice over the float group. 
 	//       Once to check if it matches the stored size, and a second time to actually store values.

@@ -7,6 +7,9 @@
 #include "Camera.hpp"
 #include "OGL_Skybox.hpp"
 
+// TODO: Do not leave imgui here
+#include "imgui.h"
+static float g_Exposure = 1.f;
 
 const std::vector<OGL_DeferredRenderer::RenderTargetParam>
 OGL_DeferredRenderer::AvailableTargets =
@@ -14,7 +17,7 @@ OGL_DeferredRenderer::AvailableTargets =
 	{ "Position", GL_RGB32F, GL_COLOR_ATTACHMENT0},
 	{ "Normal", GL_RGB32F, GL_COLOR_ATTACHMENT1 },
 	{ "DiffuseSpec", GL_RGBA32F, GL_COLOR_ATTACHMENT2 },
-	{ "PostLighting", GL_RGB32F, GL_COLOR_ATTACHMENT3 },
+	{ "PostLighting", GL_RGBA32F, GL_COLOR_ATTACHMENT3 },
 	{ "DepthStencil", GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT }
 };
 
@@ -50,7 +53,7 @@ OGL_DeferredRenderer::Initialize()
 	m_SolidBackgroundPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_SolidBG.fs", GL_FRAGMENT_SHADER);
 
 	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
-	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.fs", GL_FRAGMENT_SHADER);
+	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_ToneMapping.fs", GL_FRAGMENT_SHADER);
 }
 
 
@@ -63,8 +66,6 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	SetViewport(camera);
 
 	LoadPVMatrices(camera);
-
-	// TODO: Use stencil buffer to flag pixels that should be overwritten by sky
 
 	// GEOMETRY PASS
 	// DEPTH
@@ -125,6 +126,8 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		glUseProgram(0);
 	}
 
+
+	ImGui::SliderFloat("Exposure", &g_Exposure, 0.001f, 10.f);
 	// FINAL PASS
 	// NO DEPTH
 	// NO STENCIL
@@ -132,6 +135,7 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDrawBuffer(GL_BACK);
 		glDisable(GL_STENCIL_TEST);
+		glEnable(GL_FRAMEBUFFER_SRGB);
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -139,7 +143,8 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		glBindTexture(GL_TEXTURE_2D, m_Framebuffer.GetColorAttachment("PostLighting")->TargetName);
 
 		m_QuadShader.EnableShader();
-		glUniform1i(m_QuadShader.GetUniform("source"), 0);
+		glUniform1i(m_QuadShader.GetUniform("u_Source"), 0);
+		glUniform1f(m_QuadShader.GetUniform("u_Exposure"), g_Exposure);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glUseProgram(0);

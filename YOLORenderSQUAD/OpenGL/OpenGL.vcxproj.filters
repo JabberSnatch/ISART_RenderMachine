@@ -166,5 +166,11 @@
     <None Include="..\Resources\SHADERS\DEFERRED\def_Skybox.vs">
       <Filter>Resource Files\DEFERRED</Filter>
     </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_ToneMapping.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_ToneMapping.vs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
   </ItemGroup>
 </Project>

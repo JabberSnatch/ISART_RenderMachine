@@ -78,9 +78,33 @@ INIT_TEST_SCENE()
 		model->AddMultiMesh(data, &g_Shader);
 		model->Attach(offsetNode);
 
+		// NOTE: This scale is used for the ciri model that is 849 units high
+		modelNode->LocalTransform().Scale = Vec3(0.002f);
 		// NOTE: We want the camera to focus on this object
-		modelNode->LocalTransform().Scale = Vec3(0.02f);
 		DEVICE->CurrentScene()->MainCamera()->CenterOnBounds(model->Min(), model->Max());
+	}
+
+	{
+		std::string name = "../Resources/MODELS/plane";
+		if (!std::fstream(name + ".mys").good())
+		{
+			parser.ParseFile(name + ".obj");
+			data = parser.GenerateMeshData(true);
+			data.Serialize(name + ".mys");
+		}
+		else
+		{
+			data.Deserialize(name + ".mys");
+		}
+
+		Node* modelNode = ROOTNODE->CreateChild();
+		modelNode->LocalTransform().Position = Vec3(0.f, 0.f, 0.f);
+
+		OGL_RenderObject* model = COMPONENTINCUBATOR->Create<OGL_RenderObject>();
+		model->AddMultiMesh(data, &g_Shader);
+		model->Attach(modelNode);
+
+		modelNode->LocalTransform().Scale = Vec3(10.f);
 	}
 
 	{
@@ -99,7 +123,7 @@ INIT_TEST_SCENE()
 		data.m_Meshes[0].m_Material.Ns = 10.f;
 
 		Node* modelNode = ROOTNODE->CreateChild();
-		modelNode->LocalTransform().Position = Vec3(0.f, 10.f, 0.f);
+		modelNode->LocalTransform().Position = Vec3(0.f, 1.f, 0.f);
 		{
 			RotateAround* controller = COMPONENTINCUBATOR->Create<RotateAround>();
 			controller->speed = 50.f;
@@ -161,7 +185,7 @@ INIT_TEST_SCENE()
 
 	// LIGHTS
 	//Node* lightNode = NODEINCUBATOR->Create();
-	//for (int i = 0; i < 20; ++i)
+	//for (int i = 0; i < 10; ++i)
 	//{
 		Node* lightNode = NODEINCUBATOR->Create();
 		Light* light0 = COMPONENTINCUBATOR->Create<Light>();
@@ -175,7 +199,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light1 = COMPONENTINCUBATOR->Create<Light>();
-	//light1->Attach(lightNode);
+	light1->Attach(lightNode);
 	light1->m_Type = Light::POINT;
 	light1->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light1->m_Id = Vec3(0.f, 0.f, 1.f);
@@ -184,7 +208,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light2 = COMPONENTINCUBATOR->Create<Light>();
-	//light2->Attach(lightNode);
+	light2->Attach(lightNode);
 	light2->m_Type = Light::DIRECTIONAL;
 	light2->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light2->m_Id = Vec3(1.f, 0.f, 0.f);
@@ -193,7 +217,7 @@ INIT_TEST_SCENE()
 
 	lightNode = NODEINCUBATOR->Create();
 	Light* light3 = COMPONENTINCUBATOR->Create<Light>();
-	//light3->Attach(lightNode);
+	light3->Attach(lightNode);
 	light3->m_Type = Light::SPOT;
 	light3->m_Ia = Vec3(0.f, 0.f, 0.f);
 	light3->m_Id = Vec3(0.f, 1.f, 0.f);

@@ -225,6 +225,8 @@
     <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.vs" />
     <None Include="..\Resources\SHADERS\DEFERRED\def_Skybox.fs" />
     <None Include="..\Resources\SHADERS\DEFERRED\def_Skybox.vs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_ToneMapping.fs" />
+    <None Include="..\Resources\SHADERS\DEFERRED\def_ToneMapping.vs" />
     <None Include="..\Resources\SHADERS\DrawNormals.fs" />
     <None Include="..\Resources\SHADERS\DrawNormals.gs" />
     <None Include="..\Resources\SHADERS\DrawNormals.vs" />

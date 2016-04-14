@@ -41,8 +41,8 @@ IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
-	std::string muc;
-	std::cin >> muc;
+	//std::string muc;
+	//std::cin >> muc;
 
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
@@ -190,7 +190,16 @@ DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 		// TODO: There might be some refactor to be done on the whole platform layer
 		if (g_ImGui_Init)
 		{
-			DEVICE->SetDimensions(LOWORD(_lParam), HIWORD(_lParam));
+			int width = LOWORD(_lParam);
+			int height = HIWORD(_lParam);
+
+			DEVICE->SetDimensions(width, height);
+			ImGuiIO& io = ImGui::GetIO();
+			io.DisplaySize = ImVec2((float)width, (float)height);
+
+			ImGui_OGL_FreeResources();
+			ImGui_OGL_InitResources();
+
 			ImGui::NewFrame();
 			DEVICE->Update(1. / 60.);
 			DEVICE->Render();
