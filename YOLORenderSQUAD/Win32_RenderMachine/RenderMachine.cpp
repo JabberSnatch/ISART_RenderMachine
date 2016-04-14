@@ -26,6 +26,8 @@
 static const wchar_t	AppName[] = { L"RenderMachine" };
 static const wchar_t	WindowName[] = { L"YOLORenderSQUAD" };
 static IRenderer*		g_Renderer = nullptr;
+static bool				g_ImGui_Init = false;
+
 
 enum E_RENDERER { OPENGL, D3D11, COUNT };
 
@@ -39,14 +41,14 @@ IRenderContext*		CreateContext(E_RENDERER _type, HWND _window);
 int WINAPI 
 WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow)
 {
-	std::string muc;
-	std::cin >> muc;
+	//std::string muc;
+	//std::cin >> muc;
 
 	WNDCLASS wc = { 0 };
 	HWND hWnd;
 
 	const int width = 1280;
-	const int height = 740;
+	const int height = 720;
 	{
 		{
 			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -77,18 +79,6 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 	{
 		IRenderContext* context = CreateContext(OPENGL, hWnd);
 		g_Renderer = CreateRenderer(OPENGL);
-	
-		//OGL_DeferredRenderer test;
-		//test.Resize(width, height);
-		OGL_DeferredRenderer test(width, height);
-		test.Initialize();
-
-		DEVICE->Initialize(width, height);
-		DEVICE->SetRenderContext(context);
-		DEVICE->SetRenderer(&test);
-		//DEVICE->OGL_SETUP();
-
-		INIT_TEST_SCENE();
 
 		{
 			ImGuiIO& io = ImGui::GetIO();
@@ -114,7 +104,20 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 			io.RenderDrawListsFn = ImGui_OGL_RenderDrawLists;
 
 			ImGui_OGL_InitResources();
+		
+			g_ImGui_Init = true;
 		}
+	
+		//OGL_DeferredRenderer test;
+		//test.Resize(width, height);
+		OGL_DeferredRenderer test(width, height);
+		test.Initialize();
+
+		DEVICE->Initialize(width, height);
+		DEVICE->SetRenderContext(context);
+		DEVICE->SetRenderer(&test);
+
+		INIT_TEST_SCENE();
 
 
 		// RUN LOOP
@@ -181,10 +184,18 @@ DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-	case WM_WINDOWPOSCHANGED:
+	case WM_SIZE:
 	{
-		WINDOWPOS* position = (WINDOWPOS*)_lParam;
-		DEVICE->SetDimensions(position->cx - 16, position->cy - 19);
+		// TODO: There might be some refactor to be done on the whole platform layer
+		if (g_ImGui_Init)
+		{
+			DEVICE->SetDimensions(LOWORD(_lParam), HIWORD(_lParam));
+			ImGui::NewFrame();
+			DEVICE->Update(1. / 60.);
+			DEVICE->Render();
+			ImGui::Render();
+			DEVICE->SwapBuffers();
+		}
 	} break;
 	case WM_KEYDOWN:
 	case WM_KEYUP:

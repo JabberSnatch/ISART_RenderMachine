@@ -6,7 +6,7 @@
 void		
 Logger::Log(LogLevel _level, const std::string& _message)
 {
-	if (_level < CurrentLevel)
+	if (_level <= CurrentLevel)
 		std::cout << "[" << LogLevelToString(_level) << "] " << _message << std::endl;
 }
 
@@ -34,4 +34,8 @@ Logger::LogLevelToString(LogLevel _level)
 }
 
 
+#ifdef _DEBUG
 Logger::LogLevel Logger::CurrentLevel = LOG_DEBUG;
+#else
+Logger::LogLevel Logger::CurrentLevel = LOG_ERROR;
+#endif

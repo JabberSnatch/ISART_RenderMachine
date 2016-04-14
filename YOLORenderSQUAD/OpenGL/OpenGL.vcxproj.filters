@@ -160,5 +160,11 @@
     <None Include="..\Resources\SHADERS\DEFERRED\def_Quad.vs">
       <Filter>Resource Files\DEFERRED</Filter>
     </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Skybox.fs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
+    <None Include="..\Resources\SHADERS\DEFERRED\def_Skybox.vs">
+      <Filter>Resource Files\DEFERRED</Filter>
+    </None>
   </ItemGroup>
 </Project>

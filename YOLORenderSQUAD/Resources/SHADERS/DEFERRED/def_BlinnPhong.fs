@@ -55,7 +55,7 @@ in vec2 texCoord;
 uniform sampler2D u_PositionMap;
 uniform sampler2D u_NormalMap;
 uniform sampler2D u_DiffuseSpecMap;
-out vec4 FragmentColor;
+layout(location = 0) out vec4 FragmentColor;
 
 vec3 WorldPosition;
 vec3 Normal;

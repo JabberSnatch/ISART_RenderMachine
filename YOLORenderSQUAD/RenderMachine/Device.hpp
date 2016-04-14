@@ -50,6 +50,8 @@ public:
 	auto	operator = (Device&&) -> Device& = delete;
 
 private:
+	bool	m_Init = false;
+
 	int		m_Width;
 	int		m_Height;
 

@@ -17,6 +17,8 @@ Device::Initialize(int _width, int _height)
 	Camera* camera = m_CurrentScene->MainCamera();
 	camera->Initialize({ 0, 0, _width, _height });
 	camera->ComputePerspective();
+
+	m_Init = true;
 }
 
 
@@ -39,6 +41,8 @@ Device::Shutdown()
 void
 Device::Update(double _deltaTime)
 {
+	if (!m_Init) return;
+
 	const DynamicObjectMap_t& objectsMap = m_CurrentScene->DynamicObjectsMap();
 	for (DynamicObjectMap_t::const_iterator ite = objectsMap.cbegin(); ite != objectsMap.cend(); ++ite)
 		(*ite).second->Update(_deltaTime);
@@ -50,6 +54,7 @@ Device::Update(double _deltaTime)
 void
 Device::Render()
 {
+	if (!m_Init) return;
 	// TODO: It is probably not the render context's job to clear the buffer
 	//m_RenderContext->ClearBuffer();
 
@@ -60,12 +65,15 @@ Device::Render()
 void
 Device::SetDimensions(int _width, int _height)
 {
-	m_Width = _width;
-	m_Height = _height;
-	if (m_CurrentScene)
-		m_CurrentScene->MainCamera()->SetViewport({0, 0, _width, _height});
-	//if (m_Renderer)
-	//	m_Renderer->Resize(_width, _height);
+	if (_width != m_Width || _height != m_Height)
+	{
+		m_Width = _width;
+		m_Height = _height;
+		if (m_CurrentScene)
+			m_CurrentScene->MainCamera()->SetViewport({0, 0, _width, _height});
+		if (m_Renderer)
+			m_Renderer->Resize(_width, _height);
+	}
 }
 
 

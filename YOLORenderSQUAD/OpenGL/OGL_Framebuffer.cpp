@@ -34,9 +34,9 @@ OGL_Framebuffer::Activate() const
 void
 OGL_Framebuffer::ActivateColorAttachments(std::initializer_list<std::string> _targets) const
 {
-	const std::string* ite = _targets.begin();
 	std::vector<GLenum> attachments;
-	while (ite != _targets.end())
+
+	for (const std::string* ite = _targets.begin(); ite != _targets.end(); ++ite)
 	{
 		const RenderTargetDesc* target = GetColorAttachment(*ite);
 		if (target)
@@ -59,11 +59,24 @@ OGL_Framebuffer::Resize(int _width, int _height)
 {
 	m_Width = _width;
 	m_Height = _height;
-	RenderTargetMap_t copy = m_RenderTargets;
+	
+	m_IsValid = false;
+	{
+		RenderTargetMap_t copy = m_RenderTargets;
+		RemoveAllColorAttachment();
 
-	m_RenderTargets.clear();
-	for (RenderTargetMap_t::iterator ite = copy.begin(); ite != copy.end(); ++ite)
-		EmplaceColorAttachment(ite->first, ite->second.Format, ite->second.AttachmentPoint);
+		for (RenderTargetMap_t::iterator ite = copy.begin(); ite != copy.end(); ++ite)
+			EmplaceColorAttachment(ite->first, ite->second.Format, ite->second.AttachmentPoint);
+	}
+
+	{
+		RenderTargetDesc copy = m_DepthStencil;
+		RemoveDepthStencilAttachment();
+
+		SetDepthStencilAttachment(copy.Format, copy.AttachmentPoint);
+	}
+
+	ValidateFramebuffer();
 }
 
 
@@ -127,6 +140,7 @@ OGL_Framebuffer::EmplaceColorAttachment(const std::string& _name, GLenum _format
 	RenderTargetMap_t::iterator findResult = m_RenderTargets.find(_name);
 	if (findResult == m_RenderTargets.end())
 	{
+		LOG_DEBUG("Creating color attachment " + _name);
 		RenderTargetDesc desc = CreateRenderTarget(_format, _attachmentPoint);
 		if (desc.Valid)
 			m_RenderTargets.emplace(_name, desc);
@@ -158,6 +172,7 @@ OGL_Framebuffer::RemoveAllColorAttachment()
 	for (RenderTargetMap_t::iterator ite = m_RenderTargets.begin(); ite != m_RenderTargets.end(); ++ite)
 		glDeleteTextures(1, &ite->second.TargetName);
 
+
 	m_RenderTargets.clear();
 }
 
@@ -167,6 +182,8 @@ OGL_Framebuffer::CreateRenderTarget(GLenum _format, GLenum _attachmentPoint)
 {
 	Bind();
 
+	OGL_ERROR_LOG("Before CreateRenderTarget");
+
 	RenderTargetDesc desc;
 	desc.Valid = true;
 	desc.AttachmentPoint = _attachmentPoint;
@@ -174,13 +191,20 @@ OGL_Framebuffer::CreateRenderTarget(GLenum _format, GLenum _attachmentPoint)
 
 	glGenTextures(1, &desc.TargetName);
 	glBindTexture(GL_TEXTURE_2D, desc.TargetName);
+	desc.Valid &= OGL_ERROR_LOG("glBindTexture");
+
+	if (_format == GL_RGBA8)
+		LOG_DEBUG("_format is RGBA8");
 	glTexStorage2D(GL_TEXTURE_2D, 1, _format, m_Width, m_Height);
-	desc.Valid &= OGL_ERROR_LOG("Creating a render texture");
+	desc.Valid &= OGL_ERROR_LOG("glTexStorage2D");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, _attachmentPoint, GL_TEXTURE_2D, desc.TargetName, 0);
-	desc.Valid &= OGL_ERROR_LOG("Binding a render texture to a framebuffer");
+	desc.Valid &= OGL_ERROR_LOG("glFramebufferTexture2D");
+
+	if (!desc.Valid)
+		glDeleteTextures(1, &desc.TargetName);
 
 	Unbind();
 

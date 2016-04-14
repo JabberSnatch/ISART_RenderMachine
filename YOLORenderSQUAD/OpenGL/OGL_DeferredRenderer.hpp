@@ -15,7 +15,8 @@ public:
 	struct RenderTargetParam
 	{
 		std::string		Identifier;
-		GLuint			InternalFormat;
+		GLenum			InternalFormat;
+		GLenum			AttachmentPoint;
 	};
 
 	OGL_DeferredRenderer(int _width, int _height);
@@ -43,6 +44,8 @@ private:
 
 	OGL_Shader	m_GeometryPass;
 	OGL_Shader	m_LightingPass;
+	OGL_Shader	m_SkyboxPass;
+	OGL_Shader	m_SolidBackgroundPass;
 	OGL_Shader	m_QuadShader;
 
 	OGL_Framebuffer	m_Framebuffer;

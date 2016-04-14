@@ -5,15 +5,17 @@
 #include "IRenderObject.hpp"
 #include "OGL_RenderObject.hpp"
 #include "Camera.hpp"
+#include "OGL_Skybox.hpp"
 
 
 const std::vector<OGL_DeferredRenderer::RenderTargetParam>
 OGL_DeferredRenderer::AvailableTargets =
 {
-	{ "Position", GL_RGB32F },
-	{ "Normal", GL_RGB32F },
-	{ "DiffuseSpec", GL_RGBA8 },
-	{ "Depth", GL_DEPTH_COMPONENT24 }
+	{ "Position", GL_RGB32F, GL_COLOR_ATTACHMENT0},
+	{ "Normal", GL_RGB32F, GL_COLOR_ATTACHMENT1 },
+	{ "DiffuseSpec", GL_RGBA8, GL_COLOR_ATTACHMENT2 },
+	{ "PostLighting", GL_RGBA8, GL_COLOR_ATTACHMENT3 },
+	{ "DepthStencil", GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT }
 };
 
 
@@ -29,10 +31,13 @@ OGL_DeferredRenderer::Initialize()
 
 	for (size_t i = 0; i < AvailableTargets.size() - 1; ++i)
 	{
-		RenderTargetParam target = AvailableTargets[i];
-		m_Framebuffer.EmplaceColorAttachment(target.Identifier, target.InternalFormat, GL_COLOR_ATTACHMENT0 + (int)i);
+		const RenderTargetParam& target = AvailableTargets[i];
+		m_Framebuffer.EmplaceColorAttachment(target.Identifier, target.InternalFormat, target.AttachmentPoint);
 	}
-	m_Framebuffer.SetDepthStencilAttachment((--AvailableTargets.end())->InternalFormat, GL_DEPTH_ATTACHMENT);
+	{
+		const RenderTargetParam& target = *(--AvailableTargets.end());
+		m_Framebuffer.SetDepthStencilAttachment(target.InternalFormat, target.AttachmentPoint);
+	}
 	m_Framebuffer.ValidateFramebuffer();
 	
 	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.vs", GL_VERTEX_SHADER);
@@ -40,6 +45,12 @@ OGL_DeferredRenderer::Initialize()
 
 	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
 	m_LightingPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_BlinnPhong.fs", GL_FRAGMENT_SHADER);
+
+	//m_SkyboxPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
+	//m_SkyboxPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Skybox.fs", GL_FRAGMENT_SHADER);
+
+	m_SolidBackgroundPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
+	m_SolidBackgroundPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_SolidBG.fs", GL_FRAGMENT_SHADER);
 
 	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.vs", GL_VERTEX_SHADER);
 	m_QuadShader.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Quad.fs", GL_FRAGMENT_SHADER);
@@ -57,29 +68,97 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	LoadPVMatrices(camera);
 
 	// TODO: Use stencil buffer to flag pixels that should be overwritten by sky
-	
-	m_Framebuffer.Bind();
-	m_Framebuffer.Activate();
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	const RenderObjectMap_t& renderObjectsMap = _scene->RenderObjectsMap();
-	for (auto& pair : renderObjectsMap)
+	// GEOMETRY PASS
+	// DEPTH
+	// STENCIL
 	{
-		OGL_RenderObject* object = reinterpret_cast<OGL_RenderObject*>(pair.second);
-		for(auto& mesh : object->Meshes())
-			mesh.SetShader(&m_GeometryPass);
+		m_Framebuffer.Bind();
+		m_Framebuffer.ActivateColorAttachments({ "Position", "Normal", "DiffuseSpec" });
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_STENCIL_TEST);
+		glStencilMask(0xff);
+		glStencilFunc(GL_ALWAYS, 0xf0, 0xff);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		pair.second->Render();
+		const RenderObjectMap_t& renderObjectsMap = _scene->RenderObjectsMap();
+		for (auto& pair : renderObjectsMap)
+		{
+			OGL_RenderObject* object = reinterpret_cast<OGL_RenderObject*>(pair.second);
+			for(auto& mesh : object->Meshes())
+				mesh.SetShader(&m_GeometryPass);
+
+			pair.second->Render();
+		}
 	}
 
+	// LIGHTING PASS
+	// NO DEPTH 
+	// NO STENCIL
+	{
+		m_Framebuffer.ActivateColorAttachments({ "PostLighting" });
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_STENCIL_TEST);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDrawBuffer(GL_BACK);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	LightingPass(_scene->LightsMap(), cameraTransform);
-	//DebugDrawBuffer(NORMAL);
+		LightingPass(_scene->LightsMap(), cameraTransform);
+	}
+	
+	// BACKGROUND PASS
+	// NO DEPTH
+	// STENCIL
+	{
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_NOTEQUAL, 0xf0, 0xff);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		ISkybox* sky = _scene->Skybox();
+		if (sky)
+		{
+			//glDisable(GL_STENCIL_TEST);
+			//glEnable(GL_DEPTH_TEST);
+			sky->Render();
+			//OGL_Skybox* oglSky = (OGL_Skybox*)sky;
+			//GLuint		cubemap = oglSky->Cubemap();
+			//m_SkyboxPass.EnableShader();
+			//// TODO: Add a texture binding.
+			//glActiveTexture(GL_TEXTURE0);
+			//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+			//
+			//glUniform1i(m_SkyboxPass.GetUniform("u_Skybox"), cubemap);
+		}
+		else
+		{
+			Vec3 color(1.f, 0.f, 0.f);
+			m_SolidBackgroundPass.EnableShader();
+			glUniform3fv(m_SolidBackgroundPass.GetUniform("u_Color"), 1, color.ToArray().get());
+		}
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glUseProgram(0);
+	}
+
+	// FINAL PASS
+	// NO DEPTH
+	// NO STENCIL
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDrawBuffer(GL_BACK);
+		glDisable(GL_STENCIL_TEST);
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_Framebuffer.GetColorAttachment("PostLighting")->TargetName);
+
+		m_QuadShader.EnableShader();
+		glUniform1i(m_QuadShader.GetUniform("source"), 0);
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glUseProgram(0);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 
@@ -110,6 +189,7 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 
 	// TODO: Split lighting shader into one shader per type of light
 	m_LightingPass.EnableShader();
+	// TODO: Lighting pass shouldn't run through all available targets. Instead it could be given a list of targets.
 	for (size_t i = 0; i < AvailableTargets.size() - 1; ++i)
 	{
 		const std::string& targetName = AvailableTargets[i].Identifier;

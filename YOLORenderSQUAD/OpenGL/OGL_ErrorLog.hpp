@@ -9,6 +9,7 @@ class OGL_ErrorLog
 {
 public:
 
+	// TODO: Replace PrintGLError with glDebugMessageCallback
 	static bool			PrintGLError(const std::string& _message);
 	static std::string	GLToString(GLenum _errorCode);
 
