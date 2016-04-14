@@ -12,22 +12,8 @@ class OGL_DeferredRenderer
 	:public OGL_Renderer
 {
 public:
-	enum RenderTarget
-	{
-		POSITION = 0,
-		NORMAL,
-		DIFFUSE_SPEC,
-	
-		DEPTH,
-		RENDER_TARGET_COUNT,
-	};
-
 	struct RenderTargetParam
 	{
-	//	GLuint	LayoutPosition;
-	//	GLuint	InternalFormat;
-	//	GLuint	Format;
-	//	GLuint	Type;
 		std::string		Identifier;
 		GLuint			InternalFormat;
 	};
@@ -49,7 +35,7 @@ public:
 
 private:
 	void	LightingPass(const LightMap_t& _lights, const Transform& _cam);
-	void	DebugDrawBuffer(RenderTarget _target);
+	void	DebugDrawBuffer(int _target);
 
 	// TODO: Probably bring these up to IRenderer class.
 	int		m_Width;
@@ -62,7 +48,7 @@ private:
 	OGL_Framebuffer	m_Framebuffer;
 
 	// NOTE: Defined in .cpp
-	static const RenderTargetParam AvailableTargets[RENDER_TARGET_COUNT];
+	static const std::vector<RenderTargetParam> AvailableTargets;
 };
 
 

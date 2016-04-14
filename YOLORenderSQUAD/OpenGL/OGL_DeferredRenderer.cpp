@@ -7,8 +7,8 @@
 #include "Camera.hpp"
 
 
-const OGL_DeferredRenderer::RenderTargetParam
-OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
+const std::vector<OGL_DeferredRenderer::RenderTargetParam>
+OGL_DeferredRenderer::AvailableTargets =
 {
 	{ "Position", GL_RGB32F },
 	{ "Normal", GL_RGB32F },
@@ -27,12 +27,12 @@ OGL_DeferredRenderer::Initialize()
 {
 	OGL_Renderer::Initialize();
 
-	for (int i = 0; i < DEPTH; ++i)
+	for (size_t i = 0; i < AvailableTargets.size() - 1; ++i)
 	{
 		RenderTargetParam target = AvailableTargets[i];
-		m_Framebuffer.EmplaceColorAttachment(target.Identifier, target.InternalFormat, GL_COLOR_ATTACHMENT0 + i);
+		m_Framebuffer.EmplaceColorAttachment(target.Identifier, target.InternalFormat, GL_COLOR_ATTACHMENT0 + (int)i);
 	}
-	m_Framebuffer.SetDepthStencilAttachment(AvailableTargets[DEPTH].InternalFormat, GL_DEPTH_ATTACHMENT);
+	m_Framebuffer.SetDepthStencilAttachment((--AvailableTargets.end())->InternalFormat, GL_DEPTH_ATTACHMENT);
 	m_Framebuffer.ValidateFramebuffer();
 	
 	m_GeometryPass.LoadShaderAndCompile("../Resources/SHADERS/DEFERRED/def_Geometry.vs", GL_VERTEX_SHADER);
@@ -110,7 +110,7 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 
 	// TODO: Split lighting shader into one shader per type of light
 	m_LightingPass.EnableShader();
-	for (int i = 0; i < DEPTH; ++i)
+	for (size_t i = 0; i < AvailableTargets.size() - 1; ++i)
 	{
 		const std::string& targetName = AvailableTargets[i].Identifier;
 		std::string uniformName = "u_" + targetName + "Map";
@@ -118,9 +118,9 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 		const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(targetName);
 		if (desc)
 		{
-			glActiveTexture(GL_TEXTURE0 + i);
+			glActiveTexture(GL_TEXTURE0 + (int)i);
 			glBindTexture(GL_TEXTURE_2D, desc->TargetName);
-			glUniform1i(m_LightingPass.GetUniform(uniformName), i);
+			glUniform1i(m_LightingPass.GetUniform(uniformName), (int)i);
 		}
 	}
 
@@ -130,7 +130,7 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glUseProgram(0);
 
-	for (int i = 0; i < RENDER_TARGET_COUNT; ++i)
+	for (int i = 0; i < AvailableTargets.size() - 1; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -141,7 +141,7 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 
 
 void
-OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
+OGL_DeferredRenderer::DebugDrawBuffer(int _target)
 {
 	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
 
