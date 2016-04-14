@@ -7,13 +7,13 @@
 #include "Camera.hpp"
 
 
-const OGL_DeferredRenderer::RenderTargetDesc
+const OGL_DeferredRenderer::RenderTargetParam
 OGL_DeferredRenderer::AvailableTargets[RENDER_TARGET_COUNT] =
 {
-	{ POSITION, GL_RGB32F, GL_RGB, GL_FLOAT },
-	{ NORMAL, GL_RGB32F, GL_RGB, GL_FLOAT },
-	{ DIFFUSE_SPEC, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE },
-	{ DEPTH, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT }
+	{ "Position", GL_RGB32F },
+	{ "Normal", GL_RGB32F },
+	{ "DiffuseSpec", GL_RGBA8 },
+	{ "Depth", GL_DEPTH_COMPONENT24 }
 };
 
 
@@ -29,10 +29,9 @@ OGL_DeferredRenderer::Initialize()
 
 	for (int i = 0; i < DEPTH; ++i)
 	{
-		RenderTargetDesc target = AvailableTargets[i];
-		m_Framebuffer.EmplaceColorAttachment(TargetToString((RenderTarget)i), target.InternalFormat, GL_COLOR_ATTACHMENT0 + i);
+		RenderTargetParam target = AvailableTargets[i];
+		m_Framebuffer.EmplaceColorAttachment(target.Identifier, target.InternalFormat, GL_COLOR_ATTACHMENT0 + i);
 	}
-	
 	m_Framebuffer.SetDepthStencilAttachment(AvailableTargets[DEPTH].InternalFormat, GL_DEPTH_ATTACHMENT);
 	m_Framebuffer.ValidateFramebuffer();
 	
@@ -113,7 +112,7 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 	m_LightingPass.EnableShader();
 	for (int i = 0; i < DEPTH; ++i)
 	{
-		std::string targetName = TargetToString((RenderTarget)i);
+		const std::string& targetName = AvailableTargets[i].Identifier;
 		std::string uniformName = "u_" + targetName + "Map";
 	
 		const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(targetName);
@@ -148,10 +147,8 @@ OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
 
 	glDisable(GL_DEPTH_TEST);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, m_RenderTextures[_target]);
-
-	const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(TargetToString(_target));
+	const std::string& targetName = AvailableTargets[_target].Identifier;
+	const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(targetName);
 	if (desc)
 	{
 		glActiveTexture(GL_TEXTURE0);
@@ -165,27 +162,9 @@ OGL_DeferredRenderer::DebugDrawBuffer(RenderTarget _target)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else
-		LOG_WARNING("No render target found for " + TargetToString(_target));
+		LOG_WARNING("No render target found for " + targetName);
 	
 
 	if (DepthTest) glEnable(GL_DEPTH_TEST);
 }
 
-
-std::string
-OGL_DeferredRenderer::TargetToString(RenderTarget _target)
-{
-	switch (_target)
-	{
-	case POSITION:
-		return "Position";
-	case NORMAL:
-		return "Normal";
-	case DIFFUSE_SPEC:
-		return "DiffuseSpec";
-	case DEPTH:
-		return "Depth";
-	default:
-		return "";
-	}
-}

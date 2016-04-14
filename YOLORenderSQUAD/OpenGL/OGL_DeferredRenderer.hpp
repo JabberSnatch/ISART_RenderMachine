@@ -22,16 +22,18 @@ public:
 		RENDER_TARGET_COUNT,
 	};
 
-	struct RenderTargetDesc
+	struct RenderTargetParam
 	{
-		GLuint	LayoutPosition;
-		GLuint	InternalFormat;
-		GLuint	Format;
-		GLuint	Type;
+	//	GLuint	LayoutPosition;
+	//	GLuint	InternalFormat;
+	//	GLuint	Format;
+	//	GLuint	Type;
+		std::string		Identifier;
+		GLuint			InternalFormat;
 	};
 
-	OGL_DeferredRenderer() = default;
 	OGL_DeferredRenderer(int _width, int _height);
+	OGL_DeferredRenderer() = delete;
 	OGL_DeferredRenderer(const OGL_DeferredRenderer&) = delete;
 	OGL_DeferredRenderer(OGL_DeferredRenderer&&) = delete;
 	virtual ~OGL_DeferredRenderer() = default;
@@ -60,8 +62,7 @@ private:
 	OGL_Framebuffer	m_Framebuffer;
 
 	// NOTE: Defined in .cpp
-	static const RenderTargetDesc AvailableTargets[RENDER_TARGET_COUNT];
-	static std::string	TargetToString(RenderTarget _target);
+	static const RenderTargetParam AvailableTargets[RENDER_TARGET_COUNT];
 };
 
 
