@@ -10,6 +10,7 @@
 #include "Device.hpp"
 #include "OGL_RenderContext.hpp"
 #include "OGL_Renderer.hpp"
+#include "OGL_DeferredRenderer.hpp"
 
 
 #include "TESTSCENE.hpp"
@@ -28,7 +29,7 @@ QtDisplay::Initialize()
 	m_Context = new OGL_RenderContext();
 	m_Context->Initialize(&m_RenderWindow);
 
-	m_Renderer = new OGL_Renderer();
+	m_Renderer = new OGL_DeferredRenderer(1280, 720);
 	m_Renderer->Initialize();
 
 	DEVICE->Initialize(1280, 720);
@@ -63,16 +64,22 @@ QtDisplay::event(QEvent* _event)
 	{
 	case QEvent::UpdateRequest:
 	{
-		DEVICE->Update(1.f / 60.f);
-		DEVICE->Render();
-		DEVICE->SwapBuffers();
+		if (!m_Resizing)
+		{
+			DEVICE->Update(1.f / 60.f);
+			m_Context->MakeCurrent();
+			DEVICE->Render();
+			DEVICE->SwapBuffers();
+		}
 		QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
 
 	} break;
 	case QEvent::Resize:
 	{
+		m_Resizing = true;
 		QResizeEvent* resizeData = (QResizeEvent*)_event;
 		DEVICE->SetDimensions(resizeData->size().width(), resizeData->size().height());
+		m_Resizing = false;
 	} break;
 	default:
 		eventWasProcessed = QMainWindow::event(_event);

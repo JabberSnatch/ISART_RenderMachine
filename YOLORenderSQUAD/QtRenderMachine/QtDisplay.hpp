@@ -22,6 +22,8 @@ protected:
 	virtual bool	event(QEvent* _event) override;
 
 private:
+	bool				m_Resizing = false;
+
 	QLayout*			m_RootLayout;
 
 	QWindow				m_RenderWindow;

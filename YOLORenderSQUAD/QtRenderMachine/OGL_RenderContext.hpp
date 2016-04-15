@@ -24,6 +24,8 @@ public:
 
 	virtual E_TYPE	Type() { return E_TYPE::OPENGL; }
 
+	void			MakeCurrent();
+
 	auto	operator = (const OGL_RenderContext&) -> OGL_RenderContext& = delete;
 	auto	operator = (OGL_RenderContext&&) -> OGL_RenderContext& = delete;
 

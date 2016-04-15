@@ -34,14 +34,6 @@ OGL_RenderContext::Initialize(QWindow* _win)
 	std::cout << "Version OpenGL : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "Fabriquant : " << glGetString(GL_VENDOR) << std::endl;
 	std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_TEXTURE_2D);
-	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glClearColor(.5f, .5f, .5f, 1.f);
 }
 
 
@@ -68,3 +60,9 @@ OGL_RenderContext::Shutdown()
 	m_Window->destroy();
 }
 
+
+void
+OGL_RenderContext::MakeCurrent()
+{
+	m_QtContext->makeCurrent(m_Window);
+}

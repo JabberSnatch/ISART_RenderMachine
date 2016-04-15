@@ -30,6 +30,11 @@ OGL_Renderer::Initialize()
 void
 OGL_Renderer::Render(const Scene* _scene)
 {
+	glDisable(GL_BLEND);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	glDepthFunc(GL_LEQUAL);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Get Camera from scene

@@ -49,9 +49,13 @@ public:
 			localTransform.Rotation = Quaternion();
 		}
 
+#ifdef _IMGUI
 		ImGui::Text("%f, %f, %f", localTransform.Position.x, localTransform.Position.y, localTransform.Position.z);
+#endif
 		Vec3 eulerRotation = rot.toEuler();
+#ifdef _IMGUI
 		ImGui::Text("%f, %f, %f", eulerRotation.x, eulerRotation.y, eulerRotation.z);
+#endif
 
 	}
 

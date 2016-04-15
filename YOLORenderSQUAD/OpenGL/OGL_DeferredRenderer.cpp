@@ -9,8 +9,10 @@
 #include "OGL_ErrorLog.hpp"
 
 
+#ifdef _IMGUI
 // TODO: Do not leave imgui here
 #include "imgui.h"
+#endif
 static float g_Exposure = 1.f;
 
 const std::vector<OGL_DeferredRenderer::RenderTargetParam>
@@ -62,6 +64,11 @@ OGL_DeferredRenderer::Initialize()
 void
 OGL_DeferredRenderer::Render(const Scene* _scene)
 {
+	glDisable(GL_BLEND);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	glDepthFunc(GL_LEQUAL);
+
 	{
 		int unhandledErrorCount = OGL_ErrorLog::ClearErrorStack();
 		if (unhandledErrorCount > 0)
@@ -135,7 +142,9 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 	}
 
 
+#ifdef _IMGUI
 	ImGui::SliderFloat("Exposure", &g_Exposure, 0.001f, 10.f);
+#endif
 	// FINAL PASS
 	// NO DEPTH
 	// NO STENCIL
@@ -184,9 +193,6 @@ OGL_DeferredRenderer::Resize(int _width, int _height)
 void
 OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _cam, std::initializer_list<std::string> _sourceRenderTargets)
 {
-	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
-	glDisable(GL_DEPTH_TEST);
-
 	// TODO: Split lighting shader into one shader per type of light
 	m_LightingPass.EnableShader();
 
@@ -219,8 +225,6 @@ OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	if (DepthTest) glEnable(GL_DEPTH_TEST);
 }
 
 

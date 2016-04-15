@@ -12,6 +12,7 @@ public:
 	IRenderContext(IRenderContext&&) = delete;
 	virtual ~IRenderContext() = default;
 
+	// TODO: Remove clear buffer, it's not the context's job to do it.
 	virtual void	ClearBuffer() = 0;
 	virtual void	SwapBuffers() = 0;
 	virtual void	Shutdown() = 0;

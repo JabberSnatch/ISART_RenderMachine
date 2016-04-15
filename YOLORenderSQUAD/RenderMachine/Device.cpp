@@ -55,8 +55,6 @@ void
 Device::Render()
 {
 	if (!m_Init) return;
-	// TODO: It is probably not the render context's job to clear the buffer
-	//m_RenderContext->ClearBuffer();
 
 	m_Renderer->Render(m_CurrentScene);
 }
