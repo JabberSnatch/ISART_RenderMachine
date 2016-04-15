@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="CameraFlyAroundController.hpp" />
+    <ClInclude Include="Clock.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="ComponentIncubator.hpp" />
     <ClInclude Include="Device.hpp" />
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ComponentIncubator.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="IDynamicObject.cpp" />
