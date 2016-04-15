@@ -15,6 +15,20 @@ OGL_ErrorLog::PrintGLError(const std::string& _message)
 }
 
 
+int
+OGL_ErrorLog::ClearErrorStack()
+{
+	int  count = 0;
+	GLenum error = glGetError();
+	while (error != GL_NO_ERROR) 
+	{
+		error = glGetError();
+		++count;
+	}
+	return count ;
+}
+
+
 std::string	
 OGL_ErrorLog::GLToString(GLenum _errorCode)
 {

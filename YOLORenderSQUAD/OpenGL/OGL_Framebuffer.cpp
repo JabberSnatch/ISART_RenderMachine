@@ -182,8 +182,6 @@ OGL_Framebuffer::CreateRenderTarget(GLenum _format, GLenum _attachmentPoint)
 {
 	Bind();
 
-	OGL_ERROR_LOG("Before CreateRenderTarget");
-
 	RenderTargetDesc desc;
 	desc.Valid = true;
 	desc.AttachmentPoint = _attachmentPoint;

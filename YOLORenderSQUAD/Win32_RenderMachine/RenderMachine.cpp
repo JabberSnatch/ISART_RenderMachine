@@ -197,9 +197,6 @@ DispatchMessages(HWND _hWnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2((float)width, (float)height);
 
-			ImGui_OGL_FreeResources();
-			ImGui_OGL_InitResources();
-
 			ImGui::NewFrame();
 			DEVICE->Update(1. / 60.);
 			DEVICE->Render();

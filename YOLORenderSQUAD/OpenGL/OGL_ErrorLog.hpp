@@ -9,8 +9,8 @@ class OGL_ErrorLog
 {
 public:
 
-	// TODO: Replace PrintGLError with glDebugMessageCallback
 	static bool			PrintGLError(const std::string& _message);
+	static int			ClearErrorStack();
 	static std::string	GLToString(GLenum _errorCode);
 
 
@@ -27,7 +27,7 @@ public:
 #ifdef _DEBUG
 #define OGL_ERROR_LOG(message) OGL_ErrorLog::PrintGLError(message)
 #else
-#define OGL_ERROR_LOG(message) glGetError() == GL_NO_ERROR
+#define OGL_ERROR_LOG(message) (glGetError() == GL_NO_ERROR)
 #endif
 
 

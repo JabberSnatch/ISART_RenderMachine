@@ -35,7 +35,7 @@ public:
 	auto	operator = (OGL_DeferredRenderer&&) -> OGL_DeferredRenderer& = delete;
 
 private:
-	void	LightingPass(const LightMap_t& _lights, const Transform& _cam);
+	void	LightingPass(const LightMap_t& _lights, const Transform& _cam, std::initializer_list<std::string> _sourceRenderTargets);
 	void	DebugDrawBuffer(int _target);
 
 	// TODO: Probably bring these up to IRenderer class.

@@ -6,6 +6,8 @@
 #include "OGL_RenderObject.hpp"
 #include "Camera.hpp"
 #include "OGL_Skybox.hpp"
+#include "OGL_ErrorLog.hpp"
+
 
 // TODO: Do not leave imgui here
 #include "imgui.h"
@@ -60,6 +62,12 @@ OGL_DeferredRenderer::Initialize()
 void
 OGL_DeferredRenderer::Render(const Scene* _scene)
 {
+	{
+		int unhandledErrorCount = OGL_ErrorLog::ClearErrorStack();
+		if (unhandledErrorCount > 0)
+			LOG_WARNING(std::to_string(unhandledErrorCount) + " GL errors were unhandled during the last frame.");
+	}
+
 	// Get Camera from scene
 	Camera* camera = _scene->MainCamera();
 	Transform cameraTransform = camera->getNode()->WorldTransform();
@@ -102,7 +110,7 @@ OGL_DeferredRenderer::Render(const Scene* _scene)
 		glDepthMask(GL_FALSE);
 		glDisable(GL_STENCIL_TEST);
 
-		LightingPass(_scene->LightsMap(), cameraTransform);
+		LightingPass(_scene->LightsMap(), cameraTransform, { "Position", "Normal", "DiffuseSpec" });
 	}
 	
 	// BACKGROUND PASS
@@ -174,26 +182,30 @@ OGL_DeferredRenderer::Resize(int _width, int _height)
 
 
 void
-OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _cam)
+OGL_DeferredRenderer::LightingPass(const LightMap_t& _lights, const Transform& _cam, std::initializer_list<std::string> _sourceRenderTargets)
 {
 	GLboolean DepthTest = glIsEnabled(GL_DEPTH_TEST);
 	glDisable(GL_DEPTH_TEST);
 
 	// TODO: Split lighting shader into one shader per type of light
 	m_LightingPass.EnableShader();
-	// TODO: Lighting pass shouldn't run through all available targets. Instead it could be given a list of targets.
-	for (size_t i = 0; i < AvailableTargets.size() - 1; ++i)
+
+	int boundTargetCount = 0;
+	for (const std::string* ite = _sourceRenderTargets.begin(); ite < _sourceRenderTargets.end(); ++ite)
 	{
-		const std::string& targetName = AvailableTargets[i].Identifier;
+		const std::string& targetName = *ite;
 		std::string uniformName = "u_" + targetName + "Map";
-	
+
 		const OGL_Framebuffer::RenderTargetDesc* desc = m_Framebuffer.GetColorAttachment(targetName);
 		if (desc)
 		{
-			glActiveTexture(GL_TEXTURE0 + (int)i);
+			glActiveTexture(GL_TEXTURE0 + boundTargetCount);
 			glBindTexture(GL_TEXTURE_2D, desc->TargetName);
-			glUniform1i(m_LightingPass.GetUniform(uniformName), (int)i);
+			glUniform1i(m_LightingPass.GetUniform(uniformName), boundTargetCount);
+			++boundTargetCount;
 		}
+		else
+			LOG_WARNING("Render target " + targetName + " was not found as a color attachment.");
 	}
 
 	LoadLightData(_lights);
@@ -227,7 +239,7 @@ OGL_DeferredRenderer::DebugDrawBuffer(int _target)
 		glBindTexture(GL_TEXTURE_2D, desc->TargetName);
 
 		m_QuadShader.EnableShader();
-		glUniform1i(m_QuadShader.GetUniform("source"), 0);
+		glUniform1i(m_QuadShader.GetUniform("u_Source"), 0);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glUseProgram(0);
 
