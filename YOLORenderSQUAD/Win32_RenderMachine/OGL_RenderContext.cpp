@@ -49,6 +49,8 @@ OGL_RenderContext::Initialize(HWND _window)
 		wglMakeCurrent(m_DeviceContext, m_glRenderContext);
 	}
 
+	wglSwapIntervalEXT(1);
+
 	std::cout << "Version OpenGL : " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "Fabriquant : " << glGetString(GL_VENDOR) << std::endl;
 	std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;

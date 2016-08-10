@@ -86,6 +86,7 @@ in VS_OUTPUT
 	vec3 v_LightDirection;
 	vec3 v_Tangent;
 	vec3 v_Bitangent;
+	vec3 v_ViewPosition;
 } IN;
 
 struct VS_CPY
@@ -266,7 +267,7 @@ void main(void)
     Input_Material MATERIAL = IN_MATERIAL;
 	
     CPY.v_Normal = IN.v_Normal;
-	CPY.v_ViewDirection = IN.v_ViewDirection;
+	CPY.v_ViewDirection = normalize(IN.v_ViewPosition - IN.v_WorldPosition);//IN.v_ViewDirection;
 
     if (u_map_Ka_bound)
     {
@@ -311,13 +312,13 @@ void main(void)
     if (u_skybox_bound)
     {
         vec3 R = reflect(-CPY.v_ViewDirection, CPY.v_Normal);
-        //linearColor = texture(u_skybox, R).xyz / 10.0;
+        linearColor = texture(u_skybox, R).xyz / 10.0;
     }
 
     //gl_FragColor = vec4(pow(linearColor, vec3(1.0 / 2.2)), 1.0);
     //gl_FragColor = vec4(pow(abs(CPY.v_Normal), vec3(2.2)), 1.0);
-    gl_FragColor = vec4(vec3(MATERIAL.Ns), 1.0);
-    //gl_FragColor = vec4(linearColor, 1.0);
+    //gl_FragColor = vec4(vec3(abs(CPY.v_ViewDirection)), 1.0);
+    gl_FragColor = vec4(linearColor, 1.0);
     //gl_FragColor = vec4(1.0, 0, 0, 1.0);
     //gl_FragColor = vec4(u_PointLights[0].Constant - LIGHTS.PointLights[0].Constant, 0.0, 0.0, 1.0);
 }

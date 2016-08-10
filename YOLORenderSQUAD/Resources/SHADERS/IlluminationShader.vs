@@ -30,6 +30,7 @@ out VS_OUTPUT
 	vec3 v_LightDirection;
 	vec3 v_Tangent;
 	vec3 v_Bitangent;
+	vec3 v_ViewPosition;
 } OUT;
 
 void main(void)
@@ -45,7 +46,8 @@ void main(void)
 	OUT.v_Normal = normalize(tiWorldMatrix * a_Normal);
 	OUT.v_Tangent = normalize(tiWorldMatrix * a_Tangent);
 	OUT.v_Bitangent = normalize(tiWorldMatrix * a_Bitangent);
-	OUT.v_ViewDirection = normalize(u_ViewPosition - (mat3(u_WorldMatrix) * a_Position));
+	OUT.v_ViewDirection = normalize(u_ViewPosition - OUT.v_WorldPosition);//(mat3(u_WorldMatrix) * a_Position));
+	OUT.v_ViewPosition = u_ViewPosition;
 
 	if (u_LightPosition.w == 0.0)
 		OUT.v_LightDirection = u_LightPosition.xyz;
