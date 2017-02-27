@@ -56,7 +56,7 @@ void main()
         vec4 TEX_COLOR = texture(u_map_N, IN.v_TexCoords);
         mat3 normalSpace = mat3(normalize(IN.v_Tangent), normalize(IN.v_Bitangent), normalize(IN.v_Normal));
         
-        //CPY.v_Normal = normalSpace * normalize((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
+        CPY.v_Normal = normalSpace * normalize((2 * TEX_COLOR.xyz) - vec3(1.0, 1.0, 1.0));
     }
 
     if (u_map_Kd_bound)

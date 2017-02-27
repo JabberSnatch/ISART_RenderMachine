@@ -237,7 +237,10 @@ OGL_Mesh::CreateTexture(const std::string& _path, MD::TEXTURE_ID _id, bool _forc
 {
 	if (!std::fstream(_path).good()) return;
 
-	m_Textures[_id] = OGL_TextureLoader::Get()->GetTexture(_path, _forceAlpha);
+	if (_id == MD::TEXTURE_ID::MAP_N)
+		m_Textures[_id] = OGL_TextureLoader::Get()->GetTexture_NoSRGB(_path, _forceAlpha);
+	else
+		m_Textures[_id] = OGL_TextureLoader::Get()->GetTexture(_path, _forceAlpha);
 
 	if (!m_HasSampler)
 	{

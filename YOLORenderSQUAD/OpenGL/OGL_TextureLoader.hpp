@@ -33,6 +33,7 @@ public:
 	~OGL_TextureLoader();
 
 	auto	FreeOGLResources() -> void;
+	auto	GetTexture_NoSRGB(const std::string& _path, bool _forceAlpha = false) -> Texture;
 	auto	GetTexture(const std::string& _path, bool _forceAlpha = false) -> Texture;
 	auto	GetCubeMap(const std::string* _path, bool _forceAlpha = false) -> Texture;
 

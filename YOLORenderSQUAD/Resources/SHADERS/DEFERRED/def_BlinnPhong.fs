@@ -192,6 +192,7 @@ void main()
    
 
     FragmentColor = ambient + diffuse + specular;
-    //FragmentColor = specular;
+    //FragmentColor = abs(Normal);
+	//FragmentColor = specular;
     //FragmentColor = vec4(vec3(SpecularIntensity), 1.0);
 }

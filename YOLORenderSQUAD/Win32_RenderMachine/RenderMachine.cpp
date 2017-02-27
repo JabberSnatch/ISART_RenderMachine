@@ -115,8 +115,8 @@ WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _n
 
 		DEVICE->Initialize(width, height);
 		DEVICE->SetRenderContext(context);
-		DEVICE->SetRenderer(g_Renderer);
-		//DEVICE->SetRenderer(&test);
+		//DEVICE->SetRenderer(g_Renderer);
+		DEVICE->SetRenderer(&test);
 
 		INIT_TEST_SCENE();
 
